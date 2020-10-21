@@ -1,8 +1,8 @@
 import shlex
 
-import yaml
 from prompt_toolkit.completion import Completion
 
+from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -11,13 +11,6 @@ from utils import register_cli_commands, command
 class MainMenu(object):
     def __init__(self):
         self.display_name = ''
-        self.yaml = {}
-        with open("./config.yaml", 'r') as stream:
-            try:
-                self.yaml = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
-                self.yaml = {}
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -28,7 +21,7 @@ class MainMenu(object):
             pass
         else:
             if len(cmd_line) > 1 and cmd_line[0] == 'connect' and cmd_line[1] in ['-c', '--connect']:
-                for server in self.yaml.get('servers', []):
+                for server in empire_config.yaml.get('servers', []):
                     yield Completion(server, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
@@ -65,10 +58,9 @@ class MainMenu(object):
             --username=<u>     Username for empire. if not provided, will attempt to pull from yaml
             --password=<pw>    Password for empire. if not provided, will attempt to pull from yaml
         """
-        #todo connect socket
         if config is True:
             # Check for name in yaml
-            server: dict = self.yaml.get('servers').get(host)
+            server: dict = empire_config.yaml.get('servers').get(host)
             if not server:
                 print(f'Could not find server in config.yaml for {host}')
             state.connect(server['host'], server['port'], server['socketport'], server['username'], server['password'])

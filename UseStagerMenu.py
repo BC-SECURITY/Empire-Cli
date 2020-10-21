@@ -5,7 +5,7 @@ import textwrap
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-import EmpireApiClient
+from EmpireCliState import state
 from utils import register_cli_commands, command
 
 
@@ -13,8 +13,6 @@ from utils import register_cli_commands, command
 class UseStagerMenu(object):
     def __init__(self):
         self.display_name = "usestager"
-        # self.stagers = EmpireApiClient.get_stagers()
-        # self.stagers_dict = dict(list(map(lambda x: (x['Name'], x), self.stagers['stagers'])))
         self.selected_type = ''
         self.stager_options = {}
 
@@ -33,7 +31,7 @@ class UseStagerMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['usestager']:
-                for stager in self.stagers['stagers']:
+                for stager in state.stagers['stagers']:
                     yield Completion(stager['Name'], start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
@@ -47,8 +45,7 @@ class UseStagerMenu(object):
 
         Usage: use <module>
         """
-        # TODO Store stagers as list AND dict?
-        if len(list(filter(lambda x: x == module, list(map(lambda x: x['Name'], self.stagers['stagers']))))) > 0:
+        if module in state.stager_types['types']:
             self.selected_type = module
             self.display_name = 'usestager/' + module
             self.stager_options = self.stagers_dict[module]['options']

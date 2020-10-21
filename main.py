@@ -2,10 +2,11 @@ import re
 import shlex
 from typing import get_type_hints
 
+import urllib3
 from docopt import docopt
 from prompt_toolkit import PromptSession, HTML
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import Completer
+from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
@@ -16,12 +17,18 @@ from MainMenu import MainMenu
 from UseListenerMenu import UseListenerMenu
 from UseStagerMenu import UseStagerMenu
 
+# todo probably put a prop in config.yaml to suppress this (from self-signed certs)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class MyCustomCompleter(Completer):
     def __init__(self, empire_cli):
         self.empire_cli = empire_cli
 
     def get_completions(self, document, complete_event):
+        word_before_cursor = document.get_word_before_cursor()
+        if not state.connected:
+            yield Completion('connect', start_position=-len(word_before_cursor))
+
         cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
         if len(cmd_line) > 0:
             if cmd_line[0] in ['uselistener']:
@@ -63,6 +70,7 @@ class EmpireCli(object):
         history.append_string('uselistener http')
         history.append_string('listeners')
         history.append_string("main")
+        history.append_string("connect -c localhost")
 
         print('Welcome to Empire!')
         print("Use the 'connect' command to connect to your Empire server.")
@@ -99,14 +107,14 @@ class EmpireCli(object):
             elif text == 'listeners':
                 self.current_menu = self.menus['ListenerMenu']
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], self.menus['UseListenerMenu'].listener_types['types']))) > 0:
+                if len(list(filter(lambda x: x == cmd_line[1], state.listener_types['types']))) > 0:
                     # todo utulize the command decorator?
                     self.current_menu = self.menus['UseListenerMenu']
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], list(map(lambda x: x['Name'], self.menus['UseStagerMenu'].stagers['stagers']))))) > 0:
+                if len(list(filter(lambda x: x == cmd_line[1], state.stager_types['types']))) > 0:
                     # todo utulize the command decorator?
                     self.current_menu = self.menus['UseStagerMenu']
                     self.current_menu.use(cmd_line[1])

@@ -14,6 +14,8 @@ class EmpireCliState(object):
         self.connected = False
         self.listeners = []
         self.listener_types = []
+        self.stagers = []
+        self.stager_types = []
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -28,16 +30,20 @@ class EmpireCliState(object):
         self.sio = socketio.Client(ssl_verify=False)
         self.sio.connect(f'{host}:{socketport}?token={self.token}')
 
-        # TODO Seprate sio class? at least for the handlers?
-        self.sio.on('listeners/new', lambda data: print(data))
-
         print('Connected to ' + host)
 
         self.init()
+        self.init_handlers()
 
     def init(self):
         self.listeners = self.get_listeners()
         self.listener_types = self.get_listener_types()
+        self.stagers = self.get_stagers()
+        self.stager_types = {'types': list(map(lambda x: x['Name'], self.stagers['stagers']))}
+
+    def init_handlers(self):
+        if self.sio:
+            self.sio.on('listeners/new', lambda data: print(data))
 
     def disconnect(self):
         self.host = ''

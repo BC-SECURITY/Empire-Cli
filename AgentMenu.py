@@ -2,9 +2,9 @@ import string
 
 from terminaltables import SingleTable
 
-import EmpireApiClient
+from EmpireCliState import state
 
-
+# This needs to be updated to match how ListenerMenu works.
 class AgentMenu(object):
     def __init__(self):
         self.display_name = "agents"
@@ -18,7 +18,7 @@ class AgentMenu(object):
 
     def execute(self, text: string) -> None:
         if text == 'list':
-            agents = EmpireApiClient.get_agents()
+            agents = state.get_agents()
             agent_list = list(map(lambda x: [x['name'], x['listener'], x['language'], x['username'], trunc(x['process_name'], 10), x['process_id'], x['lastseen_time']], agents['agents']))
             agent_list.insert(0, ['Name', 'Listener', 'Language', 'Username', 'Process', 'PID', 'Last Seen'])
             table = SingleTable(agent_list)

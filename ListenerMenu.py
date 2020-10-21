@@ -5,7 +5,6 @@ import textwrap
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-import EmpireApiClient
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -77,7 +76,6 @@ class ListenerMenu(object):
         table.inner_row_border = True
         print(table.table)
 
-
     @command
     def kill(self, listener_name: string) -> None:
         """
@@ -85,4 +83,4 @@ class ListenerMenu(object):
 
         Usage: kill <listener_name>
         """
-        EmpireApiClient.kill_listener(listener_name)
+        state.kill_listener(listener_name)

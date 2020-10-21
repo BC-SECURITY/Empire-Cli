@@ -5,7 +5,7 @@ import textwrap
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-import EmpireApiClient
+from EmpireCliState import state
 from utils import register_cli_commands, command
 
 
@@ -13,7 +13,6 @@ from utils import register_cli_commands, command
 class UseListenerMenu(object):
     def __init__(self):
         self.display_name = "uselistener"
-        # self.listener_types = EmpireApiClient.get_listener_types()
         self.selected_type = ''
         self.listener_options = {}
 
@@ -32,7 +31,7 @@ class UseListenerMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['uselistener']:
-                for type in self.listener_types['types']:
+                for type in state.listener_types['types']:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
@@ -46,10 +45,10 @@ class UseListenerMenu(object):
 
         Usage: use <module>
         """
-        if module in self.listener_types['types']:
+        if module in state.listener_types['types']:
             self.selected_type = module
             self.display_name = 'uselistener/' + self.selected_type
-            self.listener_options = EmpireApiClient.get_listener_options(self.selected_type)['listeneroptions']
+            self.listener_options = state.get_listener_options(self.selected_type)['listeneroptions']
 
             listener_list = []
             for key, value in self.listener_options.items():
@@ -122,6 +121,6 @@ class UseListenerMenu(object):
         for key, value in self.listener_options.items():
             post_body[key] = self.listener_options[key]['Value']
 
-        response = EmpireApiClient.create_listener(self.selected_type, post_body)
+        response = state.create_listener(self.selected_type, post_body)
 
         print(response)
