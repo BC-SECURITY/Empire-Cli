@@ -1,0 +1,19 @@
+servers:
+  localhost:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
+  other-server:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
+  another-one:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
