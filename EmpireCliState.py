@@ -16,6 +16,8 @@ class EmpireCliState(object):
         self.listener_types = []
         self.stagers = []
         self.stager_types = []
+        self.modules = []
+        self.module_types = []
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -40,6 +42,8 @@ class EmpireCliState(object):
         self.listener_types = self.get_listener_types()
         self.stagers = self.get_stagers()
         self.stager_types = {'types': list(map(lambda x: x['Name'], self.stagers['stagers']))}
+        self.modules = self.get_modules()
+        self.module_types = {'types': list(map(lambda x: x['Name'], self.modules['modules']))}
 
     def init_handlers(self):
         if self.sio:
@@ -105,6 +109,13 @@ class EmpireCliState(object):
 
     def get_agents(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/agents',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_modules(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/modules',
                                 verify=False,
                                 params={'token': self.token})
 

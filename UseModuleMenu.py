@@ -10,11 +10,11 @@ from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UseListenerMenu(object):
+class UseModuleMenu(object):
     def __init__(self):
-        self.display_name = "uselistener"
+        self.display_name = "usemodule"
         self.selected_type = ''
-        self.listener_options = {}
+        self.module_options = {}
 
     def autocomplete(self):
         return self._cmd_registry + [
@@ -30,11 +30,8 @@ class UseListenerMenu(object):
         except ValueError:
             pass
         else:
-            if len(cmd_line) > 0 and cmd_line[0] in ['uselistener']:
-                for type in state.listener_types['types']:
-                    yield Completion(type, start_position=-len(word_before_cursor))
-            elif len(cmd_line) > 0 and cmd_line[0] in ['set']:
-                for type in state.get_listener_options(self.selected_type)['listeneroptions']:
+            if len(cmd_line) > 0 and cmd_line[0] in ['usemodule']:
+                for type in state.module_types['types']:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
@@ -44,24 +41,24 @@ class UseListenerMenu(object):
     @command
     def use(self, module: str) -> None:
         """
-        Use the selected listener
+        Use the selected module
 
         Usage: use <module>
         """
-        if module in state.listener_types['types']:
+        if module in state.module_types['types']:
             self.selected_type = module
-            self.display_name = 'uselistener/' + self.selected_type
-            self.listener_options = state.get_listener_options(self.selected_type)['listeneroptions']
+            self.display_name = 'usemodule/' + self.selected_type
+            self.module_options = state.modules['modules'][self.selected_type]
 
-            listener_list = []
+            module_list = []
             for key, value in self.listener_options.items():
                 values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
                 values.reverse()
                 temp = [key] + values
-                listener_list.append(temp)
+                module_list.append(temp)
 
-            table = SingleTable(listener_list)
-            table.title = 'Listeners List'
+            table = SingleTable(module_list)
+            table.title = 'Module List'
             table.inner_row_border = True
             print(table.table)
 
@@ -98,32 +95,14 @@ class UseListenerMenu(object):
 
         Usage: info
         """
-        listener_list = []
+        module_list = []
         for key, value in self.listener_options.items():
             values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
             values.reverse()
             temp = [key] + values
-            listener_list.append(temp)
+            module_list.append(temp)
 
-        table = SingleTable(listener_list)
-        table.title = 'Listeners List'
+        table = SingleTable(module_list)
+        table.title = 'Module List'
         table.inner_row_border = True
         print(table.table)
-
-
-    @command
-    def start(self):
-        """
-        Create the current listener
-
-        Usage: start
-        """
-        # todo validation and error handling
-        # Hopefully this will force us to provid more info in api errors ;)
-        post_body = {}
-        for key, value in self.listener_options.items():
-            post_body[key] = self.listener_options[key]['Value']
-
-        response = state.create_listener(self.selected_type, post_body)
-
-        print(response)

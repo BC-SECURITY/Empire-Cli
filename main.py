@@ -16,6 +16,7 @@ from ListenerMenu import ListenerMenu
 from MainMenu import MainMenu
 from UseListenerMenu import UseListenerMenu
 from UseStagerMenu import UseStagerMenu
+from UseModuleMenu import UseModuleMenu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -25,9 +26,9 @@ class MyCustomCompleter(Completer):
         self.empire_cli = empire_cli
 
     def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-        if not state.connected:
-            yield Completion('connect', start_position=-len(word_before_cursor))
+        #word_before_cursor = document.get_word_before_cursor()
+        #if not state.connected:
+        #   yield Completion('connect', start_position=-len(word_before_cursor))
 
         cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
         if len(cmd_line) > 0:
@@ -35,6 +36,8 @@ class MyCustomCompleter(Completer):
                 return self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event)
             if cmd_line[0] in ['usestager']:
                 return self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event)
+            if cmd_line[0] in ['usemodule']:
+                return self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
 
         return self.empire_cli.current_menu.get_completions(document, complete_event)
 
@@ -49,6 +52,7 @@ class EmpireCli(object):
             'UseListenerMenu': UseListenerMenu(),
             'UseStagerMenu': UseStagerMenu(),
             'AgentMenu': AgentMenu(),
+            'UseModuleMenu': UseModuleMenu(),
         }
         self.current_menu = self.menus['MainMenu']
 
@@ -101,6 +105,7 @@ class EmpireCli(object):
                 continue
             if not state.connected and not cmd_line[0] == 'connect':
                 continue
+
             # Switch Menus
             if text == 'main':
                 self.current_menu = self.menus['MainMenu']
@@ -124,6 +129,14 @@ class EmpireCli(object):
                 self.current_menu = self.menus['StagerMenu']
             elif text == 'agents':
                 self.current_menu = self.menus['AgentMenu']
+            elif text == 'usemodule':
+                if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
+                    # todo utulize the command decorator?
+                    self.current_menu = self.menus['UseModuleMenu']
+                    self.current_menu.use(cmd_line[1])
+                else:
+                    print(f'No module {cmd_line[1]}')
+
             else:
                 func = None
                 try:
