@@ -31,9 +31,8 @@ class AgentMenu(object):
         except ValueError:
             pass
         else:
-            if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'interact', 'clear', 'rename']:
-                for x in range(len(state.get_agents()['agents'])):
-                    type = state.get_agents()['agents'][x]['name']
+            if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'clear', 'rename']:
+                for type in state.agent_types['types']:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
@@ -58,16 +57,6 @@ class AgentMenu(object):
         table.title = 'Agents'
         table.inner_row_border = True
         print(table.table)
-
-    @command
-    def interact(self, agent_name: string):
-        """
-        Interact with an active agent
-
-        Usage: interact <agent_name>
-        """
-        self.selected_type = agent_name
-        self.display_name = agent_name
 
     @command
     def kill(self, agent_name: string) -> None:

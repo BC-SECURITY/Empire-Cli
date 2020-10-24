@@ -17,6 +17,7 @@ from MainMenu import MainMenu
 from UseListenerMenu import UseListenerMenu
 from UseStagerMenu import UseStagerMenu
 from UseModuleMenu import UseModuleMenu
+from InteractMenu import InteractMenu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -38,6 +39,8 @@ class MyCustomCompleter(Completer):
                 return self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event)
             if cmd_line[0] in ['usemodule']:
                 return self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
+            if cmd_line[0] in ['interact']:
+                return self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
 
         return self.empire_cli.current_menu.get_completions(document, complete_event)
 
@@ -53,6 +56,7 @@ class EmpireCli(object):
             'UseStagerMenu': UseStagerMenu(),
             'AgentMenu': AgentMenu(),
             'UseModuleMenu': UseModuleMenu(),
+            'InteractMenu': InteractMenu(),
         }
         self.current_menu = self.menus['MainMenu']
 
@@ -135,6 +139,13 @@ class EmpireCli(object):
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
                     # todo utilize the command decorator?
                     self.current_menu = self.menus['UseModuleMenu']
+                    self.current_menu.use(cmd_line[1])
+                else:
+                    print(f'No module {cmd_line[1]}')
+            elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
+                if len(list(filter(lambda x: x == cmd_line[1], state.agent_types['types']))) > 0:
+                    # todo utilize the command decorator?
+                    self.current_menu = self.menus['InteractMenu']
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')

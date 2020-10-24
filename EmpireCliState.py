@@ -18,6 +18,8 @@ class EmpireCliState(object):
         self.stager_types = []
         self.modules = []
         self.module_types = []
+        self.agents = []
+        self.agent_types = []
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -44,6 +46,8 @@ class EmpireCliState(object):
         self.stager_types = {'types': list(map(lambda x: x['Name'], self.stagers['stagers']))}
         self.modules = self.get_modules()
         self.module_types = {'types': list(map(lambda x: x['Name'], self.modules['modules']))}
+        self.agents = self.get_agents()
+        self.agent_types = {'types': list(map(lambda x: x['name'], self.agents['agents']))}
 
     def init_handlers(self):
         if self.sio:
