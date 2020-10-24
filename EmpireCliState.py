@@ -121,5 +121,27 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def kill_agent(self, agent_name: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/kill',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def clear_agent(self, agent_name: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/clear',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def rename_agent(self, agent_name: str, new_agent_name: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/rename',
+                                 json={'newname': new_agent_name},
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
 
 state = EmpireCliState()

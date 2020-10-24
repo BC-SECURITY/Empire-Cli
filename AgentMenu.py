@@ -8,6 +8,7 @@ from terminaltables import SingleTable
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
+
 @register_cli_commands
 class AgentMenu(object):
     def __init__(self):
@@ -30,9 +31,8 @@ class AgentMenu(object):
         except ValueError:
             pass
         else:
-            if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
+            if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'interact', 'clear', 'rename']:
                 for x in range(len(state.get_agents()['agents'])):
-                    #if state.get_agents()['agents'][x]['Name'] == self.selected_type:
                     type = state.get_agents()['agents'][x]['name']
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
@@ -47,23 +47,55 @@ class AgentMenu(object):
 
         Usage: list
         """
-        agent_list = list(map(lambda x: [x['ID'], x['session_id'], x['high_integrity'], x['language'], x['internal_ip'], x['username'], x['process_name'], x['process_id'], str(x['delay']) + '/' + str(x['jitter']), x['lastseen_time'], x['listener']],
-                                 state.get_agents()['agents']))
-        agent_list.insert(0, ['ID', 'Session ID', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process', 'PID', 'Delay', 'Last Seen', 'Listener'])
+        agent_list = list(map(
+            lambda x: [x['ID'], x['session_id'], x['high_integrity'], x['language'], x['internal_ip'], x['username'],
+                       x['process_name'], x['process_id'], str(x['delay']) + '/' + str(x['jitter']), x['lastseen_time'],
+                       x['listener']],
+            state.get_agents()['agents']))
+        agent_list.insert(0, ['ID', 'Session ID', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
+                              'PID', 'Delay', 'Last Seen', 'Listener'])
         table = SingleTable(agent_list)
         table.title = 'Agents'
         table.inner_row_border = True
         print(table.table)
 
     @command
-    def interact(self, session: string):
+    def interact(self, agent_name: string):
         """
         Interact with an active agent
 
-        Usage: interact <session>
+        Usage: interact <agent_name>
         """
-        self.selected_type = session
-        self.display_name = session
+        self.selected_type = agent_name
+        self.display_name = agent_name
+
+    @command
+    def kill(self, agent_name: string) -> None:
+        """
+        Kill the selected listener
+
+        Usage: kill <agent_name>
+        """
+        state.kill_agent(agent_name)
+
+    @command
+    def clear(self, agent_name: string) -> None:
+        """
+        Clear tasks for selected listener
+
+        Usage: clear <agent_name>
+        """
+        state.clear_agent(agent_name)
+
+    @command
+    def rename(self, agent_name: string, new_agent_name: string) -> None:
+        """
+        Rename selected listener
+
+        Usage: rename <agent_name> <new_agent_name>
+        """
+        state.rename_agent(agent_name, new_agent_name)
+
 
 def trunc(value: string = '', limit: int = 1) -> string:
     if value:
