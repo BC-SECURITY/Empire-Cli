@@ -48,10 +48,12 @@ class UseModuleMenu(object):
         if module in state.module_types['types']:
             self.selected_type = module
             self.display_name = 'usemodule/' + self.selected_type
-            self.module_options = state.modules['modules'][self.selected_type]
+            for x in range(len(state.modules['modules'])):
+                if state.modules['modules'][x]['Name'] == self.selected_type:
+                    self.module_options = state.modules['modules'][x]['options']
 
             module_list = []
-            for key, value in self.listener_options.items():
+            for key, value in self.module_options.items():
                 values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
                 values.reverse()
                 temp = [key] + values
@@ -70,7 +72,7 @@ class UseModuleMenu(object):
         Usage: set <key> <value>
         """
         if key in self.listener_options:
-            self.listener_options[key]['Value'] = value
+            self.module_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
         print(f'Set {key} to {value}')
@@ -83,7 +85,7 @@ class UseModuleMenu(object):
         Usage: unset <key>
         """
         if key in self.listener_options:
-            self.listener_options[key]['Value'] = ''
+            self.module_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
         print(f'Unset {key}')
@@ -96,7 +98,7 @@ class UseModuleMenu(object):
         Usage: info
         """
         module_list = []
-        for key, value in self.listener_options.items():
+        for key, value in self.module_options.items():
             values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
             values.reverse()
             temp = [key] + values

@@ -110,7 +110,6 @@ class UseListenerMenu(object):
         table.inner_row_border = True
         print(table.table)
 
-
     @command
     def start(self):
         """

@@ -94,7 +94,7 @@ class EmpireCli(object):
                 with patch_stdout():
                     text = session.prompt(HTML((f"<ansiblue>{self.current_menu.display_name}</ansiblue> > ")))
                 # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
-                # TODO what to do about case sensitivty for parsing options.
+                # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
             except KeyboardInterrupt:
                 continue  # Control-C pressed. Try again.
@@ -113,14 +113,14 @@ class EmpireCli(object):
                 self.current_menu = self.menus['ListenerMenu']
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.listener_types['types']))) > 0:
-                    # todo utulize the command decorator?
+                    # todo utilize the command decorator?
                     self.current_menu = self.menus['UseListenerMenu']
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.stager_types['types']))) > 0:
-                    # todo utulize the command decorator?
+                    # todo utilize the command decorator?
                     self.current_menu = self.menus['UseStagerMenu']
                     self.current_menu.use(cmd_line[1])
                 else:
@@ -129,9 +129,9 @@ class EmpireCli(object):
                 self.current_menu = self.menus['StagerMenu']
             elif text == 'agents':
                 self.current_menu = self.menus['AgentMenu']
-            elif text == 'usemodule':
+            elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
-                    # todo utulize the command decorator?
+                    # todo utilize the command decorator?
                     self.current_menu = self.menus['UseModuleMenu']
                     self.current_menu.use(cmd_line[1])
                 else:
