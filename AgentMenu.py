@@ -47,11 +47,11 @@ class AgentMenu(object):
         Usage: list
         """
         agent_list = list(map(
-            lambda x: [x['ID'], x['session_id'], x['high_integrity'], x['language'], x['internal_ip'], x['username'],
+            lambda x: [x['ID'], x['name'], x['high_integrity'], x['language'], x['internal_ip'], x['username'],
                        x['process_name'], x['process_id'], str(x['delay']) + '/' + str(x['jitter']), x['lastseen_time'],
                        x['listener']],
             state.get_agents()['agents']))
-        agent_list.insert(0, ['ID', 'Session ID', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
+        agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
         table = SingleTable(agent_list)
         table.title = 'Agents'
