@@ -111,6 +111,7 @@ class EmpireCli(object):
                 self.current_menu = self.menus['MainMenu']
             elif text == 'listeners':
                 self.current_menu = self.menus['ListenerMenu']
+                self.current_menu.list()
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.listener_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -129,6 +130,7 @@ class EmpireCli(object):
                 self.current_menu = self.menus['StagerMenu']
             elif text == 'agents':
                 self.current_menu = self.menus['AgentMenu']
+                self.current_menu.list()
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
                     # todo utilize the command decorator?

@@ -8,31 +8,42 @@ from terminaltables import SingleTable
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
-# This needs to be updated to match how ListenerMenu works.
+@register_cli_commands
 class AgentMenu(object):
     def __init__(self):
         self.display_name = "agents"
+        self.selected_type = ''
 
     def autocomplete(self):
-        return [
+        return self._cmd_registry + [
+            'help',
+            'main',
             'list',
+            'interact',
         ]
 
-    def execute(self, text: string) -> None:
-        if text == 'list':
-            agents = state.get_agents()
-            agent_list = list(map(lambda x: [x['name'], x['listener'], x['language'], x['username'], trunc(x['process_name'], 10), x['process_id'], x['lastseen_time']], agents['agents']))
-            agent_list.insert(0, ['Name', 'Listener', 'Language', 'Username', 'Process', 'PID', 'Last Seen'])
-            table = SingleTable(agent_list)
-            table.title = 'Agents List'
-            table.inner_row_border = True
-            print(table.table)
-        # print('hi!' + text)
+    def get_completions(self, document, complete_event):
+        word_before_cursor = document.get_word_before_cursor()
+        try:
+            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
+            # print(cmd_line)
+        except ValueError:
+            pass
+        else:
+            if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
+                for x in range(len(state.get_agents()['agents'])):
+                    #if state.get_agents()['agents'][x]['Name'] == self.selected_type:
+                    type = state.get_agents()['agents'][x]['name']
+                    yield Completion(type, start_position=-len(word_before_cursor))
+            else:
+                for word in self.autocomplete():
+                    if word.startswith(word_before_cursor):
+                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
 
     @command
     def list(self) -> None:
         """
-        Get running/available listeners
+        Get running/available agents
 
         Usage: list
         """
@@ -44,6 +55,15 @@ class AgentMenu(object):
         table.inner_row_border = True
         print(table.table)
 
+    @command
+    def interact(self, session: string):
+        """
+        Interact with an active agent
+
+        Usage: interact <session>
+        """
+        self.selected_type = session
+        self.display_name = session
 
 def trunc(value: string = '', limit: int = 1) -> string:
     if value:
