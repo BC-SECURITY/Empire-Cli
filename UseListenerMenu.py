@@ -61,7 +61,7 @@ class UseListenerMenu(object):
                 listener_list.append(temp)
 
             table = SingleTable(listener_list)
-            table.title = 'Listeners List'
+            table.title = 'Listeners Options'
             table.inner_row_border = True
             print(table.table)
 
@@ -106,7 +106,7 @@ class UseListenerMenu(object):
             listener_list.append(temp)
 
         table = SingleTable(listener_list)
-        table.title = 'Listeners List'
+        table.title = 'Listeners Options'
         table.inner_row_border = True
         print(table.table)
 

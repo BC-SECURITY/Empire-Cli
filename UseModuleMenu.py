@@ -60,7 +60,7 @@ class UseModuleMenu(object):
                 module_list.append(temp)
 
             table = SingleTable(module_list)
-            table.title = 'Module List'
+            table.title = 'Module Options'
             table.inner_row_border = True
             print(table.table)
 
@@ -105,6 +105,6 @@ class UseModuleMenu(object):
             module_list.append(temp)
 
         table = SingleTable(module_list)
-        table.title = 'Module List'
+        table.title = 'Module Options'
         table.inner_row_border = True
         print(table.table)
