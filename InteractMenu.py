@@ -32,8 +32,8 @@ class InteractMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
-                for self.selected_type in state.agent_types['types']:
-                    yield Completion(self.selected_type, start_position=-len(word_before_cursor))
+                for type in state.agent_types['types']:
+                    yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
                     if word.startswith(word_before_cursor):

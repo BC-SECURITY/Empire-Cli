@@ -138,8 +138,12 @@ class EmpireCli(object):
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
                     # todo utilize the command decorator?
+                    previous_menu = self.current_menu
                     self.current_menu = self.menus['UseModuleMenu']
                     self.current_menu.use(cmd_line[1])
+                    if previous_menu == self.menus['InteractMenu']:
+                        self.current_menu.set('Agent', previous_menu.selected_type)
+                        self.current_menu.info()
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'interact' and len(cmd_line) > 1:

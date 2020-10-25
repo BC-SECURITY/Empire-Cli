@@ -52,18 +52,6 @@ class UseModuleMenu(object):
                 if state.modules['modules'][x]['Name'] == self.selected_type:
                     self.module_options = state.modules['modules'][x]['options']
 
-            module_list = []
-            for key, value in self.module_options.items():
-                values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-                values.reverse()
-                temp = [key] + values
-                module_list.append(temp)
-
-            table = SingleTable(module_list)
-            table.title = 'Module Options'
-            table.inner_row_border = True
-            print(table.table)
-
     @command
     def set(self, key: string, value: string) -> None:
         """
@@ -71,7 +59,7 @@ class UseModuleMenu(object):
 
         Usage: set <key> <value>
         """
-        if key in self.listener_options:
+        if key in self.module_options:
             self.module_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
@@ -84,7 +72,7 @@ class UseModuleMenu(object):
 
         Usage: unset <key>
         """
-        if key in self.listener_options:
+        if key in self.module_options:
             self.module_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
