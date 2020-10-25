@@ -52,8 +52,17 @@ class InteractMenu(object):
     @command
     def shell(self, shell_cmd: str) -> None:
         """
-        asks an the specified agent_name to execute a shell command.
+        Tasks an the specified agent to execute a shell command.
 
         Usage: shell <shell_cmd>
         """
         state.agent_shell(self.selected_type, shell_cmd)
+
+    @command
+    def sysinfo(self) -> None:
+        """
+        Tasks an the specified agent to execute Get-Sysinfo.
+
+        Usage: sysinfo
+        """
+        state.agent_shell(self.selected_type, 'Get-Sysinfo')

@@ -19,6 +19,7 @@ from UseStagerMenu import UseStagerMenu
 from UseModuleMenu import UseModuleMenu
 from InteractMenu import InteractMenu
 from ShellMenu import ShellMenu
+from CredentialMenu import CredentialMenu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -42,6 +43,8 @@ class MyCustomCompleter(Completer):
                 return self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
             if cmd_line[0] in ['interact']:
                 return self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
+            if cmd_line[0] in ['credentials']:
+                return self.empire_cli.menus['CredentialMenu'].get_completions(document, complete_event)
 
         return self.empire_cli.current_menu.get_completions(document, complete_event)
 
@@ -59,6 +62,7 @@ class EmpireCli(object):
             'UseModuleMenu': UseModuleMenu(),
             'InteractMenu': InteractMenu(),
             'ShellMenu': ShellMenu(),
+            'CredentialMenu': CredentialMenu(),
         }
         self.current_menu = self.menus['MainMenu']
         self.previous_menu = self.menus['MainMenu']
@@ -170,7 +174,9 @@ class EmpireCli(object):
                     self.current_menu = self.previous_menu
                 else:
                     self.current_menu.shell(self.current_menu.selected_type, text)
-
+            elif text == 'credentials':
+                self.current_menu = self.menus['CredentialMenu']
+                self.current_menu.list()
             else:
                 func = None
                 try:

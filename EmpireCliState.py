@@ -182,4 +182,12 @@ class EmpireCliState(object):
                                  params={'token': self.token})
 
         return json.loads(response.content)
+
+    def get_creds(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/creds',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
 state = EmpireCliState()
