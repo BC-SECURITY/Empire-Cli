@@ -18,6 +18,7 @@ from UseListenerMenu import UseListenerMenu
 from UseStagerMenu import UseStagerMenu
 from UseModuleMenu import UseModuleMenu
 from InteractMenu import InteractMenu
+from ShellMenu import ShellMenu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -57,8 +58,10 @@ class EmpireCli(object):
             'AgentMenu': AgentMenu(),
             'UseModuleMenu': UseModuleMenu(),
             'InteractMenu': InteractMenu(),
+            'ShellMenu': ShellMenu(),
         }
         self.current_menu = self.menus['MainMenu']
+        self.previous_menu = self.menus['MainMenu']
 
     def autocomplete(self):
         return self.current_menu.autocomplete()
@@ -153,6 +156,20 @@ class EmpireCli(object):
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+            elif text == 'shell':
+                # todo utilize the command decorator?
+                self.previous_menu = self.current_menu
+                if self.previous_menu == self.menus['InteractMenu']:
+                    self.current_menu = self.menus['ShellMenu']
+                    self.current_menu.selected_type = self.previous_menu.selected_type
+                    self.current_menu.use(self.current_menu.selected_type)
+                else:
+                    pass
+            elif self.current_menu == self.menus['ShellMenu']:
+                if text == 'exit':
+                    self.current_menu = self.previous_menu
+                else:
+                    self.current_menu.shell(self.current_menu.selected_type, text)
 
             else:
                 func = None

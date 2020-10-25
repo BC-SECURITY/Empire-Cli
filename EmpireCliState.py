@@ -147,5 +147,39 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def agent_shell(self, agent_name, shell_cmd: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/shell',
+                                 json={'command': shell_cmd},
+                                 verify=False,
+                                 params={'token': self.token})
 
+        return json.loads(response.content)
+
+    def scrape_directory(self, agent_name):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/directory',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_directory(self, agent_name):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/directory',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_result(self, agent_name):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/results',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_task_result(self, agent_name, task_id):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/task/{task_id}',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
 state = EmpireCliState()

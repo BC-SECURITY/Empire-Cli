@@ -48,3 +48,12 @@ class InteractMenu(object):
         """
         self.selected_type = agent_name
         self.display_name = self.selected_type
+
+    @command
+    def shell(self, shell_cmd: str) -> None:
+        """
+        asks an the specified agent_name to execute a shell command.
+
+        Usage: shell <shell_cmd>
+        """
+        state.agent_shell(self.selected_type, shell_cmd)
