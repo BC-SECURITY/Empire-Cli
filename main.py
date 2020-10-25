@@ -177,6 +177,11 @@ class EmpireCli(object):
             elif text == 'credentials':
                 self.current_menu = self.menus['CredentialMenu']
                 self.current_menu.list()
+            elif cmd_line[0] == 'report':
+                if len(cmd_line) > 1:
+                    state.generate_report(cmd_line[1])
+                else:
+                    state.generate_report('')
             else:
                 func = None
                 try:

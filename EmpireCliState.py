@@ -164,22 +164,22 @@ class EmpireCliState(object):
 
     def get_directory(self, agent_name):
         response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/directory',
-                                 verify=False,
-                                 params={'token': self.token})
+                                verify=False,
+                                params={'token': self.token})
 
         return json.loads(response.content)
 
     def get_result(self, agent_name):
         response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/results',
-                                 verify=False,
-                                 params={'token': self.token})
+                                verify=False,
+                                params={'token': self.token})
 
         return json.loads(response.content)
 
     def get_task_result(self, agent_name, task_id):
         response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/task/{task_id}',
-                                 verify=False,
-                                 params={'token': self.token})
+                                verify=False,
+                                params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -189,5 +189,14 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
+    def generate_report(self, directory_location):
+        response = requests.post(url=f'{self.host}:{self.port}/api/reporting/generate',
+                                 verify=False,
+                                 json={'logo': directory_location},
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
 
 state = EmpireCliState()
