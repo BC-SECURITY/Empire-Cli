@@ -116,4 +116,4 @@ class UsePluginMenu(object):
             post_body[key] = self.plugin_options[key]['Value']
 
         response = state.execute_plugin(self.selected_type, post_body)
-        print(response)
+        #print(response)

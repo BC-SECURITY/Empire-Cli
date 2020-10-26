@@ -221,7 +221,7 @@ class EmpireCli(object):
                             # if args.get(key) is not None:
                             if key is not 'return':
                                 new_args[key] = args[key]
-                        print(new_args)
+                        #print(new_args)
                         func(**new_args)
                     except Exception as e:
                         print(e)

@@ -118,11 +118,11 @@ class UseListenerMenu(object):
         Usage: start
         """
         # todo validation and error handling
-        # Hopefully this will force us to provid more info in api errors ;)
+        # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
         for key, value in self.listener_options.items():
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected_type, post_body)
 
-        print(response)
+        #print(response)

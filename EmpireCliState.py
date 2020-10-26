@@ -129,6 +129,14 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def execute_module(self, module_name: str, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/modules/{module_name}',
+                                json=options,
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
     def kill_agent(self, agent_name: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/kill',
                                  verify=False,
@@ -187,6 +195,12 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def get_agent_result(self, agent_name):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/results',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
     def get_creds(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/creds',
                                 verify=False,

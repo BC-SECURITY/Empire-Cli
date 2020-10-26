@@ -1,6 +1,8 @@
 import shlex
 import string
 import textwrap
+import threading
+import time
 
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
@@ -39,6 +41,27 @@ class InteractMenu(object):
                     if word.startswith(word_before_cursor):
                         yield Completion(word, start_position=-len(word_before_cursor), style="underline")
 
+    def tasking_id_returns(self, agent_name, task_id: int):
+        """
+        Polls and prints tasking data for taskID
+
+        Usage: tasking_id_returns <agent_name> <task_id>
+        """
+        # todo: there must be a better way to do this with notifications
+        # Set previous results to current results to avoid a lot of old data
+        status_result = False
+
+        while not status_result:
+            try:
+                results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
+                if results['results'] is not None:
+                    print('[*] Task ' + str(results['taskID']) + " results:")
+                    print(results['results'])
+                    status_result = True
+            except:
+                pass
+            time.sleep(1)
+
     @command
     def use(self, agent_name: str) -> None:
         """
@@ -48,6 +71,8 @@ class InteractMenu(object):
         """
         self.selected_type = agent_name
         self.display_name = self.selected_type
+        #agent_return = threading.Thread(target=self.tasking_returns)
+        #agent_return.start()
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -56,7 +81,10 @@ class InteractMenu(object):
 
         Usage: shell <shell_cmd>
         """
-        state.agent_shell(self.selected_type, shell_cmd)
+        response = state.agent_shell(self.selected_type, shell_cmd)
+        print('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID']))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        agent_return.start()
 
     @command
     def sysinfo(self) -> None:

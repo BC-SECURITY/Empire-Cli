@@ -1,6 +1,8 @@
 import shlex
 import string
 import textwrap
+import time
+import threading
 
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
@@ -37,6 +39,28 @@ class UseModuleMenu(object):
                 for word in self.autocomplete():
                     if word.startswith(word_before_cursor):
                         yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+
+    def tasking_id_returns(self, agent_name, task_id: int):
+        """
+        Polls and prints tasking data for taskID
+
+        Usage: tasking_id_returns <agent_name> <task_id>
+        """
+        # todo: there must be a better way to do this with notifications
+        # Set previous results to current results to avoid a lot of old data
+        status_result = False
+
+        while not status_result:
+            try:
+                results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
+                if results['results'] is not None:
+                    if 'Job started:' not in results['results']:
+                        print('[*] Task ' + str(results['taskID']) + " results:")
+                        print(results['results'])
+                        status_result = True
+            except:
+                pass
+            time.sleep(1)
 
     @command
     def use(self, module: str) -> None:
@@ -96,3 +120,22 @@ class UseModuleMenu(object):
         table.title = 'Module Options'
         table.inner_row_border = True
         print(table.table)
+
+    @command
+    def execute(self):
+        """
+        Execute the selected module
+
+        Usage: start
+        """
+        # todo validation and error handling
+        # Hopefully this will force us to provide more info in api errors ;)
+        post_body = {}
+        for key, value in self.module_options.items():
+            post_body[key] = self.module_options[key]['Value']
+
+        response = state.execute_module(self.selected_type, post_body)
+
+        print('[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID']))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.module_options['Agent']['Value'], response['taskID']])
+        agent_return.start()
