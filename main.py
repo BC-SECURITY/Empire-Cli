@@ -50,7 +50,7 @@ class MyCustomCompleter(Completer):
             if cmd_line[0] in ['plugins']:
                 return self.empire_cli.menus['PluginsMenu'].get_completions(document, complete_event)
             if cmd_line[0] in ['useplugin']:
-                return self.empire_cli.menus['PluginsMenu'].get_completions(document, complete_event)
+                return self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event)
 
         return self.empire_cli.current_menu.get_completions(document, complete_event)
 

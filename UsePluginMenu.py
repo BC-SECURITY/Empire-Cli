@@ -15,7 +15,7 @@ class UsePluginMenu(object):
         self.selected_type = ''
         self.display_name = 'useplugin'
         self.plugin_options = {}
-        self.plugin_info= {}
+        self.plugin_info = {}
 
     def autocomplete(self):
         return self._cmd_registry + [

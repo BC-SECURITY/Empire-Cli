@@ -40,7 +40,8 @@ class MainMenu(object):
             'users',
             'uselistener',
             'usestager',
-            'plugins'
+            'plugins',
+            'useplugin'
         ]
 
     @command
