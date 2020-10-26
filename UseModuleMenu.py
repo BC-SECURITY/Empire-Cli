@@ -55,7 +55,7 @@ class UseModuleMenu(object):
     @command
     def set(self, key: string, value: string) -> None:
         """
-        Set a field for the current listener
+        Set a field for the current module
 
         Usage: set <key> <value>
         """
@@ -68,7 +68,7 @@ class UseModuleMenu(object):
     @command
     def unset(self, key: str) -> None:
         """
-        Unset a listener option.
+        Unset a module option.
 
         Usage: unset <key>
         """
@@ -81,7 +81,7 @@ class UseModuleMenu(object):
     @command
     def info(self):
         """
-        Print the current listener options
+        Print the current module options
 
         Usage: info
         """

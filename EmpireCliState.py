@@ -20,6 +20,8 @@ class EmpireCliState(object):
         self.module_types = []
         self.agents = []
         self.agent_types = []
+        self.plugins = []
+        self.plugin_types = []
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -48,6 +50,8 @@ class EmpireCliState(object):
         self.module_types = {'types': list(map(lambda x: x['Name'], self.modules['modules']))}
         self.agents = self.get_agents()
         self.agent_types = {'types': list(map(lambda x: x['name'], self.agents['agents']))}
+        self.plugins = self.list_active_plugins()
+        self.plugin_types = {'types': list(map(lambda x: x['Name'], self.plugins['plugins']))}
 
     def init_handlers(self):
         if self.sio:
@@ -198,5 +202,17 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def list_active_plugins(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/plugin/active',
+                                verify=False,
+                                params={'token': self.token})
 
+        return json.loads(response.content)
+
+    def get_plugin(self, plugin_name):
+        response = requests.get(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
 state = EmpireCliState()

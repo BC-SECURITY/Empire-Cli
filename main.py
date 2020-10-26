@@ -20,6 +20,8 @@ from UseModuleMenu import UseModuleMenu
 from InteractMenu import InteractMenu
 from ShellMenu import ShellMenu
 from CredentialMenu import CredentialMenu
+from PluginsMenu import PluginsMenu
+from UsePluginMenu import UsePluginMenu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -45,6 +47,10 @@ class MyCustomCompleter(Completer):
                 return self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
             if cmd_line[0] in ['credentials']:
                 return self.empire_cli.menus['CredentialMenu'].get_completions(document, complete_event)
+            if cmd_line[0] in ['plugins']:
+                return self.empire_cli.menus['PluginsMenu'].get_completions(document, complete_event)
+            if cmd_line[0] in ['useplugin']:
+                return self.empire_cli.menus['PluginsMenu'].get_completions(document, complete_event)
 
         return self.empire_cli.current_menu.get_completions(document, complete_event)
 
@@ -63,6 +69,9 @@ class EmpireCli(object):
             'InteractMenu': InteractMenu(),
             'ShellMenu': ShellMenu(),
             'CredentialMenu': CredentialMenu(),
+            'PluginsMenu': PluginsMenu(),
+            'UsePluginMenu': UsePluginMenu(),
+
         }
         self.current_menu = self.menus['MainMenu']
         self.previous_menu = self.menus['MainMenu']
@@ -182,6 +191,16 @@ class EmpireCli(object):
                     state.generate_report(cmd_line[1])
                 else:
                     state.generate_report('')
+            elif text == 'plugins':
+                self.current_menu = self.menus['PluginsMenu']
+                self.current_menu.list()
+            elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
+                if len(list(filter(lambda x: x == cmd_line[1], state.plugin_types['types']))) > 0:
+                    # todo utilize the command decorator?
+                    self.current_menu = self.menus['UsePluginMenu']
+                    self.current_menu.use(cmd_line[1])
+                else:
+                    print(f'No module {cmd_line[1]}')
             else:
                 func = None
                 try:
