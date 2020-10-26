@@ -215,4 +215,12 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
+    def execute_plugin(self, plugin_name, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',
+                                json=options,
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
 state = EmpireCliState()

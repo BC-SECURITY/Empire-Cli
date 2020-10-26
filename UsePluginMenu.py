@@ -15,6 +15,7 @@ class UsePluginMenu(object):
         self.selected_type = ''
         self.display_name = 'useplugin'
         self.plugin_options = {}
+        self.plugin_info= {}
 
     def autocomplete(self):
         return self._cmd_registry + [
@@ -53,6 +54,8 @@ class UsePluginMenu(object):
             for x in range(len(state.plugins['plugins'])):
                 if state.plugins['plugins'][x]['Name'] == self.selected_type:
                     self.plugin_options = state.plugins['plugins'][x]['options']
+                    self.plugin_info = state.plugins['plugins'][x]
+                    del self.plugin_info['options']
 
     @command
     def info(self):
@@ -80,8 +83,8 @@ class UsePluginMenu(object):
 
         Usage: set <key> <value>
         """
-        if key in self.module_options:
-            self.module_options[key]['Value'] = value
+        if key in self.plugin_options:
+            self.plugin_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
         print(f'Set {key} to {value}')
@@ -110,7 +113,7 @@ class UsePluginMenu(object):
         # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
         for key, value in self.plugin_options.items():
-            post_body[key] = self.plugin__options[key]['Value']
+            post_body[key] = self.plugin_options[key]['Value']
 
         response = state.execute_plugin(self.selected_type, post_body)
         print(response)
