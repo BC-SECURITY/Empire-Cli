@@ -131,10 +131,12 @@ class EmpireCli(object):
             if text == 'main':
                 self.current_menu = self.menus['MainMenu']
                 self.menu_history.append(self.current_menu)
+
             elif text == 'listeners':
                 self.current_menu = self.menus['ListenerMenu']
                 self.menu_history.append(self.current_menu)
                 self.current_menu.list()
+
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.listener_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -143,6 +145,7 @@ class EmpireCli(object):
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+
             elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.stager_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -151,14 +154,12 @@ class EmpireCli(object):
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
-            elif text == 'stagers':
-                self.current_menu = self.menus['StagerMenu']
-                self.menu_history.append(self.current_menu)
 
             elif text == 'agents':
                 self.current_menu = self.menus['AgentMenu']
                 self.menu_history.append(self.current_menu)
                 self.current_menu.list()
+
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -171,6 +172,7 @@ class EmpireCli(object):
                         self.current_menu.info()
                 else:
                     print(f'No module {cmd_line[1]}')
+
             elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.agent_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -179,6 +181,7 @@ class EmpireCli(object):
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+
             elif text == 'shell':
                 # todo utilize the command decorator?
                 self.previous_menu = self.current_menu
@@ -189,24 +192,29 @@ class EmpireCli(object):
                     self.current_menu.use(self.current_menu.selected_type)
                 else:
                     pass
+
             elif self.current_menu == self.menus['ShellMenu']:
                 if text == 'exit':
                     self.current_menu = self.previous_menu
                 else:
                     self.current_menu.shell(self.current_menu.selected_type, text)
+
             elif text == 'credentials':
                 self.current_menu = self.menus['CredentialMenu']
                 self.menu_history.append(self.current_menu)
                 self.current_menu.list()
+
             elif cmd_line[0] == 'report':
                 if len(cmd_line) > 1:
                     state.generate_report(cmd_line[1])
                 else:
                     state.generate_report('')
+
             elif text == 'plugins':
                 self.current_menu = self.menus['PluginsMenu']
                 self.menu_history.append(self.current_menu)
                 self.current_menu.list()
+
             elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.plugin_types['types']))) > 0:
                     # todo utilize the command decorator?
@@ -215,10 +223,12 @@ class EmpireCli(object):
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+
             elif text == 'back':
                 if self.current_menu != self.menus['MainMenu']:
                     del self.menu_history[-1]
                     self.current_menu = self.menu_history[-1]
+
             else:
                 func = None
                 try:
@@ -234,7 +244,7 @@ class EmpireCli(object):
                         ))
                         # ST does this in the @command decorator
                         new_args = {}
-                        # todo casting for typehinted values
+                        # todo casting for type hinted values
                         for key, hint in get_type_hints(func).items():
                             # if args.get(key) is not None:
                             if key is not 'return':

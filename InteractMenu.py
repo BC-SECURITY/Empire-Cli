@@ -71,8 +71,10 @@ class InteractMenu(object):
         """
         self.selected_type = agent_name
         self.display_name = self.selected_type
-        # agent_return = threading.Thread(target=self.tasking_returns)
-        # agent_return.start()
+        if self.selected_type in state.agent_types['types']:
+            for x in range(len(state.agents['agents'])):
+                if state.agents['agents'][x]['name'] == self.selected_type:
+                    self.agent_options = state.agents['agents'][x]
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -94,3 +96,25 @@ class InteractMenu(object):
         Usage: sysinfo
         """
         state.agent_shell(self.selected_type, 'Get-Sysinfo')
+
+    @command
+    def info(self) -> None:
+        """
+        Display agent info.
+
+        Usage: info
+        """
+        #todo: the spacing looks off on the table
+        agent_list = []
+        for key, value in self.agent_options.items():
+            if isinstance(value, int):
+                value = str(value)
+            if value is None:
+                value = ''
+            temp = [key, value]
+            agent_list.append(temp)
+
+        table = SingleTable(agent_list)
+        table.title = 'Agent Options'
+        table.inner_row_border = True
+        print(table.table)
