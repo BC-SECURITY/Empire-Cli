@@ -71,8 +71,8 @@ class InteractMenu(object):
         """
         self.selected_type = agent_name
         self.display_name = self.selected_type
-        #agent_return = threading.Thread(target=self.tasking_returns)
-        #agent_return.start()
+        # agent_return = threading.Thread(target=self.tasking_returns)
+        # agent_return.start()
 
     @command
     def shell(self, shell_cmd: str) -> None:

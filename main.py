@@ -75,6 +75,7 @@ class EmpireCli(object):
         }
         self.current_menu = self.menus['MainMenu']
         self.previous_menu = self.menus['MainMenu']
+        self.menu_history = [self.menus['MainMenu']]
 
     def autocomplete(self):
         return self.current_menu.autocomplete()
@@ -129,13 +130,16 @@ class EmpireCli(object):
             # Switch Menus
             if text == 'main':
                 self.current_menu = self.menus['MainMenu']
+                self.menu_history.append(self.current_menu)
             elif text == 'listeners':
                 self.current_menu = self.menus['ListenerMenu']
+                self.menu_history.append(self.current_menu)
                 self.current_menu.list()
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.listener_types['types']))) > 0:
                     # todo utilize the command decorator?
                     self.current_menu = self.menus['UseListenerMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
@@ -143,22 +147,27 @@ class EmpireCli(object):
                 if len(list(filter(lambda x: x == cmd_line[1], state.stager_types['types']))) > 0:
                     # todo utilize the command decorator?
                     self.current_menu = self.menus['UseStagerMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif text == 'stagers':
                 self.current_menu = self.menus['StagerMenu']
+                self.menu_history.append(self.current_menu)
+
             elif text == 'agents':
                 self.current_menu = self.menus['AgentMenu']
+                self.menu_history.append(self.current_menu)
                 self.current_menu.list()
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.module_types['types']))) > 0:
                     # todo utilize the command decorator?
-                    previous_menu = self.current_menu
+                    self.previous_menu = self.current_menu
                     self.current_menu = self.menus['UseModuleMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.use(cmd_line[1])
-                    if previous_menu == self.menus['InteractMenu']:
-                        self.current_menu.set('Agent', previous_menu.selected_type)
+                    if self.previous_menu == self.menus['InteractMenu']:
+                        self.current_menu.set('Agent', self.previous_menu.selected_type)
                         self.current_menu.info()
                 else:
                     print(f'No module {cmd_line[1]}')
@@ -166,6 +175,7 @@ class EmpireCli(object):
                 if len(list(filter(lambda x: x == cmd_line[1], state.agent_types['types']))) > 0:
                     # todo utilize the command decorator?
                     self.current_menu = self.menus['InteractMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
@@ -174,6 +184,7 @@ class EmpireCli(object):
                 self.previous_menu = self.current_menu
                 if self.previous_menu == self.menus['InteractMenu']:
                     self.current_menu = self.menus['ShellMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.selected_type = self.previous_menu.selected_type
                     self.current_menu.use(self.current_menu.selected_type)
                 else:
@@ -185,6 +196,7 @@ class EmpireCli(object):
                     self.current_menu.shell(self.current_menu.selected_type, text)
             elif text == 'credentials':
                 self.current_menu = self.menus['CredentialMenu']
+                self.menu_history.append(self.current_menu)
                 self.current_menu.list()
             elif cmd_line[0] == 'report':
                 if len(cmd_line) > 1:
@@ -193,14 +205,20 @@ class EmpireCli(object):
                     state.generate_report('')
             elif text == 'plugins':
                 self.current_menu = self.menus['PluginsMenu']
+                self.menu_history.append(self.current_menu)
                 self.current_menu.list()
             elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
                 if len(list(filter(lambda x: x == cmd_line[1], state.plugin_types['types']))) > 0:
                     # todo utilize the command decorator?
                     self.current_menu = self.menus['UsePluginMenu']
+                    self.menu_history.append(self.current_menu)
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+            elif text == 'back':
+                if self.current_menu != self.menus['MainMenu']:
+                    del self.menu_history[-1]
+                    self.current_menu = self.menu_history[-1]
             else:
                 func = None
                 try:
