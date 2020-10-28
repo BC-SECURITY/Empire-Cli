@@ -1,27 +1,21 @@
 import shlex
 import string
-import textwrap
 
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class AgentMenu(object):
+class AgentMenu(Menu):
     def __init__(self):
-        self.display_name = "agents"
-        self.selected_type = ''
+        super().__init__(display_name='agents', selected='')
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -32,12 +26,13 @@ class AgentMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'clear', 'rename']:
-                for type in state.agent_types['types']:
+                for type in state.agent_types:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.list()
 
     @command
     def list(self) -> None:
@@ -93,3 +88,6 @@ def trunc(value: string = '', limit: int = 1) -> string:
         else:
             return value
     return ''
+
+
+agent_menu = AgentMenu()

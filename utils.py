@@ -9,6 +9,7 @@ def command(func):
         return func(*args, **kwargs)
     return wrap
 
+
 def register_cli_commands(cls):
     cls._cmd_registry = []
     for methodname in dir(cls):

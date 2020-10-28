@@ -6,20 +6,17 @@ from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class ListenerMenu(object):
+class ListenerMenu(Menu):
     def __init__(self):
-        self.display_name = "listeners"
-        self.selected_type = ''
+        super().__init__(display_name='listeners', selected='')
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -33,9 +30,10 @@ class ListenerMenu(object):
                 for listener in state.listeners['listeners']:
                     yield Completion(listener['name'], start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor))
+                yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.list()
 
     @command
     def list(self) -> None:
@@ -84,3 +82,6 @@ class ListenerMenu(object):
         Usage: kill <listener_name>
         """
         state.kill_listener(listener_name)
+
+
+listener_menu = ListenerMenu()

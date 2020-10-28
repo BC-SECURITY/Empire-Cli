@@ -6,21 +6,18 @@ from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UseStagerMenu(object):
+class UseStagerMenu(Menu):
     def __init__(self):
-        self.display_name = "usestager"
-        self.selected_type = ''
+        super().__init__(display_name='usestager', selected='')
         self.stager_options = {}
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -37,9 +34,7 @@ class UseStagerMenu(object):
                 for type in self.stager_options:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
 
     @command
     def use(self, module: string) -> None:
@@ -48,7 +43,7 @@ class UseStagerMenu(object):
 
         Usage: use <module>
         """
-        if module in state.stager_types['types']:
+        if module in state.stager_types:
             self.selected_type = module
             self.display_name = 'usestager/' + module
             for x in range(len(state.stagers['stagers'])):
@@ -128,3 +123,6 @@ class UseStagerMenu(object):
         response = state.create_stager(self.selected_type, post_body)
 
         print(response[self.selected_type]['Output'])
+
+
+use_stager_menu = UseStagerMenu()

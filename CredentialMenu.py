@@ -1,27 +1,19 @@
 import shlex
-import string
-import textwrap
 
-from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
-from utils import register_cli_commands, command
+from Menu import Menu
+from utils import register_cli_commands
 
 
 @register_cli_commands
-class CredentialMenu(object):
+class CredentialMenu(Menu):
     def __init__(self):
-        self.selected_type = ''
-        self.display_name = 'credentials'
+        super().__init__(display_name='credentials', selected='')
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -31,9 +23,10 @@ class CredentialMenu(object):
         except ValueError:
             pass
         else:
-            for word in self.autocomplete():
-                if word.startswith(word_before_cursor):
-                    yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+            yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.list()
 
     def list(self) -> None:
         """
@@ -49,3 +42,6 @@ class CredentialMenu(object):
         table.title = 'Credentials'
         table.inner_row_border = True
         print(table.table)
+
+
+credential_menu = CredentialMenu()

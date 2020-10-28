@@ -4,13 +4,14 @@ from prompt_toolkit.completion import Completion
 
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class MainMenu(object):
+class MainMenu(Menu):
     def __init__(self):
-        self.display_name = ''
+        super().__init__(display_name='')
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -24,12 +25,11 @@ class MainMenu(object):
                 for server in empire_config.yaml.get('servers', []):
                     yield Completion(server, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor))
+                yield from super().get_completions(document, complete_event)
 
     def autocomplete(self):
-        return [
+        # todo implement disconnect and fix this function
+        return self._cmd_registry + [
             'connect',
             'disconnect',
             'exit',
@@ -67,3 +67,6 @@ class MainMenu(object):
             state.connect(server['host'], server['port'], server['socketport'], server['username'], server['password'])
         else:
             state.connect(host, port, socketport, username, password)
+
+
+main_menu = MainMenu()

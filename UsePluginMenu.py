@@ -6,24 +6,19 @@ from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UsePluginMenu(object):
+class UsePluginMenu(Menu):
     def __init__(self):
-        self.selected_type = ''
-        self.display_name = 'useplugin'
+        super().__init__(display_name='useplugin', selected='')
         self.plugin_options = {}
         self.plugin_info = {}
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -34,12 +29,10 @@ class UsePluginMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['useplugin']:
-                for type in state.plugin_types['types']:
+                for type in state.plugin_types:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
 
     @command
     def use(self, plugin_name: str) -> None:
@@ -48,11 +41,11 @@ class UsePluginMenu(object):
 
         Usage: use <plugin_name>
         """
-        if plugin_name in state.plugin_types['types']:
-            self.selected_type = plugin_name
-            self.display_name = 'useplugin/' + self.selected_type
+        if plugin_name in state.plugin_types:
+            self.selected = plugin_name
+            self.display_name = 'useplugin/' + self.selected
             for x in range(len(state.plugins['plugins'])):
-                if state.plugins['plugins'][x]['Name'] == self.selected_type:
+                if state.plugins['plugins'][x]['Name'] == self.selected:
                     self.plugin_options = state.plugins['plugins'][x]['options']
                     self.plugin_info = state.plugins['plugins'][x]
                     del self.plugin_info['options']
@@ -115,5 +108,8 @@ class UsePluginMenu(object):
         for key, value in self.plugin_options.items():
             post_body[key] = self.plugin_options[key]['Value']
 
-        response = state.execute_plugin(self.selected_type, post_body)
+        response = state.execute_plugin(self.selected, post_body)
         #print(response)
+
+
+use_plugin_menu = UsePluginMenu()

@@ -45,13 +45,13 @@ class EmpireCliState(object):
         self.listeners = self.get_listeners()
         self.listener_types = self.get_listener_types()
         self.stagers = self.get_stagers()
-        self.stager_types = {'types': list(map(lambda x: x['Name'], self.stagers['stagers']))}
+        self.stager_types = list(map(lambda x: x['Name'], self.stagers['stagers']))
         self.modules = self.get_modules()
-        self.module_types = {'types': list(map(lambda x: x['Name'], self.modules['modules']))}
+        self.module_types = list(map(lambda x: x['Name'], self.modules['modules']))
         self.agents = self.get_agents()
-        self.agent_types = {'types': list(map(lambda x: x['name'], self.agents['agents']))}
+        self.agent_types = list(map(lambda x: x['name'], self.agents['agents']))
         self.plugins = self.list_active_plugins()
-        self.plugin_types = {'types': list(map(lambda x: x['Name'], self.plugins['plugins']))}
+        self.plugin_types = list(map(lambda x: x['Name'], self.plugins['plugins']))
 
     def init_handlers(self):
         if self.sio:
@@ -63,6 +63,7 @@ class EmpireCliState(object):
         self.token = ''
         self.connected = False
 
+    # todo need to keep state up to date
     def get_listeners(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/listeners',
                                 verify=False,

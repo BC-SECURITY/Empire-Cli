@@ -1,28 +1,25 @@
 import shlex
 import string
 import textwrap
-import time
 import threading
+import time
 
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UseModuleMenu(object):
+class UseModuleMenu(Menu):
     def __init__(self):
-        self.display_name = "usemodule"
-        self.selected_type = ''
+        super().__init__(display_name='usemodule', selected='')
         self.module_options = {}
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -33,12 +30,10 @@ class UseModuleMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['usemodule']:
-                for type in state.module_types['types']:
+                for type in state.module_types:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
@@ -69,11 +64,11 @@ class UseModuleMenu(object):
 
         Usage: use <module>
         """
-        if module in state.module_types['types']:
-            self.selected_type = module
-            self.display_name = 'usemodule/' + self.selected_type
+        if module in state.module_types:
+            self.selected = module
+            self.display_name = 'usemodule/' + self.selected
             for x in range(len(state.modules['modules'])):
-                if state.modules['modules'][x]['Name'] == self.selected_type:
+                if state.modules['modules'][x]['Name'] == self.selected:
                     self.module_options = state.modules['modules'][x]['options']
 
     @command
@@ -134,8 +129,11 @@ class UseModuleMenu(object):
         for key, value in self.module_options.items():
             post_body[key] = self.module_options[key]['Value']
 
-        response = state.execute_module(self.selected_type, post_body)
+        response = state.execute_module(self.selected, post_body)
 
         print('[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID']))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.module_options['Agent']['Value'], response['taskID']])
         agent_return.start()
+
+
+use_module_menu = UseModuleMenu()

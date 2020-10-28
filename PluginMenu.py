@@ -1,27 +1,18 @@
 import shlex
-import string
-import textwrap
 
-from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class PluginsMenu(object):
+class PluginMenu(Menu):
     def __init__(self):
-        self.selected_type = ''
-        self.display_name = 'plugins'
+        super().__init__(display_name='plugins', selected='')
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -31,9 +22,10 @@ class PluginsMenu(object):
         except ValueError:
             pass
         else:
-            for word in self.autocomplete():
-                if word.startswith(word_before_cursor):
-                    yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+            yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.list()
 
     @command
     def list(self) -> None:
@@ -42,10 +34,14 @@ class PluginsMenu(object):
 
         Usage: list
         """
-        plugins_list = list(map(
-            lambda x: [x['Name'], x['Description']],state.list_active_plugins()['plugins']))
+        plugins_list = []
+        # plugins_list = list(map(
+        #     lambda x: [x['Name'], x['Description']],state.list_active_plugins()['plugins']))
         plugins_list.insert(0, ['Name', 'Description'])
         table = SingleTable(plugins_list)
         table.title = 'Plugins'
         table.inner_row_border = True
         print(table.table)
+
+
+plugin_menu = PluginMenu()
