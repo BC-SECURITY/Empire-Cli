@@ -3,8 +3,8 @@ import string
 import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -55,10 +55,7 @@ class UseListenerMenu(Menu):
                 temp = [key] + values
                 listener_list.append(temp)
 
-            table = SingleTable(listener_list)
-            table.title = 'Listeners Options'
-            table.inner_row_border = True
-            print(table.table)
+            self.info()
 
     @command
     def set(self, key: string, value: string) -> None:
@@ -100,10 +97,7 @@ class UseListenerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
-        table = SingleTable(listener_list)
-        table.title = 'Listeners Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(listener_list, 'Listeners Options')
 
     @command
     def start(self):

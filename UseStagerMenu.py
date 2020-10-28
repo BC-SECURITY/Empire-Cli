@@ -3,8 +3,8 @@ import string
 import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -44,10 +44,10 @@ class UseStagerMenu(Menu):
         Usage: use <module>
         """
         if module in state.stager_types:
-            self.selected_type = module
+            self.selected = module
             self.display_name = 'usestager/' + module
             for x in range(len(state.stagers['stagers'])):
-                if state.stagers['stagers'][x]['Name'] == self.selected_type:
+                if state.stagers['stagers'][x]['Name'] == self.selected:
                     self.stager_options = state.stagers['stagers'][x]['options']
 
             listener_list = []
@@ -57,10 +57,7 @@ class UseStagerMenu(Menu):
                 temp = [key] + values
                 listener_list.append(temp)
 
-            table = SingleTable(listener_list)
-            table.title = 'Stager Options'
-            table.inner_row_border = True
-            print(table.table)
+            self.info()
 
     @command
     def set(self, key: string, value: string) -> None:
@@ -102,10 +99,7 @@ class UseStagerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
-        table = SingleTable(listener_list)
-        table.title = 'Stager Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(listener_list, 'Stager Options')
 
     @command
     def generate(self):
@@ -120,9 +114,9 @@ class UseStagerMenu(Menu):
         for key, value in self.stager_options.items():
             post_body[key] = self.stager_options[key]['Value']
 
-        response = state.create_stager(self.selected_type, post_body)
+        response = state.create_stager(self.selected, post_body)
 
-        print(response[self.selected_type]['Output'])
+        print(response[self.selected]['Output'])
 
 
 use_stager_menu = UseStagerMenu()

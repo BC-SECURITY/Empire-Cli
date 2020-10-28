@@ -7,7 +7,19 @@ class Menu(object):
         self.selected = selected
 
     def autocomplete(self):
-        return ['help', 'main', 'interact']
+        return [
+            'help',
+            'main',
+            'interact',
+            'listeners',
+            'uselistener',
+            'usestager',
+            'plugins',
+            'useplugin',
+            'agents',
+            'usemodule',
+            'exit',
+        ]
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()

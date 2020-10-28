@@ -5,8 +5,8 @@ import threading
 import time
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -111,10 +111,7 @@ class UseModuleMenu(Menu):
             temp = [key] + values
             module_list.append(temp)
 
-        table = SingleTable(module_list)
-        table.title = 'Module Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(module_list, 'Module Options')
 
     @command
     def execute(self):

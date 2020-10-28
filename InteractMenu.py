@@ -3,8 +3,8 @@ import threading
 import time
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -105,10 +105,7 @@ class InteractMenu(Menu):
             temp = [key, value]
             agent_list.append(temp)
 
-        table = SingleTable(agent_list)
-        table.title = 'Agent Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(agent_list, 'Agent Options')
 
 
 interact_menu = InteractMenu()

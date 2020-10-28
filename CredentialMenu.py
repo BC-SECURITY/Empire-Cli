@@ -1,10 +1,9 @@
 import shlex
 
-from terminaltables import SingleTable
-
+import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands
+from utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -28,6 +27,7 @@ class CredentialMenu(Menu):
     def init(self):
         self.list()
 
+    @command
     def list(self) -> None:
         """
         Get running/available agents
@@ -38,10 +38,8 @@ class CredentialMenu(Menu):
             lambda x: [x['ID'], x['credtype'], x['domain'], x['username'], x['host'], x['password']],
             state.get_creds()['creds']))
         cred_list.insert(0, ['ID', 'CredType', 'Domain', 'UserName', 'Host', 'Password/Hash'])
-        table = SingleTable(cred_list)
-        table.title = 'Credentials'
-        table.inner_row_border = True
-        print(table.table)
+
+        table_util.print_table(cred_list, 'Credentials')
 
 
 credential_menu = CredentialMenu()

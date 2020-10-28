@@ -3,8 +3,8 @@ import string
 import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -45,10 +45,8 @@ class ListenerMenu(Menu):
         listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_type'], x['created_at']],
                                  state.listeners['listeners']))
         listener_list.insert(0, ['ID', 'Name', 'Module', 'Listener Type', 'Created At'])
-        table = SingleTable(listener_list)
-        table.title = 'Listeners List'
-        table.inner_row_border = True
-        print(table.table)
+
+        table_util.print_table(listener_list, 'Listeners List')
 
     @command
     def info(self, listener_name: string) -> None:
@@ -69,10 +67,7 @@ class ListenerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
-        table = SingleTable(listener_list)
-        table.title = 'Listeners List'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(listener_list, listener_name)
 
     @command
     def kill(self, listener_name: string) -> None:

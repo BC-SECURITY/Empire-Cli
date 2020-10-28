@@ -3,8 +3,8 @@ import string
 import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -64,10 +64,7 @@ class UsePluginMenu(Menu):
             temp = [key] + values
             plugin_list.append(temp)
 
-        table = SingleTable(plugin_list)
-        table.title = 'Plugin Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(plugin_list, 'Plugin Options')
 
     @command
     def set(self, key: string, value: string) -> None:

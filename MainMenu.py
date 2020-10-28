@@ -28,21 +28,7 @@ class MainMenu(Menu):
                 yield from super().get_completions(document, complete_event)
 
     def autocomplete(self):
-        # todo implement disconnect and fix this function
-        return self._cmd_registry + [
-            'connect',
-            'disconnect',
-            'exit',
-            'help',
-            'listeners',
-            'agents',
-            'usemodule',
-            'users',
-            'uselistener',
-            'usestager',
-            'plugins',
-            'useplugin'
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     @command
     def connect(self, host: str, config: bool = False, port: int = 1337, socketport: int = 5000, username: str = None, password: str = None) -> None:
@@ -67,6 +53,10 @@ class MainMenu(Menu):
             state.connect(server['host'], server['port'], server['socketport'], server['username'], server['password'])
         else:
             state.connect(host, port, socketport, username, password)
+
+    @command
+    def disconnect(self):
+        print('todo')
 
 
 main_menu = MainMenu()

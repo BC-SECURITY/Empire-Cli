@@ -2,8 +2,8 @@ import shlex
 import string
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -48,10 +48,8 @@ class AgentMenu(Menu):
             state.get_agents()['agents']))
         agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
-        table = SingleTable(agent_list)
-        table.title = 'Agents'
-        table.inner_row_border = True
-        print(table.table)
+
+        table_util.print_table(agent_list, 'Agents')
 
     @command
     def kill(self, agent_name: string) -> None:

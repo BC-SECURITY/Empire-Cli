@@ -1,7 +1,6 @@
 import shlex
 
-from terminaltables import SingleTable
-
+import table_util
 from Menu import Menu
 from utils import register_cli_commands, command
 
@@ -38,10 +37,8 @@ class PluginMenu(Menu):
         # plugins_list = list(map(
         #     lambda x: [x['Name'], x['Description']],state.list_active_plugins()['plugins']))
         plugins_list.insert(0, ['Name', 'Description'])
-        table = SingleTable(plugins_list)
-        table.title = 'Plugins'
-        table.inner_row_border = True
-        print(table.table)
+
+        table_util.print_table(plugins_list, 'Plugins')
 
 
 plugin_menu = PluginMenu()
