@@ -33,6 +33,9 @@ class UseListenerMenu(object):
             if len(cmd_line) > 0 and cmd_line[0] in ['uselistener']:
                 for type in state.listener_types['types']:
                     yield Completion(type, start_position=-len(word_before_cursor))
+            elif len(cmd_line) > 0 and cmd_line[0] in ['set']:
+                for type in state.get_listener_options(self.selected_type)['listeneroptions']:
+                    yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
                     if word.startswith(word_before_cursor):
@@ -58,7 +61,7 @@ class UseListenerMenu(object):
                 listener_list.append(temp)
 
             table = SingleTable(listener_list)
-            table.title = 'Listeners List'
+            table.title = 'Listeners Options'
             table.inner_row_border = True
             print(table.table)
 
@@ -103,10 +106,9 @@ class UseListenerMenu(object):
             listener_list.append(temp)
 
         table = SingleTable(listener_list)
-        table.title = 'Listeners List'
+        table.title = 'Listeners Options'
         table.inner_row_border = True
         print(table.table)
-
 
     @command
     def start(self):
@@ -116,11 +118,11 @@ class UseListenerMenu(object):
         Usage: start
         """
         # todo validation and error handling
-        # Hopefully this will force us to provid more info in api errors ;)
+        # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
         for key, value in self.listener_options.items():
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected_type, post_body)
 
-        print(response)
+        #print(response)

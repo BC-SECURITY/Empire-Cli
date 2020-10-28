@@ -33,6 +33,9 @@ class UseStagerMenu(object):
             if len(cmd_line) > 0 and cmd_line[0] in ['usestager']:
                 for stager in state.stagers['stagers']:
                     yield Completion(stager['Name'], start_position=-len(word_before_cursor))
+            elif len(cmd_line) > 0 and cmd_line[0] in ['set']:
+                for type in self.stager_options:
+                    yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
                     if word.startswith(word_before_cursor):
@@ -48,7 +51,9 @@ class UseStagerMenu(object):
         if module in state.stager_types['types']:
             self.selected_type = module
             self.display_name = 'usestager/' + module
-            self.stager_options = self.stagers_dict[module]['options']
+            for x in range(len(state.stagers['stagers'])):
+                if state.stagers['stagers'][x]['Name'] == self.selected_type:
+                    self.stager_options = state.stagers['stagers'][x]['options']
 
             listener_list = []
             for key, value in self.stager_options.items():
@@ -58,7 +63,7 @@ class UseStagerMenu(object):
                 listener_list.append(temp)
 
             table = SingleTable(listener_list)
-            table.title = 'Listeners List'
+            table.title = 'Stager Options'
             table.inner_row_border = True
             print(table.table)
 
@@ -103,7 +108,7 @@ class UseStagerMenu(object):
             listener_list.append(temp)
 
         table = SingleTable(listener_list)
-        table.title = 'Listeners List'
+        table.title = 'Stager Options'
         table.inner_row_border = True
         print(table.table)
 
@@ -115,11 +120,11 @@ class UseStagerMenu(object):
         Usage: generate
         """
         # todo validation and error handling
-        # Hopefully this will force us to provid more info in api errors ;)
+        # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
         for key, value in self.stager_options.items():
             post_body[key] = self.stager_options[key]['Value']
 
-        response = EmpireApiClient.create_stager(self.selected_type, post_body)
+        response = state.create_stager(self.selected_type, post_body)
 
         print(response[self.selected_type]['Output'])

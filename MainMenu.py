@@ -36,11 +36,12 @@ class MainMenu(object):
             'help',
             'listeners',
             'agents',
-            'modules',
+            'usemodule',
             'users',
             'uselistener',
             'usestager',
-            'plugins'
+            'plugins',
+            'useplugin'
         ]
 
     @command
