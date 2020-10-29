@@ -237,4 +237,35 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
+    def update_agent_notes(self, agent_name: str, notes: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
+                                json=notes,
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_agent_notes(self, agent_name: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_user_notes(self, username: str, notes: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/users/{username}/notes',
+                                 json=notes,
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_user_notes(self, username: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/users/{username}/notes',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
 state = EmpireCliState()

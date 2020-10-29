@@ -48,6 +48,7 @@ class InteractMenu(object):
         Usage: tasking_id_returns <agent_name> <task_id>
         """
         # todo: there must be a better way to do this with notifications
+        # todo: add a timeout value
         # Set previous results to current results to avoid a lot of old data
         status_result = False
 
