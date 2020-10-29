@@ -14,6 +14,7 @@ from utils import register_cli_commands, command
 class InteractMenu(Menu):
     def __init__(self):
         super().__init__(display_name='', selected='')
+        self.agent_options = {}
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -27,8 +28,8 @@ class InteractMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
-                for type in state.agent_types:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for agent in state.agents.keys():
+                    yield Completion(agent, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
 
@@ -60,12 +61,10 @@ class InteractMenu(Menu):
 
         Usage: use <agent_name>
         """
-        self.selected = agent_name
-        self.display_name = self.selected
-        if self.selected in state.agent_types:
-            for x in range(len(state.agents['agents'])):
-                if state.agents['agents'][x]['name'] == self.selected:
-                    self.agent_options = state.agents['agents'][x]
+        if agent_name in state.agents.keys():
+            self.selected = agent_name
+            self.display_name = self.selected
+            self.agent_options = state.agents[agent_name]
 
     @command
     def shell(self, shell_cmd: str) -> None:

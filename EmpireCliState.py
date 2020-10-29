@@ -12,16 +12,12 @@ class EmpireCliState(object):
         self.token = ''
         self.sio: Optional[socketio.Client] = None
         self.connected = False
-        self.listeners = []
+        self.listeners = {}
         self.listener_types = []
-        self.stagers = []
-        self.stager_types = []
-        self.modules = []
-        self.module_types = []
-        self.agents = []
-        self.agent_types = []
-        self.plugins = []
-        self.plugin_types = []
+        self.stagers = {}
+        self.modules = {}
+        self.agents = {}
+        self.plugins = {}
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -42,16 +38,12 @@ class EmpireCliState(object):
         self.init_handlers()
 
     def init(self):
-        self.listeners = self.get_listeners()
+        self.listeners = {x['name']: x for x in self.get_listeners()}
         self.listener_types = self.get_listener_types()
-        self.stagers = self.get_stagers()
-        self.stager_types = list(map(lambda x: x['Name'], self.stagers['stagers']))
-        self.modules = self.get_modules()
-        self.module_types = list(map(lambda x: x['Name'], self.modules['modules']))
-        self.agents = self.get_agents()
-        self.agent_types = list(map(lambda x: x['name'], self.agents['agents']))
-        self.plugins = self.list_active_plugins()
-        self.plugin_types = list(map(lambda x: x['Name'], self.plugins['plugins']))
+        self.stagers = {x['Name']: x for x in self.get_stagers()}
+        self.modules = {x['Name']: x for x in self.get_modules()}
+        self.agents = {x['Name']: x for x in self.get_agents()}
+        self.plugins = {x['Name']: x for x in self.get_active_plugins()}
 
     def init_handlers(self):
         if self.sio:
@@ -69,7 +61,7 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['listeners']
 
     def kill_listener(self, listener_name: str):
         response = requests.delete(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
@@ -83,7 +75,7 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['types']
 
     def get_listener_options(self, module: str):
         response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{module}',
@@ -101,11 +93,12 @@ class EmpireCliState(object):
         return json.loads(response.content)
 
     def get_stagers(self):
+        # todo need error handling in all api requests
         response = requests.get(url=f'{self.host}:{self.port}/api/stagers',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['stagers']
 
     def create_stager(self, module: str, options: Dict):
         options['StagerName'] = module
@@ -121,14 +114,14 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['agents']
 
     def get_modules(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/modules',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['modules']
 
     def execute_module(self, module_name: str, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/modules/{module_name}',
@@ -217,12 +210,12 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def list_active_plugins(self):
+    def get_active_plugins(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/plugin/active',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['plugins']
 
     def get_plugin(self, plugin_name):
         response = requests.get(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',
@@ -238,4 +231,6 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
+
 state = EmpireCliState()

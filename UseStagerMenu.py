@@ -28,13 +28,16 @@ class UseStagerMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['usestager']:
-                for stager in state.stagers['stagers']:
-                    yield Completion(stager['Name'], start_position=-len(word_before_cursor))
+                for stager in state.stagers.keys():
+                    yield Completion(stager, start_position=-len(word_before_cursor))
             elif len(cmd_line) > 0 and cmd_line[0] in ['set']:
                 for type in self.stager_options:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.info()
 
     @command
     def use(self, module: string) -> None:
@@ -43,12 +46,10 @@ class UseStagerMenu(Menu):
 
         Usage: use <module>
         """
-        if module in state.stager_types:
+        if module in state.stagers.keys(): # todo rename module?
             self.selected = module
             self.display_name = 'usestager/' + module
-            for x in range(len(state.stagers['stagers'])):
-                if state.stagers['stagers'][x]['Name'] == self.selected:
-                    self.stager_options = state.stagers['stagers'][x]['options']
+            self.stager_options = state.stagers[module]['options']
 
             listener_list = []
             for key, value in self.stager_options.items():
@@ -56,8 +57,6 @@ class UseStagerMenu(Menu):
                 values.reverse()
                 temp = [key] + values
                 listener_list.append(temp)
-
-            self.info()
 
     @command
     def set(self, key: string, value: string) -> None:

@@ -10,6 +10,7 @@ class Menu(object):
         return [
             'help',
             'main',
+            'back',
             'interact',
             'listeners',
             'uselistener',
@@ -18,6 +19,7 @@ class Menu(object):
             'useplugin',
             'agents',
             'usemodule',
+            'credentials',
             'exit',
         ]
 

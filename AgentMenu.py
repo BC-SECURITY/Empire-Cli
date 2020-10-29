@@ -26,8 +26,8 @@ class AgentMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'clear', 'rename']:
-                for type in state.agent_types:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for agent in state.agents.keys():
+                    yield Completion(agent, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
 

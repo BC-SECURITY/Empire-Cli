@@ -30,8 +30,8 @@ class UseModuleMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['usemodule']:
-                for type in state.module_types:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for module in state.modules.keys():
+                    yield Completion(module, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
 
@@ -64,12 +64,10 @@ class UseModuleMenu(Menu):
 
         Usage: use <module>
         """
-        if module in state.module_types:
+        if module in state.modules.keys():
             self.selected = module
             self.display_name = 'usemodule/' + self.selected
-            for x in range(len(state.modules['modules'])):
-                if state.modules['modules'][x]['Name'] == self.selected:
-                    self.module_options = state.modules['modules'][x]['options']
+            self.module_options = state.modules[module]['options']
 
     @command
     def set(self, key: string, value: string) -> None:

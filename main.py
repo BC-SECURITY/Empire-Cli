@@ -6,7 +6,7 @@ import urllib3
 from docopt import docopt
 from prompt_toolkit import PromptSession, HTML
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import Completer
+from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
@@ -33,28 +33,30 @@ class MyCustomCompleter(Completer):
         self.empire_cli = empire_cli
 
     def get_completions(self, document, complete_event):
-        #word_before_cursor = document.get_word_before_cursor()
-        #if not state.connected:
-        #   yield Completion('connect', start_position=-len(word_before_cursor))
+        word_before_cursor = document.get_word_before_cursor()
+        if not state.connected:
+            yield Completion('connect', start_position=-len(word_before_cursor))
+            return
 
         cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
         if len(cmd_line) > 0:
             if cmd_line[0] in ['uselistener']:
-                return self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event)
+                yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event)
+                return
             if cmd_line[0] in ['usestager']:
-                return self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event)
+                yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event)
+                return
             if cmd_line[0] in ['usemodule']:
-                return self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
+                yield from self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
+                return
             if cmd_line[0] in ['interact']:
-                return self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
-            if cmd_line[0] in ['credentials']:  # todo do you want this to be global or only int he credential menu?
-                return self.empire_cli.menus['CredentialMenu'].get_completions(document, complete_event)
-            if cmd_line[0] in ['plugins']:  # todo do you want this to be global or only in the plugin menu?
-                return self.empire_cli.menus['PluginMenu'].get_completions(document, complete_event)
+                yield from self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
+                return
             if cmd_line[0] in ['useplugin']:
-                return self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event)
+                yield from self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event)
+                return
 
-        return self.empire_cli.current_menu.get_completions(document, complete_event)
+        yield from self.empire_cli.current_menu.get_completions(document, complete_event)
 
 
 class EmpireCli(object):
@@ -79,7 +81,7 @@ class EmpireCli(object):
         self.previous_menu = self.menus['MainMenu']
         self.menu_history = [self.menus['MainMenu']]
 
-    def autocomplete(self):
+    def autocomplete(self): # Todo needed?
         return self.current_menu.autocomplete()
 
     def bottom_toolbar(self):
@@ -146,28 +148,27 @@ class EmpireCli(object):
             elif text == 'plugins':
                 self.change_menu(self.menus['PluginMenu'])
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], state.listener_types))) > 0:
+                if cmd_line[1] in state.listener_types:
                     # todo utilize the command decorator?
-                    self.current_menu = self.menus['UseListenerMenu']
-                    self.menu_history.append(self.current_menu)
+                    self.change_menu(self.menus['UseListenerMenu']) # todo table won't print this way because info is called before use.
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], state.stager_types))) > 0:
+                if cmd_line[1] in state.stagers:
                     # todo utilize the command decorator?
-                    self.current_menu = self.menus['UseStagerMenu']
-                    self.menu_history.append(self.current_menu)
+                    self.change_menu(self.menus['UseStagerMenu'])
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], state.module_types))) > 0:
+                if cmd_line[1] in state.modules:
                     # todo utilize the command decorator?
                     self.previous_menu = self.current_menu
-                    self.current_menu = self.menus['UseModuleMenu']
-                    self.menu_history.append(self.current_menu)
+                    self.change_menu(self.menus['UseModuleMenu'])
+                    # todo can we call use in change_menu?
                     self.current_menu.use(cmd_line[1])
+                    # todo if we track menus in the state could the menu do this itself in init?
                     if self.previous_menu == self.menus['InteractMenu']:
                         self.current_menu.set('Agent', self.previous_menu.selected_type)
                         self.current_menu.info()
@@ -175,10 +176,9 @@ class EmpireCli(object):
                     print(f'No module {cmd_line[1]}')
 
             elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], state.agent_types))) > 0:
+                if cmd_line[1] in state.agents:
                     # todo utilize the command decorator?
-                    self.current_menu = self.menus['InteractMenu']
-                    self.menu_history.append(self.current_menu)
+                    self.change_menu(self.menus['InteractMenu'])
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
@@ -206,10 +206,9 @@ class EmpireCli(object):
                     state.generate_report('')
 
             elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
-                if len(list(filter(lambda x: x == cmd_line[1], state.plugin_types))) > 0:
+                if cmd_line[1] in state.plugins:
                     # todo utilize the command decorator?
-                    self.current_menu = self.menus['UsePluginMenu']
-                    self.menu_history.append(self.current_menu)
+                    self.change_menu(self.menus['UsePluginMenu'])
                     self.current_menu.use(cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')

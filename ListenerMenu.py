@@ -27,8 +27,8 @@ class ListenerMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info']:
-                for listener in state.listeners['listeners']:
-                    yield Completion(listener['name'], start_position=-len(word_before_cursor))
+                for listener in state.listeners.keys():
+                    yield Completion(listener, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
 

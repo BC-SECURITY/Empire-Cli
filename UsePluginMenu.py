@@ -29,8 +29,8 @@ class UsePluginMenu(Menu):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['useplugin']:
-                for type in state.plugin_types:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for plugin in state.plugins.keys():
+                    yield Completion(plugin, start_position=-len(word_before_cursor))
             else:
                 yield from super().get_completions(document, complete_event)
 
@@ -41,14 +41,12 @@ class UsePluginMenu(Menu):
 
         Usage: use <plugin_name>
         """
-        if plugin_name in state.plugin_types:
+        if plugin_name in state.plugins:
             self.selected = plugin_name
             self.display_name = 'useplugin/' + self.selected
-            for x in range(len(state.plugins['plugins'])):
-                if state.plugins['plugins'][x]['Name'] == self.selected:
-                    self.plugin_options = state.plugins['plugins'][x]['options']
-                    self.plugin_info = state.plugins['plugins'][x]
-                    del self.plugin_info['options']
+            self.plugin_options = state.plugins[plugin_name]['options']
+            self.plugin_info = state.plugins[plugin_name]
+            del self.plugin_info['options'] # todo why the del?
 
     @command
     def info(self):

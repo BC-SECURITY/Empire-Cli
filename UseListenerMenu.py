@@ -36,6 +36,9 @@ class UseListenerMenu(Menu):
             else:
                 yield from super().get_completions(document, complete_event)
 
+    def init(self):
+        self.info()
+
     @command
     def use(self, module: str) -> None:
         """
@@ -54,8 +57,6 @@ class UseListenerMenu(Menu):
                 values.reverse()
                 temp = [key] + values
                 listener_list.append(temp)
-
-            self.info()
 
     @command
     def set(self, key: string, value: string) -> None:
