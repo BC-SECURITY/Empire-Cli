@@ -59,7 +59,7 @@ class InteractMenu(object):
             try:
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
-                    print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
+                    print(Helpers.color('[*] Task ' + str(results['taskID']) + " results received"))
                     print(Helpers.color(results['results']))
                     status_result = True
             except:
@@ -107,6 +107,18 @@ class InteractMenu(object):
             file_name = destination_file_name
 
         response = state.agent_upload_file(self.selected_type, file_name, file_data)
+        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        agent_return.start()
+
+    @command
+    def download(self, file_name: str) -> None:
+        """
+        Tasks an the specified agent to download a file.
+
+        Usage: download <file_name>
+        """
+        response = state.agent_download_file(self.selected_type, file_name)
         print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
         agent_return.start()

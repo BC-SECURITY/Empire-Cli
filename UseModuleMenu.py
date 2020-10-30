@@ -56,7 +56,7 @@ class UseModuleMenu(object):
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
                     if 'Job started:' not in results['results']:
-                        print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
+                        print(Helpers.color('[*] Task ' + str(results['taskID']) + " results received"))
                         print(Helpers.color(results['results']))
                         status_result = True
             except:

@@ -277,6 +277,14 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def agent_download_file(self, agent_name: str, file_name: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/download',
+                                 json={'filename': file_name},
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
     def update_user_notes(self, username: str, notes: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/users/{username}/notes',
                                  json=notes,

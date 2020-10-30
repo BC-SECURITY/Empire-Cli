@@ -46,7 +46,7 @@ def title(version):
     print("================================================================================")
     print(" [Empire]  Post-Exploitation Framework")
     print('================================================================================')
-    print(" [Version] %s | [Web] https://github.com/BC-SECURITY/Empire" % (version))
+    print(" [Version] %s | [Web] https://github.com/BC-SECURITY/Empire" % version)
     print('================================================================================')
     print(" [Starkiller] Multi-User GUI | [Web] https://github.com/BC-SECURITY/Starkiller")
     print('================================================================================')
