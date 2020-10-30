@@ -146,9 +146,9 @@ class EmpireCliState(object):
 
     def execute_module(self, module_name: str, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/modules/{module_name}',
-                                json=options,
-                                verify=False,
-                                params={'token': self.token})
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -216,7 +216,8 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
-    def get_creds(self):
+
+    def get_credentials(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/creds',
                                 verify=False,
                                 params={'token': self.token})
@@ -247,17 +248,17 @@ class EmpireCliState(object):
 
     def execute_plugin(self, plugin_name, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',
-                                json=options,
-                                verify=False,
-                                params={'token': self.token})
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
     def update_agent_notes(self, agent_name: str, notes: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
-                                json=notes,
-                                verify=False,
-                                params={'token': self.token})
+                                 json=notes,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -270,9 +271,9 @@ class EmpireCliState(object):
 
     def agent_upload_file(self, agent_name: str, file_name: str, file_data: bytes):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
-                                json={'filename': file_name, 'data': file_data},
-                                verify=False,
-                                params={'token': self.token})
+                                 json={'filename': file_name, 'data': file_data},
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -290,5 +291,6 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
 
 state = EmpireCliState()
