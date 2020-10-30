@@ -5,6 +5,7 @@ import textwrap
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
+import Helpers
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -78,7 +79,7 @@ class UseStagerMenu(object):
             self.stager_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(f'Set {key} to {value}')
+        print(Helpers.color('[*] Set {key} to {value}'))
 
     @command
     def unset(self, key: str) -> None:
@@ -91,7 +92,7 @@ class UseStagerMenu(object):
             self.stager_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(f'Unset {key}')
+        print(Helpers.color('[*] Unset {key}'))
 
     @command
     def info(self):

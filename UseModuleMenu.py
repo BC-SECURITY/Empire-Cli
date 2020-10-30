@@ -7,6 +7,7 @@ import threading
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
+import Helpers
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -55,7 +56,7 @@ class UseModuleMenu(object):
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
                     if 'Job started:' not in results['results']:
-                        print('[*] Task ' + str(results['taskID']) + " results:")
+                        print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
                         print(results['results'])
                         status_result = True
             except:
@@ -87,7 +88,7 @@ class UseModuleMenu(object):
             self.module_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(f'Set {key} to {value}')
+        print(Helpers.color('[*] Set {key} to {value}'))
 
     @command
     def unset(self, key: str) -> None:
@@ -100,7 +101,7 @@ class UseModuleMenu(object):
             self.module_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(f'Unset {key}')
+        print(Helpers.color('[*] Unset {key}'))
 
     @command
     def info(self):
@@ -136,6 +137,6 @@ class UseModuleMenu(object):
 
         response = state.execute_module(self.selected_type, post_body)
 
-        print('[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID']))
+        print(Helpers.color('[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.module_options['Agent']['Value'], response['taskID']])
         agent_return.start()

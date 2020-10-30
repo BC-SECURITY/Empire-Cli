@@ -1,8 +1,12 @@
 import json
+import time
 from typing import Dict, Optional
 
 import requests
 import socketio
+import os
+
+import Helpers
 
 
 class EmpireCliState(object):
@@ -22,6 +26,7 @@ class EmpireCliState(object):
         self.agent_types = []
         self.plugins = []
         self.plugin_types = []
+        self.empire_version = ''
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -36,7 +41,10 @@ class EmpireCliState(object):
         self.sio = socketio.Client(ssl_verify=False)
         self.sio.connect(f'{host}:{socketport}?token={self.token}')
 
-        print('Connected to ' + host)
+        # Wait for version to be returned
+        self.empire_version = self.get_version()['version']
+        Helpers.title(self.empire_version)
+        print(Helpers.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
@@ -62,6 +70,13 @@ class EmpireCliState(object):
         self.port = ''
         self.token = ''
         self.connected = False
+
+    def get_version(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/version',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
 
     def get_listeners(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/listeners',
@@ -248,6 +263,14 @@ class EmpireCliState(object):
 
     def get_agent_notes(self, agent_name: str):
         response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def agent_upload_file(self, agent_name: str, upload_file: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
+                                json=upload_file,
                                 verify=False,
                                 params={'token': self.token})
 

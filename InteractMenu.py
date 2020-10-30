@@ -7,6 +7,7 @@ import time
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
+import Helpers
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -56,7 +57,7 @@ class InteractMenu(object):
             try:
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
-                    print('[*] Task ' + str(results['taskID']) + " results:")
+                    print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
                     print(results['results'])
                     status_result = True
             except:
@@ -85,7 +86,7 @@ class InteractMenu(object):
         Usage: shell <shell_cmd>
         """
         response = state.agent_shell(self.selected_type, shell_cmd)
-        print('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID']))
+        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
         agent_return.start()
 
