@@ -79,7 +79,7 @@ class UseStagerMenu(object):
             self.stager_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*] Set {key} to {value}'))
+        print(Helpers.color('[*] Set %s to %s' % (key, value)))
 
     @command
     def unset(self, key: str) -> None:
@@ -92,7 +92,7 @@ class UseStagerMenu(object):
             self.stager_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*] Unset {key}'))
+        print(Helpers.color('[*] Unset %s' % key))
 
     @command
     def info(self):

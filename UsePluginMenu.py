@@ -88,7 +88,7 @@ class UsePluginMenu(object):
             self.plugin_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*]Set {key} to {value}'))
+        print(Helpers.color('[*] Set %s to %s' % (key, value)))
 
     @command
     def unset(self, key: str) -> None:
@@ -101,7 +101,7 @@ class UsePluginMenu(object):
             self.plugin_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*] Unset {key}'))
+        print(Helpers.color('[*] Unset %s' % key))
 
     @command
     def execute(self):

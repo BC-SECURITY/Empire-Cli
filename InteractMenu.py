@@ -37,8 +37,8 @@ class InteractMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
-                for type in state.agent_types['types']:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for agent_type in state.agent_types['types']:
+                    yield Completion(agent_type, start_position=-len(word_before_cursor))
             else:
                 for word in self.autocomplete():
                     if word.startswith(word_before_cursor):
@@ -139,7 +139,7 @@ class InteractMenu(object):
 
         Usage: info
         """
-        #todo: the spacing looks off on the table
+        # todo: the spacing looks off on the table
         agent_list = []
         for key, value in self.agent_options.items():
             if isinstance(value, int):

@@ -77,7 +77,7 @@ class UseListenerMenu(object):
             self.listener_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*] Set {key} to {value}'))
+        print(Helpers.color('[*] Set %s to %s' % (key, value)))
 
     @command
     def unset(self, key: str) -> None:
@@ -90,7 +90,7 @@ class UseListenerMenu(object):
             self.listener_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(Helpers.color('[*] Unset {key}'))
+        print(Helpers.color('[*] Unset %s' % key))
 
     @command
     def info(self):
@@ -125,5 +125,7 @@ class UseListenerMenu(object):
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected_type, post_body)
-
-        #print(response)
+        if response['success']:
+            print(Helpers.color('[+] ' + response['success']))
+        elif response['error']:
+            print(Helpers.color('[!] Error: ' + response['error']))

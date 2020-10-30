@@ -99,15 +99,15 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def get_listener_options(self, module: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{module}',
+    def get_listener_options(self, listener_name: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{listener_name}',
                                 verify=False,
                                 params={'token': self.token})
 
         return json.loads(response.content)
 
-    def create_listener(self, module: str, options: Dict):
-        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{module}',
+    def create_listener(self, listener_name: str, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
                                  json=options,
                                  verify=False,
                                  params={'token': self.token})
@@ -121,8 +121,8 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def create_stager(self, module: str, options: Dict):
-        options['StagerName'] = module
+    def create_stager(self, stager_name: str, options: Dict):
+        options['StagerName'] = stager_name
         response = requests.post(url=f'{self.host}:{self.port}/api/stagers',
                                  json=options,
                                  verify=False,
