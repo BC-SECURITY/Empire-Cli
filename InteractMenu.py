@@ -1,3 +1,5 @@
+import base64
+import os
 import shlex
 import string
 import textwrap
@@ -58,7 +60,7 @@ class InteractMenu(object):
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
                     print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
-                    print(results['results'])
+                    print(Helpers.color(results['results']))
                     status_result = True
             except:
                 pass
@@ -86,6 +88,25 @@ class InteractMenu(object):
         Usage: shell <shell_cmd>
         """
         response = state.agent_shell(self.selected_type, shell_cmd)
+        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        agent_return.start()
+
+    @command
+    def upload(self, local_file_directory: str, destination_file_name: str) -> None:
+        """
+        Tasks an the specified agent to upload a file.
+
+        Usage: upload <local_file_directory> [destination_file_name]
+        """
+        file_name = os.path.basename(local_file_directory)
+        open_file = open(local_file_directory, 'rb')
+        file_data = base64.b64encode(open_file.read())
+
+        if destination_file_name:
+            file_name = destination_file_name
+
+        response = state.agent_upload_file(self.selected_type, file_name, file_data)
         print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
         agent_return.start()

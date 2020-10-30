@@ -268,9 +268,9 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def agent_upload_file(self, agent_name: str, upload_file: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
-                                json=upload_file,
+    def agent_upload_file(self, agent_name: str, file_name: str, file_data: bytes):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
+                                json={'filename': file_name, 'data': file_data},
                                 verify=False,
                                 params={'token': self.token})
 

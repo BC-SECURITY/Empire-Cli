@@ -1,11 +1,13 @@
 import shlex
 import string
 import textwrap
+import threading
 import time
 
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
+import Helpers
 from EmpireCliState import state
 from utils import register_cli_commands, command
 
@@ -35,6 +37,27 @@ class ShellMenu(object):
             for word in self.autocomplete():
                 if word.startswith(word_before_cursor):
                     yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+
+    def tasking_id_returns(self, agent_name, task_id: int):
+        """
+        Polls and prints tasking data for taskID
+
+        Usage: tasking_id_returns <agent_name> <task_id>
+        """
+        # todo: there must be a better way to do this with notifications
+        # todo: add a timeout value
+        # Set previous results to current results to avoid a lot of old data
+        status_result = False
+
+        while not status_result:
+            try:
+                results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
+                if results['results'] is not None:
+                    print(Helpers.color(results['results']))
+                    status_result = True
+            except:
+                pass
+            time.sleep(1)
 
     @command
     def use(self, agent_name: str) -> None:
@@ -66,6 +89,9 @@ class ShellMenu(object):
 
         Usage:  <shell_cmd>
         """
-        state.agent_shell(agent_name, shell_cmd)
+        response = state.agent_shell(agent_name, shell_cmd)
         if shell_cmd.split()[0].lower() in ['cd', 'set-location']:
             self.update_directory(agent_name)
+        else:
+            shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+            shell_return.start()

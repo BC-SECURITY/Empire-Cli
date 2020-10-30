@@ -57,7 +57,7 @@ class UseModuleMenu(object):
                 if results['results'] is not None:
                     if 'Job started:' not in results['results']:
                         print(Helpers.color('[*] Task ' + str(results['taskID']) + " results:"))
-                        print(results['results'])
+                        print(Helpers.color(results['results']))
                         status_result = True
             except:
                 pass
