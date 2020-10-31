@@ -1,6 +1,7 @@
 import shlex
 
 import table_util
+from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
 
@@ -33,9 +34,8 @@ class PluginMenu(Menu):
 
         Usage: list
         """
-        plugins_list = []
-        # plugins_list = list(map(
-        #     lambda x: [x['Name'], x['Description']],state.list_active_plugins()['plugins']))
+        plugins_list = list(map(
+            lambda x: [x['Name'], x['Description']], state.get_active_plugins().values()))
         plugins_list.insert(0, ['Name', 'Description'])
 
         table_util.print_table(plugins_list, 'Plugins')
