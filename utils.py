@@ -1,4 +1,5 @@
 import functools
+from typing import List
 
 
 def command(func):
@@ -17,3 +18,7 @@ def register_cli_commands(cls):
         if hasattr(method, '_command'):
             cls._cmd_registry.append(methodname)
     return cls
+
+
+def filtered_search_list(prefix: str, keys) -> List[str]:
+    return list(filter(lambda x: x.lower().startswith(prefix.lower()), keys))

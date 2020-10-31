@@ -12,6 +12,10 @@ class EmpireCliState(object):
         self.token = ''
         self.sio: Optional[socketio.Client] = None
         self.connected = False
+
+        # These are cached values that can be used for autocompletes and other things.
+        # When switching menus, refresh these cached values by calling their respective 'get' functions.
+        # In the future, maybe we'll set a scheduled task to refresh this every n seconds/minutes?
         self.listeners = {}
         self.listener_types = []
         self.stagers = {}
@@ -38,12 +42,12 @@ class EmpireCliState(object):
         self.init_handlers()
 
     def init(self):
-        self.listeners = {x['name']: x for x in self.get_listeners()}
-        self.listener_types = self.get_listener_types()
-        self.stagers = {x['Name']: x for x in self.get_stagers()}
-        self.modules = {x['Name']: x for x in self.get_modules()}
-        self.agents = {x['Name']: x for x in self.get_agents()}
-        self.plugins = {x['Name']: x for x in self.get_active_plugins()}
+        self.get_listeners()
+        self.get_listener_types()
+        self.get_stagers()
+        self.get_modules()
+        self.get_agents()
+        self.get_active_plugins()
 
     def init_handlers(self):
         if self.sio:
@@ -55,13 +59,16 @@ class EmpireCliState(object):
         self.token = ''
         self.connected = False
 
-    # todo need to keep state up to date
+    # I think we we will break out the socketio handler and http requests to new classes that the state imports.
+    # This will do for this iteration.
     def get_listeners(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/listeners',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['listeners']
+        self.listeners = {x['name']: x for x in json.loads(response.content)['listeners']}
+
+        return self.listeners
 
     def kill_listener(self, listener_name: str):
         response = requests.delete(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
@@ -75,7 +82,9 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['types']
+        self.listener_types = json.loads(response.content)['types']
+
+        return self.listener_types
 
     def get_listener_options(self, module: str):
         response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{module}',
@@ -90,6 +99,8 @@ class EmpireCliState(object):
                                  verify=False,
                                  params={'token': self.token})
 
+        # todo push to state array or just call get_listeners() to refresh cache??
+
         return json.loads(response.content)
 
     def get_stagers(self):
@@ -98,7 +109,9 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['stagers']
+        self.stagers = {x['Name']: x for x in json.loads(response.content)['stagers']}
+
+        return self.stagers
 
     def create_stager(self, module: str, options: Dict):
         options['StagerName'] = module
@@ -114,14 +127,18 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['agents']
+        self.agents = {x['name']: x for x in json.loads(response.content)['agents']}
+
+        return self.agents
 
     def get_modules(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/modules',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['modules']
+        self.modules = {x['Name']: x for x in json.loads(response.content)['modules']}
+
+        return self.modules
 
     def execute_module(self, module_name: str, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/modules/{module_name}',
@@ -195,12 +212,13 @@ class EmpireCliState(object):
                                 params={'token': self.token})
 
         return json.loads(response.content)
+
     def get_creds(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/creds',
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)
+        return json.loads(response.content)['creds']
 
     def generate_report(self, directory_location):
         response = requests.post(url=f'{self.host}:{self.port}/api/reporting/generate',
@@ -215,7 +233,9 @@ class EmpireCliState(object):
                                 verify=False,
                                 params={'token': self.token})
 
-        return json.loads(response.content)['plugins']
+        self.plugins = {x['Name']: x for x in json.loads(response.content)['plugins']}
+
+        return self.plugins
 
     def get_plugin(self, plugin_name):
         response = requests.get(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',

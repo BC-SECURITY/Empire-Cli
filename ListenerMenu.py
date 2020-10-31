@@ -43,7 +43,7 @@ class ListenerMenu(Menu):
         Usage: list
         """
         listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_type'], x['created_at']],
-                                 state.listeners['listeners']))
+                                 state.listeners.values()))
         listener_list.insert(0, ['ID', 'Name', 'Module', 'Listener Type', 'Created At'])
 
         table_util.print_table(listener_list, 'Listeners List')
@@ -55,13 +55,12 @@ class ListenerMenu(Menu):
 
         Usage: info <listener_name>
         """
-        listener = list(filter(lambda x: x['name'] == listener_name, state.listeners['listeners']))[:1]
-        if not listener or len(listener) == 0:
+        if listener_name not in state.listeners:
             return None
 
         listener_list = []
 
-        for key, value in listener[0]['options'].items():
+        for key, value in state.listeners[listener_name]['options'].items():
             values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
             values.reverse()
             temp = [key] + values
