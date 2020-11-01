@@ -3,25 +3,22 @@ import string
 import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
 import Helpers
+import table_util
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UseListenerMenu(object):
+class UseListenerMenu(Menu):
     def __init__(self):
-        self.display_name = "uselistener"
-        self.selected_type = ''
+        super().__init__(display_name='uselistener', selected='')
         self.listener_options = {}
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -32,15 +29,16 @@ class UseListenerMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['uselistener']:
-                for type in state.listener_types['types']:
+                for type in state.listener_types:
                     yield Completion(type, start_position=-len(word_before_cursor))
             elif len(cmd_line) > 0 and cmd_line[0] in ['set']:
-                for type in state.get_listener_options(self.selected_type)['listeneroptions']:
+                for type in state.get_listener_options(self.selected)['listeneroptions']:
                     yield Completion(type, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.info()
 
     @command
     def use(self, module: str) -> None:
@@ -49,10 +47,10 @@ class UseListenerMenu(object):
 
         Usage: use <module>
         """
-        if module in state.listener_types['types']:
-            self.selected_type = module
-            self.display_name = 'uselistener/' + self.selected_type
-            self.listener_options = state.get_listener_options(self.selected_type)['listeneroptions']
+        if module in state.listener_types:
+            self.selected = module
+            self.display_name = 'uselistener/' + self.selected
+            self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
 
             listener_list = []
             for key, value in self.listener_options.items():
@@ -60,11 +58,6 @@ class UseListenerMenu(object):
                 values.reverse()
                 temp = [key] + values
                 listener_list.append(temp)
-
-            table = SingleTable(listener_list)
-            table.title = 'Listeners Options'
-            table.inner_row_border = True
-            print(table.table)
 
     @command
     def set(self, key: string, value: string) -> None:
@@ -106,10 +99,7 @@ class UseListenerMenu(object):
             temp = [key] + values
             listener_list.append(temp)
 
-        table = SingleTable(listener_list)
-        table.title = 'Listeners Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(listener_list, 'Listeners Options')
 
     @command
     def start(self):
@@ -119,13 +109,17 @@ class UseListenerMenu(object):
         Usage: start
         """
         # todo validation and error handling
+        # todo alias start to execute and generate
         # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
         for key, value in self.listener_options.items():
             post_body[key] = self.listener_options[key]['Value']
 
-        response = state.create_listener(self.selected_type, post_body)
+        response = state.create_listener(self.selected, post_body)
         if response['success']:
             print(Helpers.color('[+] ' + response['success']))
         elif response['error']:
             print(Helpers.color('[!] Error: ' + response['error']))
+
+
+use_listener_menu = UseListenerMenu()

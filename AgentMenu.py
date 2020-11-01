@@ -1,27 +1,21 @@
 import shlex
 import string
-import textwrap
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
+import table_util
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class AgentMenu(object):
+class AgentMenu(Menu):
     def __init__(self):
-        self.display_name = "agents"
-        self.selected_type = ''
+        super().__init__(display_name='agents', selected='')
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -32,12 +26,13 @@ class AgentMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info', 'clear', 'rename']:
-                for type in state.agent_types['types']:
-                    yield Completion(type, start_position=-len(word_before_cursor))
+                for agent in state.agents.keys():
+                    yield Completion(agent, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
+
+    def init(self):
+        self.list()
 
     @command
     def list(self) -> None:
@@ -50,13 +45,11 @@ class AgentMenu(object):
             lambda x: [x['ID'], x['name'], x['high_integrity'], x['language'], x['internal_ip'], x['username'],
                        x['process_name'], x['process_id'], str(x['delay']) + '/' + str(x['jitter']), x['lastseen_time'],
                        x['listener']],
-            state.get_agents()['agents']))
+            state.get_agents()))
         agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
-        table = SingleTable(agent_list)
-        table.title = 'Agents'
-        table.inner_row_border = True
-        print(table.table)
+
+        table_util.print_table(agent_list, 'Agents')
 
     @command
     def kill(self, agent_name: string) -> None:
@@ -93,3 +86,6 @@ def trunc(value: string = '', limit: int = 1) -> string:
         else:
             return value
     return ''
+
+
+agent_menu = AgentMenu()

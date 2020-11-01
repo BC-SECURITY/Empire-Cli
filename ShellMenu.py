@@ -1,6 +1,4 @@
 import shlex
-import string
-import textwrap
 import threading
 import time
 
@@ -9,22 +7,19 @@ from terminaltables import SingleTable
 
 import Helpers
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class ShellMenu(object):
+class ShellMenu(Menu):
     def __init__(self):
+        super().__init__()
         self.selected_type = ''
         self.display_name = ''
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -34,9 +29,7 @@ class ShellMenu(object):
         except ValueError:
             pass
         else:
-            for word in self.autocomplete():
-                if word.startswith(word_before_cursor):
-                    yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+            yield from super().get_completions(document, complete_event)
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
@@ -95,3 +88,6 @@ class ShellMenu(object):
         else:
             shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
             shell_return.start()
+
+
+shell_menu = ShellMenu()

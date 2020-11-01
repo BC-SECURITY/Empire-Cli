@@ -10,23 +10,20 @@ from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
 import Helpers
+import table_util
 from EmpireCliState import state
+from Menu import Menu
 from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class InteractMenu(object):
+class InteractMenu(Menu):
     def __init__(self):
-        self.selected_type = ''
-        self.display_name = ''
+        super().__init__(display_name='', selected='')
+        self.agent_options = {}
 
     def autocomplete(self):
-        return self._cmd_registry + [
-            'help',
-            'main',
-            'list',
-            'interact',
-        ]
+        return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
@@ -37,12 +34,10 @@ class InteractMenu(object):
             pass
         else:
             if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
-                for agent_type in state.agent_types['types']:
-                    yield Completion(agent_type, start_position=-len(word_before_cursor))
+                for agent in state.agents.keys():
+                    yield Completion(agent, start_position=-len(word_before_cursor))
             else:
-                for word in self.autocomplete():
-                    if word.startswith(word_before_cursor):
-                        yield Completion(word, start_position=-len(word_before_cursor), style="underline")
+                yield from super().get_completions(document, complete_event)
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
@@ -73,12 +68,10 @@ class InteractMenu(object):
 
         Usage: use <agent_name>
         """
-        self.selected_type = agent_name
-        self.display_name = self.selected_type
-        if self.selected_type in state.agent_types['types']:
-            for x in range(len(state.agents['agents'])):
-                if state.agents['agents'][x]['name'] == self.selected_type:
-                    self.agent_options = state.agents['agents'][x]
+        if agent_name in state.agents.keys():
+            self.selected = agent_name
+            self.display_name = self.selected
+            self.agent_options = state.agents[agent_name]
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -106,9 +99,9 @@ class InteractMenu(object):
         if destination_file_name:
             file_name = destination_file_name
 
-        response = state.agent_upload_file(self.selected_type, file_name, file_data)
-        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        response = state.agent_upload_file(self.selected, file_name, file_data)
+        print(Helpers.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
         agent_return.start()
 
     @command
@@ -130,7 +123,7 @@ class InteractMenu(object):
 
         Usage: sysinfo
         """
-        state.agent_shell(self.selected_type, 'Get-Sysinfo')
+        state.agent_shell(self.selected, 'Get-Sysinfo')
 
     @command
     def info(self) -> None:
@@ -149,7 +142,7 @@ class InteractMenu(object):
             temp = [key, value]
             agent_list.append(temp)
 
-        table = SingleTable(agent_list)
-        table.title = 'Agent Options'
-        table.inner_row_border = True
-        print(table.table)
+        table_util.print_table(agent_list, 'Agent Options')
+
+
+interact_menu = InteractMenu()
