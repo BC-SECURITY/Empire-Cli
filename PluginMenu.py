@@ -7,9 +7,9 @@ from utils import register_cli_commands, command
 
 
 @register_cli_commands
-class CredentialMenu(Menu):
+class PluginMenu(Menu):
     def __init__(self):
-        super().__init__(display_name='credentials', selected='')
+        super().__init__(display_name='plugins', selected='')
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -30,16 +30,15 @@ class CredentialMenu(Menu):
     @command
     def list(self) -> None:
         """
-        Get running/available agents
+        Get active plugins
 
         Usage: list
         """
-        cred_list = list(map(
-            lambda x: [x['ID'], x['credtype'], x['domain'], x['username'], x['host'], x['password']],
-            state.get_creds()))
-        cred_list.insert(0, ['ID', 'CredType', 'Domain', 'UserName', 'Host', 'Password/Hash'])
+        plugins_list = list(map(
+            lambda x: [x['Name'], x['Description']], state.get_active_plugins().values()))
+        plugins_list.insert(0, ['Name', 'Description'])
 
-        table_util.print_table(cred_list, 'Credentials')
+        table_util.print_table(plugins_list, 'Plugins')
 
 
-credential_menu = CredentialMenu()
+plugin_menu = PluginMenu()
