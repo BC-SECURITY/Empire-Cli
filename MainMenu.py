@@ -14,12 +14,15 @@ class MainMenu(Menu):
         super().__init__(display_name='')
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
-        if cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
-            yield Completion('-c', start_position=-len(word_before_cursor))
-        elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config']\
-                and position_util(cmd_line, 3, word_before_cursor):
-            for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
-                yield Completion(server, start_position=-len(word_before_cursor))
+        if not state.connected:
+            if cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
+                yield Completion('-c', start_position=-len(word_before_cursor))
+            elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config']\
+                    and position_util(cmd_line, 3, word_before_cursor):
+                for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
+                    yield Completion(server, start_position=-len(word_before_cursor))
+            elif position_util(cmd_line, 1, word_before_cursor):
+                yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 

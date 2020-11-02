@@ -46,15 +46,7 @@ class MyCustomCompleter(Completer):
             pass
         else:
             if not state.connected:
-                if position_util(cmd_line, 1, word_before_cursor):
-                    yield Completion('connect', start_position=-len(word_before_cursor))
-                # TODO This is duplicated code. Return the connection stuff from MainMenu
-                elif cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
-                    yield Completion('-c', start_position=-len(word_before_cursor))
-                elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config'] \
-                        and position_util(cmd_line, 3, word_before_cursor):
-                    for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
-                        yield Completion(server, start_position=-len(word_before_cursor))
+                yield from self.empire_cli.menus['MainMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
             # These commands should be accessible anywhere.
             elif cmd_line[0] in ['uselistener']:
                 yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
