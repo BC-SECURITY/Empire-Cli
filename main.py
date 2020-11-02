@@ -13,6 +13,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 import Menu
 from AgentMenu import agent_menu
 from CredentialMenu import credential_menu
+from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from InteractMenu import interact_menu
 from ListenerMenu import listener_menu
@@ -25,6 +26,8 @@ from UsePluginMenu import use_plugin_menu
 from UseStagerMenu import use_stager_menu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
+from utils import position_util, filtered_search_list
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -34,10 +37,6 @@ class MyCustomCompleter(Completer):
 
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor(WORD=True)
-        if not state.connected:
-            # TODO Return the connection stuff from MainMenu
-            yield Completion('connect', start_position=-len(word_before_cursor))
-            return
 
         try:
             cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
@@ -46,8 +45,18 @@ class MyCustomCompleter(Completer):
         except ValueError:
             pass
         else:
+            if not state.connected:
+                if position_util(cmd_line, 1, word_before_cursor):
+                    yield Completion('connect', start_position=-len(word_before_cursor))
+                # TODO This is duplicated code. Return the connection stuff from MainMenu
+                elif cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
+                    yield Completion('-c', start_position=-len(word_before_cursor))
+                elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config'] \
+                        and position_util(cmd_line, 3, word_before_cursor):
+                    for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
+                        yield Completion(server, start_position=-len(word_before_cursor))
             # These commands should be accessible anywhere.
-            if cmd_line[0] in ['uselistener']:
+            elif cmd_line[0] in ['uselistener']:
                 yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
             elif cmd_line[0] in ['usestager']:
                 yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
