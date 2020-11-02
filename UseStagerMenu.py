@@ -7,7 +7,7 @@ from prompt_toolkit.completion import Completion
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, filtered_search_list
+from utils import register_cli_commands, command, filtered_search_list, position_util
 
 
 @register_cli_commands
@@ -24,21 +24,23 @@ class UseStagerMenu(Menu):
         try:
             # cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
             cmd_line = list(map(lambda s: s, shlex.split(document.current_line)))
+            if len(cmd_line) == 0:
+                cmd_line.append('')
             # print(cmd_line)
         except ValueError:
             pass
         else:
-            if len(cmd_line) < 3 and cmd_line[0] in ['usestager']:
+            if cmd_line[0] == 'usestager' and position_util(cmd_line, 2, word_before_cursor):
                 for stager in filtered_search_list(word_before_cursor, state.stagers.keys()):
                     yield Completion(stager, start_position=-len(word_before_cursor))
-            elif len(cmd_line) < 4 and cmd_line[0] in ['set']:
+            elif cmd_line[0] in ['set', 'unset'] and position_util(cmd_line, 2, word_before_cursor):
+                for option in filtered_search_list(word_before_cursor, self.stager_options):
+                    yield Completion(option, start_position=-len(word_before_cursor))
+            elif cmd_line[0] == 'set' and position_util(cmd_line, 3, word_before_cursor):
                 if len(cmd_line) > 1 and cmd_line[1] == 'Listener':
                     for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
                         yield Completion(listener, start_position=-len(word_before_cursor))
-                else:
-                    for option in filtered_search_list(word_before_cursor, self.stager_options):
-                        yield Completion(option, start_position=-len(word_before_cursor))
-            elif len(cmd_line) <= 1:
+            elif position_util(cmd_line, 1, word_before_cursor):
                 yield from super().get_completions(document, complete_event)
 
     def init(self):
