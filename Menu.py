@@ -25,7 +25,7 @@ class Menu(object):
             'exit',
         ]
 
-    def get_completions(self, document, complete_event):
+    def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         word_before_cursor = document.get_word_before_cursor()
         for word in filtered_search_list(word_before_cursor, self.autocomplete()):
             if word.startswith(word_before_cursor):

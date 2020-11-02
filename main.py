@@ -33,27 +33,33 @@ class MyCustomCompleter(Completer):
         self.empire_cli = empire_cli
 
     def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
+        word_before_cursor = document.get_word_before_cursor(WORD=True)
         if not state.connected:
+            # TODO Return the connection stuff from MainMenu
             yield Completion('connect', start_position=-len(word_before_cursor))
             return
 
-        cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
-        if len(cmd_line) > 0:
-            if cmd_line[0] in ['uselistener']:
-                yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event)
-            elif cmd_line[0] in ['usestager']:
-                yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event)
-            elif cmd_line[0] in ['usemodule']:
-                yield from self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event)
-            elif cmd_line[0] in ['interact']:
-                yield from self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event)
-            elif cmd_line[0] in ['useplugin']:
-                yield from self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event)
-            else:
-                yield from self.empire_cli.current_menu.get_completions(document, complete_event)
+        try:
+            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
+            if len(cmd_line) == 0:
+                cmd_line.append('')
+        except ValueError:
+            pass
         else:
-            yield from self.empire_cli.current_menu.get_completions(document, complete_event)
+            # These commands should be accessible anywhere.
+            if cmd_line[0] in ['uselistener']:
+                yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+            elif cmd_line[0] in ['usestager']:
+                yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+            elif cmd_line[0] in ['usemodule']:
+                yield from self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+            elif cmd_line[0] in ['interact']:
+                yield from self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+            elif cmd_line[0] in ['useplugin']:
+                yield from self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+            else:
+                # Menu specific commands
+                yield from self.empire_cli.current_menu.get_completions(document, complete_event, cmd_line, word_before_cursor)
 
 
 class EmpireCli(object):
@@ -241,6 +247,8 @@ class EmpireCli(object):
                         func(**new_args)
                     except Exception as e:
                         print(e)
+                        pass
+                    except SystemExit as e:
                         pass
 
 
