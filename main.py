@@ -26,8 +26,6 @@ from UsePluginMenu import use_plugin_menu
 from UseStagerMenu import use_stager_menu
 
 # todo probably put a prop in config.yaml to suppress this (from self-signed certs)
-from utils import position_util, filtered_search_list
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
