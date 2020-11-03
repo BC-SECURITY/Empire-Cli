@@ -1,4 +1,5 @@
 import shlex
+import textwrap
 import threading
 import time
 
@@ -64,7 +65,7 @@ class InteractMenu(Menu):
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.display_name = self.selected
-            self.agent_options = state.agents[agent_name]
+            self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -94,19 +95,17 @@ class InteractMenu(Menu):
 
         Usage: info
         """
-        pass
-        #todo: the spacing looks off on the table
-        # todo: Vr commented this out because it was really broken and causing my terminal to freeze up
-        # agent_list = []
-        # for key, value in self.agent_options.items():
-        #     if isinstance(value, int):
-        #         value = str(value)
-        #     if value is None:
-        #         value = ''
-        #     temp = [key, value]
-        #     agent_list.append(temp)
-        #
-        # table_util.print_table(agent_list, 'Agent Options')
+        agent_list = []
+        for key, value in self.agent_options.items():
+            if isinstance(value, int):
+                value = str(value)
+            if value is None:
+                value = ''
+            if key not in ['taskings', 'results']:
+                temp = [key, '\n'.join(textwrap.wrap(str(value), width=45))]
+                agent_list.append(temp)
+
+        table_util.print_table(agent_list, 'Agent Options')
 
 
 interact_menu = InteractMenu()

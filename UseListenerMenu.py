@@ -49,13 +49,6 @@ class UseListenerMenu(Menu):
             self.display_name = 'uselistener/' + self.selected
             self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
 
-            listener_list = []
-            for key, value in self.listener_options.items():
-                values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-                values.reverse()
-                temp = [key] + values
-                listener_list.append(temp)
-
     @command
     def set(self, key: string, value: string) -> None:
         """
