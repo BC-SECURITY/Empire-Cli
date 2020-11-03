@@ -47,7 +47,14 @@ class InteractMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
+
     def use(self, agent_name: str) -> None:
         """
         Use the selected agent

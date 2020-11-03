@@ -31,5 +31,5 @@ class Menu(object):
             if word.startswith(word_before_cursor):
                 yield Completion(word, start_position=-len(word_before_cursor))
 
-    def init(self):
-        pass
+    def init(self, **kwargs) -> bool:
+        return True

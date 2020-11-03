@@ -91,10 +91,10 @@ class EmpireCli(object):
     def strip(options):
         return {re.sub('[^A-Za-z0-9 _]+', '', k): v for k, v in options.items()}
 
-    def change_menu(self, menu: Menu):
-        self.current_menu = menu
-        self.menu_history.append(menu)
-        menu.init()
+    def change_menu(self, menu: Menu, **kwargs):
+        if menu.init(**kwargs):
+            self.current_menu = menu
+            self.menu_history.append(menu)
 
     def main(self):
         if empire_config.yaml.get('suppress-self-cert-warning', True):
@@ -153,25 +153,18 @@ class EmpireCli(object):
                 self.change_menu(self.menus['PluginMenu'])
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if cmd_line[1] in state.listener_types:
-                    # todo utilize the command decorator? Call use as part of init?
-                    self.menus['UseListenerMenu'].use(cmd_line[1])
-                    self.change_menu(self.menus['UseListenerMenu'])
+                    self.change_menu(self.menus['UseListenerMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
                 if cmd_line[1] in state.stagers:
-                    # todo utilize the command decorator?
-                    self.menus['UseStagerMenu'].use(cmd_line[1])
-                    self.change_menu(self.menus['UseStagerMenu'])
+                    self.change_menu(self.menus['UseStagerMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if cmd_line[1] in state.modules:
-                    # todo utilize the command decorator?
                     self.previous_menu = self.current_menu
-                    self.change_menu(self.menus['UseModuleMenu'])
-                    # todo can we call use in change_menu?
-                    self.current_menu.use(cmd_line[1])
+                    self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1])
                     # todo if we track menus in the state could the menu do this itself in init?
                     if self.previous_menu == self.menus['InteractMenu']:
                         self.current_menu.set('Agent', self.previous_menu.selected_type)
@@ -181,14 +174,17 @@ class EmpireCli(object):
 
             elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
                 if cmd_line[1] in state.agents:
-                    # todo utilize the command decorator?
-                    self.menus['InteractMenu'].use(cmd_line[1])
-                    self.change_menu(self.menus['InteractMenu'])
+                    self.change_menu(self.menus['InteractMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
 
+            elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
+                if cmd_line[1] in state.plugins:
+                    self.change_menu(self.menus['UsePluginMenu'], selected=cmd_line[1])
+                else:
+                    print(f'No module {cmd_line[1]}')
             elif text == 'shell':
-                # todo utilize the command decorator?
+                # todo I think the menu itself might be able to do this in its init function
                 self.previous_menu = self.current_menu
                 if self.previous_menu == self.menus['InteractMenu']:
                     self.current_menu = self.menus['ShellMenu']
@@ -208,14 +204,6 @@ class EmpireCli(object):
                     state.generate_report(cmd_line[1])
                 else:
                     state.generate_report('')
-
-            elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
-                if cmd_line[1] in state.plugins:
-                    # todo utilize the command decorator?
-                    self.menus['UsePluginMenu'].use(cmd_line[1])
-                    self.change_menu(self.menus['UsePluginMenu'])
-                else:
-                    print(f'No module {cmd_line[1]}')
 
             elif text == 'back':
                 if self.current_menu != self.menus['MainMenu']:

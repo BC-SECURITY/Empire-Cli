@@ -27,7 +27,14 @@ class UsePluginMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
+
     def use(self, plugin_name: str) -> None:
         """
         Use the selected plugin
