@@ -9,9 +9,7 @@ from utils import register_cli_commands, command, position_util
 @register_cli_commands
 class ShellMenu(Menu):
     def __init__(self):
-        super().__init__()
-        self.selected_type = ''
-        self.display_name = ''
+        super().__init__(display_name='', selected='')
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -20,7 +18,13 @@ class ShellMenu(Menu):
         if position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            return True
+
     def use(self, agent_name: str) -> None:
         """
         Use shell

@@ -77,7 +77,6 @@ class EmpireCli(object):
 
         }
         self.current_menu = self.menus['MainMenu']
-        self.previous_menu = self.menus['MainMenu']
         self.menu_history = [self.menus['MainMenu']]
 
     @staticmethod
@@ -161,42 +160,32 @@ class EmpireCli(object):
                     self.change_menu(self.menus['UseStagerMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
-            elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
-                if cmd_line[1] in state.modules:
-                    self.previous_menu = self.current_menu
-                    self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1])
-                    # todo if we track menus in the state could the menu do this itself in init?
-                    if self.previous_menu == self.menus['InteractMenu']:
-                        self.current_menu.set('Agent', self.previous_menu.selected_type)
-                        self.current_menu.info()
-                else:
-                    print(f'No module {cmd_line[1]}')
-
             elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
                 if cmd_line[1] in state.agents:
                     self.change_menu(self.menus['InteractMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
-
             elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
                 if cmd_line[1] in state.plugins:
                     self.change_menu(self.menus['UsePluginMenu'], selected=cmd_line[1])
                 else:
                     print(f'No module {cmd_line[1]}')
+            elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
+                if cmd_line[1] in state.modules:
+                    if self.current_menu == self.menus['InteractMenu']:
+                        self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1], agent=self.current_menu.selected)
+                    else:
+                        self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1])
+                else:
+                    print(f'No module {cmd_line[1]}')
             elif text == 'shell':
-                # todo I think the menu itself might be able to do this in its init function
-                self.previous_menu = self.current_menu
-                if self.previous_menu == self.menus['InteractMenu']:
-                    self.current_menu = self.menus['ShellMenu']
-                    self.menu_history.append(self.current_menu)
-                    self.current_menu.selected = self.previous_menu.selected
-                    self.current_menu.use(self.current_menu.selected)
+                if self.current_menu == self.menus['InteractMenu']:
+                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
                 else:
                     pass
-
             elif self.current_menu == self.menus['ShellMenu']:
                 if text == 'exit':
-                    self.current_menu = self.previous_menu
+                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
                 else:
                     self.current_menu.shell(self.current_menu.selected_type, text)
             elif cmd_line[0] == 'report':

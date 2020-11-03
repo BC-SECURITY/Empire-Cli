@@ -94,17 +94,19 @@ class InteractMenu(Menu):
 
         Usage: info
         """
+        pass
         #todo: the spacing looks off on the table
-        agent_list = []
-        for key, value in self.agent_options.items():
-            if isinstance(value, int):
-                value = str(value)
-            if value is None:
-                value = ''
-            temp = [key, value]
-            agent_list.append(temp)
-
-        table_util.print_table(agent_list, 'Agent Options')
+        # todo: Vr commented this out because it was really broken and causing my terminal to freeze up
+        # agent_list = []
+        # for key, value in self.agent_options.items():
+        #     if isinstance(value, int):
+        #         value = str(value)
+        #     if value is None:
+        #         value = ''
+        #     temp = [key, value]
+        #     agent_list.append(temp)
+        #
+        # table_util.print_table(agent_list, 'Agent Options')
 
 
 interact_menu = InteractMenu()

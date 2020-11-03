@@ -56,6 +56,9 @@ class UseModuleMenu(Menu):
             return False
         else:
             self.use(kwargs['selected'])
+
+            if 'agent' in kwargs and 'Agent' in self.module_options:
+                self.set('Agent', kwargs['agent'])
             self.info()
             return True
 
