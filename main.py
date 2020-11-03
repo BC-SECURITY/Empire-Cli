@@ -25,9 +25,6 @@ from UseModuleMenu import use_module_menu
 from UsePluginMenu import use_plugin_menu
 from UseStagerMenu import use_stager_menu
 
-# todo probably put a prop in config.yaml to suppress this (from self-signed certs)
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 
 class MyCustomCompleter(Completer):
     def __init__(self, empire_cli):
@@ -100,6 +97,9 @@ class EmpireCli(object):
         menu.init()
 
     def main(self):
+        if empire_config.yaml.get('suppress-self-cert-warning', True):
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         # Create some history first. (Easy for testing.)
         history = InMemoryHistory()
         history.append_string("help")
