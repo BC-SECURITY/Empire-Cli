@@ -251,6 +251,9 @@ class EmpireCli(object):
                         pass
                     except SystemExit as e:
                         pass
+                elif not func and self.current_menu == self.menus['InteractMenu']:
+                    if cmd_line[0] in self.current_menu.shortcuts:
+                        self.current_menu.execute_shortcut(cmd_line[0])
 
 
 if __name__ == "__main__":

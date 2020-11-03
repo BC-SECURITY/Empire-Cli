@@ -7,6 +7,7 @@ import time
 from prompt_toolkit.completion import Completion
 
 import table_util
+from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command, position_util, filtered_search_list

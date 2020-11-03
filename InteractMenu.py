@@ -5,6 +5,7 @@ import time
 from prompt_toolkit.completion import Completion
 
 import table_util
+from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command, position_util, filtered_search_list
@@ -14,10 +15,11 @@ from utils import register_cli_commands, command, position_util, filtered_search
 class InteractMenu(Menu):
     def __init__(self):
         super().__init__(display_name='', selected='')
+        self.shortcuts = list(map(lambda x: x['name'], empire_config.yaml.get('shortcuts', {}).get('python', [])))
         self.agent_options = {}
 
     def autocomplete(self):
-        return self._cmd_registry + super().autocomplete()
+        return self._cmd_registry + super().autocomplete() + self.shortcuts
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         if cmd_line[0] in ['interact'] and position_util(cmd_line, 2, word_before_cursor):
@@ -98,6 +100,15 @@ class InteractMenu(Menu):
             agent_list.append(temp)
 
         table_util.print_table(agent_list, 'Agent Options')
+
+    def execute_shortcut(self, command: str):
+        shortcuts = {x['name']: x for x in empire_config.yaml.get('shortcuts', {}).get('python', [])}
+        shortcut = shortcuts[command]
+        print(f"executing {shortcut['name']} {shortcut['params']}")
+        params = dict.copy(shortcut['params']);
+        params['Agent'] = self.selected
+        state.execute_module(shortcut['module'], params)
+
 
 
 interact_menu = InteractMenu()
