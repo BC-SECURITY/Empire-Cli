@@ -7,6 +7,7 @@ from prompt_toolkit.completion import Completion
 
 import print_util
 import table_util
+from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import filtered_search_list, position_util

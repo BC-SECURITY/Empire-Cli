@@ -1,4 +1,34 @@
 suppress-self-cert-warning: true
+default-obfuscation:
+  string: Token\1\All
+  enabled: true
+shortcuts:
+  powershell:
+    - name: sc
+      module: powershell/collection/screenshot
+      params:
+        Ratio: 80
+    - name: mimikatz
+      module: powershell/credentials/mimikatz/logonpasswords
+    - name: spawn
+      module: powershell/management/spawn
+      params:
+        Listener: # This should be sent as a cmd. How?
+        AMSIBypass2: # Should we use defaults from the server and only override if provided here?
+        # It is a shortcut so there shouldn't be too much customization allowed via the cli.
+    - name: bypassUAC
+      module: powershell/privesc/bypassuac_eventvwr
+      params:
+        Listener: # This should be sent as a cmd. How?
+  python:
+    - name: sc
+      module: python/collection/osx/screenshot
+      params:
+        SavePath: /tmp/out.png # IN this case we need to be able to overwrite the params. How can we do this?
+    - name: other
+      module: other/module
+      params:
+        SomeParam: true
 servers:
   localhost:
     host: https://localhost
