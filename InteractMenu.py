@@ -9,7 +9,7 @@ import time
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-import Helpers
+import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
@@ -54,8 +54,8 @@ class InteractMenu(Menu):
             try:
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
-                    print(Helpers.color('[*] Task ' + str(results['taskID']) + " results received"))
-                    print(Helpers.color(results['results']))
+                    print(print_util.color('[*] Task ' + str(results['taskID']) + " results received"))
+                    print(print_util.color(results['results']))
                     status_result = True
             except:
                 pass
@@ -81,7 +81,9 @@ class InteractMenu(Menu):
         Usage: shell <shell_cmd>
         """
         response = state.agent_shell(self.selected_type, shell_cmd)
-        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+        print(print_util.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+
+        # todo can we use asyncio?
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
         agent_return.start()
 
@@ -100,7 +102,7 @@ class InteractMenu(Menu):
             file_name = destination_file_name
 
         response = state.agent_upload_file(self.selected, file_name, file_data)
-        print(Helpers.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
+        print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
         agent_return.start()
 
@@ -112,7 +114,7 @@ class InteractMenu(Menu):
         Usage: download <file_name>
         """
         response = state.agent_download_file(self.selected_type, file_name)
-        print(Helpers.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+        print(print_util.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
         agent_return.start()
 

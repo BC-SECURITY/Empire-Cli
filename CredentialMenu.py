@@ -38,7 +38,7 @@ class CredentialMenu(Menu):
         """
         cred_list = list(map(
             lambda x: [x['ID'], x['credtype'], x['domain'], x['username'], x['host'], x['password']],
-            state.get_credentials()['creds']))
+            state.get_credentials()))
         cred_list.insert(0, ['ID', 'CredType', 'Domain', 'UserName', 'Host', 'Password/Hash'])
 
         table_util.print_table(cred_list, 'Credentials')

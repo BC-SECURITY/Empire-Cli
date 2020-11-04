@@ -10,7 +10,7 @@ from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-import Helpers
+import print_util
 import Menu
 
 from AgentMenu import agent_menu
@@ -105,7 +105,7 @@ class EmpireCli(object):
         history.append_string("main")
         history.append_string("connect -c localhost")
 
-        Helpers.loading()
+        print_util.loading()
         print("\n")
         print("Use the 'connect' command to connect to your Empire server.")
         print("connect localhost will connect to a local empire instance with all the defaults")
@@ -140,7 +140,7 @@ class EmpireCli(object):
 
             # Switch Menus
             if text == 'main':
-                Helpers.title(state.empire_version)
+                print_util.title(state.empire_version)
                 self.change_menu(self.menus['MainMenu'])
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])

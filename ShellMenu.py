@@ -5,7 +5,7 @@ import time
 from prompt_toolkit.completion import Completion
 from terminaltables import SingleTable
 
-import Helpers
+import print_util
 from EmpireCliState import state
 from Menu import Menu
 from utils import register_cli_commands, command
@@ -46,7 +46,7 @@ class ShellMenu(Menu):
             try:
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
-                    print(Helpers.color(results['results']))
+                    print(print_util.color(results['results']))
                     status_result = True
             except:
                 pass

@@ -6,7 +6,7 @@ import requests
 import socketio
 import os
 
-import Helpers
+import print_util
 
 
 class EmpireCliState(object):
@@ -43,8 +43,8 @@ class EmpireCliState(object):
 
         # Wait for version to be returned
         self.empire_version = self.get_version()['version']
-        Helpers.title(self.empire_version)
-        print(Helpers.color('[*] Connected to ' + host))
+        print_util.title(self.empire_version)
+        print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
@@ -101,15 +101,15 @@ class EmpireCliState(object):
 
         return self.listener_types
 
-    def get_listener_options(self, listener_name: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{listener_name}',
+    def get_listener_options(self, listener_type: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{listener_type}',
                                 verify=False,
                                 params={'token': self.token})
 
         return json.loads(response.content)
 
-    def create_listener(self, listener_name: str, options: Dict):
-        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
+    def create_listener(self, listener_type: str, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{listener_type}',
                                  json=options,
                                  verify=False,
                                  params={'token': self.token})
@@ -275,13 +275,6 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def get_agent_notes(self, agent_name: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
-                                verify=False,
-                                params={'token': self.token})
-
-        return json.loads(response.content)
-
     def agent_upload_file(self, agent_name: str, file_name: str, file_data: bytes):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
                                  json={'filename': file_name, 'data': file_data},
@@ -303,13 +296,6 @@ class EmpireCliState(object):
                                  json=notes,
                                  verify=False,
                                  params={'token': self.token})
-
-        return json.loads(response.content)
-
-    def get_user_notes(self, username: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/users/{username}/notes',
-                                verify=False,
-                                params={'token': self.token})
 
         return json.loads(response.content)
 
