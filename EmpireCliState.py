@@ -1,8 +1,12 @@
 import json
+import time
 from typing import Dict, Optional
 
 import requests
 import socketio
+import os
+
+import print_util
 
 
 class EmpireCliState(object):
@@ -22,6 +26,7 @@ class EmpireCliState(object):
         self.modules = {}
         self.agents = {}
         self.plugins = {}
+        self.empire_version = ''
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -36,7 +41,10 @@ class EmpireCliState(object):
         self.sio = socketio.Client(ssl_verify=False)
         self.sio.connect(f'{host}:{socketport}?token={self.token}')
 
-        print('Connected to ' + host)
+        # Wait for version to be returned
+        self.empire_version = self.get_version()['version']
+        print_util.title(self.empire_version)
+        print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
@@ -70,6 +78,13 @@ class EmpireCliState(object):
 
         return self.listeners
 
+    def get_version(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/version',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
     def kill_listener(self, listener_name: str):
         response = requests.delete(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
                                    verify=False,
@@ -86,15 +101,15 @@ class EmpireCliState(object):
 
         return self.listener_types
 
-    def get_listener_options(self, module: str):
-        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{module}',
+    def get_listener_options(self, listener_type: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/listeners/options/{listener_type}',
                                 verify=False,
                                 params={'token': self.token})
 
         return json.loads(response.content)
 
-    def create_listener(self, module: str, options: Dict):
-        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{module}',
+    def create_listener(self, listener_type: str, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/listeners/{listener_type}',
                                  json=options,
                                  verify=False,
                                  params={'token': self.token})
@@ -113,8 +128,8 @@ class EmpireCliState(object):
 
         return self.stagers
 
-    def create_stager(self, module: str, options: Dict):
-        options['StagerName'] = module
+    def create_stager(self, stager_name: str, options: Dict):
+        options['StagerName'] = stager_name
         response = requests.post(url=f'{self.host}:{self.port}/api/stagers',
                                  json=options,
                                  verify=False,
@@ -142,9 +157,9 @@ class EmpireCliState(object):
 
     def execute_module(self, module_name: str, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/modules/{module_name}',
-                                json=options,
-                                verify=False,
-                                params={'token': self.token})
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -213,7 +228,7 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def get_creds(self):
+    def get_credentials(self):
         response = requests.get(url=f'{self.host}:{self.port}/api/creds',
                                 verify=False,
                                 params={'token': self.token})
@@ -246,9 +261,41 @@ class EmpireCliState(object):
 
     def execute_plugin(self, plugin_name, options: Dict):
         response = requests.post(url=f'{self.host}:{self.port}/api/plugin/{plugin_name}',
-                                json=options,
-                                verify=False,
-                                params={'token': self.token})
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_agent_notes(self, agent_name: str, notes: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/notes',
+                                 json=notes,
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def agent_upload_file(self, agent_name: str, file_name: str, file_data: bytes):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/upload',
+                                 json={'filename': file_name, 'data': file_data},
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def agent_download_file(self, agent_name: str, file_name: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/download',
+                                 json={'filename': file_name},
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_user_notes(self, username: str, notes: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/users/{username}/notes',
+                                 json=notes,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 

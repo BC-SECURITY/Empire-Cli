@@ -1,6 +1,6 @@
 import re
 import shlex
-from typing import get_type_hints, Dict
+from typing import get_type_hints
 
 import urllib3
 from docopt import docopt
@@ -10,7 +10,9 @@ from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
+import print_util
 import Menu
+
 from AgentMenu import agent_menu
 from CredentialMenu import credential_menu
 from EmpireCliConfig import empire_config
@@ -110,7 +112,8 @@ class EmpireCli(object):
         history.append_string("main")
         history.append_string("connect -c localhost")
 
-        print('Welcome to Empire!')
+        print_util.loading()
+        print("\n")
         print("Use the 'connect' command to connect to your Empire server.")
         print("connect localhost will connect to a local empire instance with all the defaults")
         print("including the default username and password.")
@@ -144,6 +147,7 @@ class EmpireCli(object):
 
             # Switch Menus
             if text == 'main':
+                print_util.title(state.empire_version)
                 self.change_menu(self.menus['MainMenu'])
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])

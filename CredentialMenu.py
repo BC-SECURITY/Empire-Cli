@@ -1,4 +1,6 @@
 import shlex
+import string
+import textwrap
 
 import table_util
 from EmpireCliState import state
@@ -30,7 +32,7 @@ class CredentialMenu(Menu):
         """
         cred_list = list(map(
             lambda x: [x['ID'], x['credtype'], x['domain'], x['username'], x['host'], x['password']],
-            state.get_creds()))
+            state.get_credentials()))
         cred_list.insert(0, ['ID', 'CredType', 'Domain', 'UserName', 'Host', 'Password/Hash'])
 
         table_util.print_table(cred_list, 'Credentials')

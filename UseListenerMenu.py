@@ -4,6 +4,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
+import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
@@ -63,7 +64,7 @@ class UseListenerMenu(Menu):
             self.listener_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(f'Set {key} to {value}')
+        print(print_util.color('[*] Set %s to %s' % (key, value)))
 
     @command
     def unset(self, key: str) -> None:
@@ -76,7 +77,7 @@ class UseListenerMenu(Menu):
             self.listener_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(f'Unset {key}')
+        print(print_util.color('[*] Unset %s' % key))
 
     @command
     def info(self):
@@ -109,8 +110,10 @@ class UseListenerMenu(Menu):
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected, post_body)
-
-        #print(response)
+        if response['success']:
+            print(print_util.color('[+] ' + response['success']))
+        elif response['error']:
+            print(print_util.color('[!] Error: ' + response['error']))
 
 
 use_listener_menu = UseListenerMenu()
