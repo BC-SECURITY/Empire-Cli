@@ -1,4 +1,3 @@
-import shlex
 import string
 import textwrap
 
@@ -8,7 +7,8 @@ import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, position_util, filtered_search_list
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -28,7 +28,14 @@ class UsePluginMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
+
     def use(self, plugin_name: str) -> None:
         """
         Use the selected plugin

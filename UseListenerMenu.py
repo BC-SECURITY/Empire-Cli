@@ -1,4 +1,3 @@
-import shlex
 import string
 import textwrap
 
@@ -8,7 +7,8 @@ import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, position_util, filtered_search_list
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -31,10 +31,14 @@ class UseListenerMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    def init(self):
-        self.info()
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
 
-    @command
     def use(self, module: str) -> None:
         """
         Use the selected listener
@@ -45,13 +49,6 @@ class UseListenerMenu(Menu):
             self.selected = module
             self.display_name = 'uselistener/' + self.selected
             self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
-
-            listener_list = []
-            for key, value in self.listener_options.items():
-                values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-                values.reverse()
-                temp = [key] + values
-                listener_list.append(temp)
 
     @command
     def set(self, key: string, value: string) -> None:

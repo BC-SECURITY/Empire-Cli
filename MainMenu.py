@@ -1,11 +1,10 @@
-import shlex
-
 from prompt_toolkit.completion import Completion
 
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, filtered_search_list, position_util
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -22,7 +21,10 @@ class MainMenu(Menu):
                 for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
                     yield Completion(server, start_position=-len(word_before_cursor))
             elif position_util(cmd_line, 1, word_before_cursor):
-                yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
+                if 'connect'.startswith(word_before_cursor):
+                    yield Completion('connect', start_position=-len(word_before_cursor))
+        elif position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 

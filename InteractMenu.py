@@ -1,20 +1,18 @@
 import base64
 import os
-import shlex
-import string
 import textwrap
 import threading
 import time
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
 import print_util
 import table_util
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, position_util, filtered_search_list
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -59,7 +57,14 @@ class InteractMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
+
     def use(self, agent_name: str) -> None:
         """
         Use the selected agent
@@ -69,8 +74,8 @@ class InteractMenu(Menu):
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.display_name = self.selected
-            self.agent_options = state.agents[agent_name]
             self.agent_language = self.agent_options['language']
+            self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -133,15 +138,15 @@ class InteractMenu(Menu):
 
         Usage: info
         """
-        # todo: the spacing looks off on the table
         agent_list = []
         for key, value in self.agent_options.items():
             if isinstance(value, int):
                 value = str(value)
             if value is None:
                 value = ''
-            temp = [key, value]
-            agent_list.append(temp)
+            if key not in ['taskings', 'results']:
+                temp = [key, '\n'.join(textwrap.wrap(str(value), width=45))]
+                agent_list.append(temp)
 
         table_util.print_table(agent_list, 'Agent Options')
 

@@ -1,4 +1,3 @@
-import shlex
 import string
 import textwrap
 import threading
@@ -11,7 +10,8 @@ import table_util
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, position_util, filtered_search_list
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -53,7 +53,17 @@ class UseModuleMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+
+            if 'agent' in kwargs and 'Agent' in self.module_options:
+                self.set('Agent', kwargs['agent'])
+            self.info()
+            return True
+
     def use(self, module: str) -> None:
         """
         Use the selected module

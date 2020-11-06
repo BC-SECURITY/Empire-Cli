@@ -1,3 +1,4 @@
+suppress-self-cert-warning: true
 default-obfuscation:
   string: Token\1\All
   enabled: true
