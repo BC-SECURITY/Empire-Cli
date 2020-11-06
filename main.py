@@ -183,14 +183,16 @@ class EmpireCli(object):
                     print(f'No module {cmd_line[1]}')
             elif text == 'shell':
                 if self.current_menu == self.menus['InteractMenu']:
-                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
+                    agent_name = self.current_menu.selected
+                    self.change_menu(self.menus['ShellMenu'], selected=agent_name)
+                    self.current_menu.selected = agent_name
                 else:
                     pass
             elif self.current_menu == self.menus['ShellMenu']:
                 if text == 'exit':
                     self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
                 else:
-                    self.current_menu.shell(self.current_menu.selected_type, text)
+                    self.current_menu.shell(self.current_menu.selected, text)
             elif cmd_line[0] == 'report':
                 if len(cmd_line) > 1:
                     state.generate_report(cmd_line[1])
