@@ -1,4 +1,3 @@
-import shlex
 import string
 import textwrap
 
@@ -7,7 +6,8 @@ from prompt_toolkit.completion import Completion
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, filtered_search_list, position_util
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands

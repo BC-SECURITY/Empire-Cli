@@ -1,6 +1,6 @@
 from prompt_toolkit.completion import Completion
 
-from utils import filtered_search_list
+from utils.autocomplete_utils import filtered_search_list
 
 
 class Menu(object):

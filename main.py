@@ -5,8 +5,7 @@ from typing import get_type_hints, Dict
 import urllib3
 from docopt import docopt
 from prompt_toolkit import PromptSession, HTML
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 

@@ -1,9 +1,9 @@
-import shlex
-
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command, position_util
+from utils.autocomplete_utils import position_util
+from utils.cli_utils import register_cli_commands, command
+
 
 
 @register_cli_commands
