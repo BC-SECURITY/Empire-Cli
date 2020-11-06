@@ -1,9 +1,8 @@
-import shlex
-
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command
+from utils.autocomplete_utils import position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -14,15 +13,9 @@ class PluginMenu(Menu):
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
 
-    def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-        try:
-            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
-            # print(cmd_line)
-        except ValueError:
-            pass
-        else:
-            yield from super().get_completions(document, complete_event)
+    def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
+        if position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def init(self):
         self.list()

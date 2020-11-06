@@ -1,11 +1,10 @@
-import shlex
-
 from prompt_toolkit.completion import Completion
 
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -13,19 +12,21 @@ class MainMenu(Menu):
     def __init__(self):
         super().__init__(display_name='')
 
-    def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-        try:
-            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
-            # print(cmd_line)
-        except ValueError:
-            pass
-        else:
-            if len(cmd_line) > 1 and cmd_line[0] == 'connect' and cmd_line[1] in ['-c', '--connect']:
-                for server in empire_config.yaml.get('servers', []):
+    def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
+        if not state.connected:
+            if cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
+                yield Completion('-c', start_position=-len(word_before_cursor))
+            elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config']\
+                    and position_util(cmd_line, 3, word_before_cursor):
+                for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
                     yield Completion(server, start_position=-len(word_before_cursor))
-            else:
-                yield from super().get_completions(document, complete_event)
+            elif position_util(cmd_line, 1, word_before_cursor):
+                if 'connect'.startswith(word_before_cursor):
+                    yield Completion('connect', start_position=-len(word_before_cursor))
+        elif position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
+        elif position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()

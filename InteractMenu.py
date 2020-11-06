@@ -1,19 +1,17 @@
 import base64
 import os
-import shlex
-import string
 import textwrap
 import threading
 import time
 
 from prompt_toolkit.completion import Completion
-from terminaltables import SingleTable
 
 import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -25,19 +23,12 @@ class InteractMenu(Menu):
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
 
-    def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-        try:
-            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
-            # print(cmd_line)
-        except ValueError:
-            pass
-        else:
-            if len(cmd_line) > 0 and cmd_line[0] in ['interact']:
-                for agent in state.agents.keys():
-                    yield Completion(agent, start_position=-len(word_before_cursor))
-            else:
-                yield from super().get_completions(document, complete_event)
+    def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
+        if cmd_line[0] in ['interact'] and position_util(cmd_line, 2, word_before_cursor):
+            for agent in filtered_search_list(word_before_cursor, state.agents.keys()):
+                yield Completion(agent, start_position=-len(word_before_cursor))
+        elif position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
@@ -61,7 +52,14 @@ class InteractMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            self.info()
+            return True
+
     def use(self, agent_name: str) -> None:
         """
         Use the selected agent
@@ -71,7 +69,7 @@ class InteractMenu(Menu):
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.display_name = self.selected
-            self.agent_options = state.agents[agent_name]
+            self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -134,15 +132,15 @@ class InteractMenu(Menu):
 
         Usage: info
         """
-        # todo: the spacing looks off on the table
         agent_list = []
         for key, value in self.agent_options.items():
             if isinstance(value, int):
                 value = str(value)
             if value is None:
                 value = ''
-            temp = [key, value]
-            agent_list.append(temp)
+            if key not in ['taskings', 'results']:
+                temp = [key, '\n'.join(textwrap.wrap(str(value), width=45))]
+                agent_list.append(temp)
 
         table_util.print_table(agent_list, 'Agent Options')
 

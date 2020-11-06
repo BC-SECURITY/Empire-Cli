@@ -1,4 +1,3 @@
-import shlex
 import string
 import textwrap
 
@@ -7,7 +6,8 @@ from prompt_toolkit.completion import Completion
 import table_util
 from EmpireCliState import state
 from Menu import Menu
-from utils import register_cli_commands, command
+from utils.autocomplete_utils import filtered_search_list, position_util
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -18,19 +18,12 @@ class ListenerMenu(Menu):
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
 
-    def get_completions(self, document, complete_event):
-        word_before_cursor = document.get_word_before_cursor()
-        try:
-            cmd_line = list(map(lambda s: s.lower(), shlex.split(document.current_line)))
-            # print(cmd_line)
-        except ValueError:
-            pass
-        else:
-            if len(cmd_line) > 0 and cmd_line[0] in ['kill', 'info']:
-                for listener in state.listeners.keys():
-                    yield Completion(listener, start_position=-len(word_before_cursor))
-            else:
-                yield from super().get_completions(document, complete_event)
+    def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
+        if cmd_line[0] in ['kill', 'info'] and position_util(cmd_line, 2, word_before_cursor):
+            for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
+                yield Completion(listener, start_position=-len(word_before_cursor))
+        elif position_util(cmd_line, 1, word_before_cursor):
+            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def init(self):
         self.list()
