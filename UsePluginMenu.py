@@ -3,6 +3,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
+import print_util
 import table_util
 from EmpireCliState import state
 from Menu import Menu
@@ -75,7 +76,7 @@ class UsePluginMenu(Menu):
             self.plugin_options[key]['Value'] = value
 
         # todo use python prompt print methods for formatting
-        print(f'Set {key} to {value}')
+        print(print_util.color('[*] Set %s to %s' % (key, value)))
 
     @command
     def unset(self, key: str) -> None:
@@ -88,7 +89,7 @@ class UsePluginMenu(Menu):
             self.plugin_options[key]['Value'] = ''
 
         # todo use python prompt print methods for formatting
-        print(f'Unset {key}')
+        print(print_util.color('[*] Unset %s' % key))
 
     @command
     def execute(self):
