@@ -43,11 +43,11 @@ class EmpireCliState(object):
 
         # Wait for version to be returned
         self.empire_version = self.get_version()['version']
-        print_util.title(self.empire_version)
         print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
+        print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
 
     def init(self):
         self.get_listeners()
