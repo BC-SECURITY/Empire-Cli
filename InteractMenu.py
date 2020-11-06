@@ -19,11 +19,14 @@ from utils.cli_utils import register_cli_commands, command
 class InteractMenu(Menu):
     def __init__(self):
         super().__init__(display_name='', selected='')
-        self.shortcuts = list(map(lambda x: x['name'], empire_config.yaml.get('shortcuts', {}).get('python', [])))
         self.agent_options = {}
+        self.shortcuts = empire_config.yaml.get('shortcuts', {})
+        self.agent_language = ''
 
     def autocomplete(self):
-        return self._cmd_registry + super().autocomplete() + self.shortcuts
+        return self._cmd_registry +\
+               super().autocomplete() +\
+               list(map(lambda x: x['name'], self.shortcuts.get(self.agent_language, [])))
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         if cmd_line[0] in ['interact'] and position_util(cmd_line, 2, word_before_cursor):
@@ -71,6 +74,7 @@ class InteractMenu(Menu):
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.display_name = self.selected
+            self.agent_language = self.agent_options['language']
             self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
@@ -146,14 +150,21 @@ class InteractMenu(Menu):
 
         table_util.print_table(agent_list, 'Agent Options')
 
-    def execute_shortcut(self, command: str):
-        shortcuts = {x['name']: x for x in empire_config.yaml.get('shortcuts', {}).get('python', [])}
-        shortcut = shortcuts[command]
-        print(f"executing {shortcut['name']} {shortcut['params']}")
-        params = dict.copy(shortcut['params']);
-        params['Agent'] = self.selected
-        state.execute_module(shortcut['module'], params)
+    def execute_shortcut(self, command_name: str):
+        shortcuts = {x['name']: x for x in self.shortcuts.get(self.agent_language, [])}
+        shortcut = shortcuts.get(command_name)
+        if not shortcut:
+            return None
+        module_options = dict.copy(state.modules[shortcut['module']]['options'])
 
+        post_body = {}
+        for key, value in module_options.items():
+            if key in shortcut.get('params', {}):
+                post_body[key] = shortcut['params'][key]
+            else:
+                post_body[key] = module_options[key]['Value']
+        post_body['Agent'] = self.selected
+        state.execute_module(shortcut['module'], post_body)
 
 
 interact_menu = InteractMenu()
