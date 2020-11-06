@@ -143,7 +143,7 @@ class EmpireCli(object):
 
             # Switch Menus
             if text == 'main':
-                print_util.title(state.empire_version)
+                print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
                 self.change_menu(self.menus['MainMenu'])
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])
