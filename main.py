@@ -95,6 +95,7 @@ class EmpireCli(object):
         if menu.init(**kwargs):
             self.current_menu = menu
             self.menu_history.append(menu)
+            self.current_menu.selected = kwargs['selected']
 
     def main(self):
         if empire_config.yaml.get('suppress-self-cert-warning', True):
@@ -183,9 +184,7 @@ class EmpireCli(object):
                     print(f'No module {cmd_line[1]}')
             elif text == 'shell':
                 if self.current_menu == self.menus['InteractMenu']:
-                    agent_name = self.current_menu.selected
-                    self.change_menu(self.menus['ShellMenu'], selected=agent_name)
-                    self.current_menu.selected = agent_name
+                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
                 else:
                     pass
             elif self.current_menu == self.menus['ShellMenu']:
