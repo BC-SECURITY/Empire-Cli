@@ -1,6 +1,6 @@
 import re
 import shlex
-from typing import get_type_hints
+from typing import get_type_hints, Dict
 
 import urllib3
 from docopt import docopt
@@ -188,7 +188,7 @@ class EmpireCli(object):
                     pass
             elif self.current_menu == self.menus['ShellMenu']:
                 if text == 'exit':
-                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
+                    self.change_menu(self.menus['InteractMenu'], selected=self.current_menu.selected)
                 else:
                     self.current_menu.shell(self.current_menu.selected, text)
             elif cmd_line[0] == 'report':

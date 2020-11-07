@@ -107,9 +107,9 @@ class UseListenerMenu(Menu):
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected, post_body)
-        if response['success']:
+        if 'success' in response.keys():
             print(print_util.color('[+] ' + response['success']))
-        elif response['error']:
+        elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
 
