@@ -95,7 +95,6 @@ class EmpireCli(object):
         if menu.init(**kwargs):
             self.current_menu = menu
             self.menu_history.append(menu)
-            self.current_menu.selected = kwargs['selected']
 
     def main(self):
         if empire_config.yaml.get('suppress-self-cert-warning', True):
