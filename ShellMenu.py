@@ -48,13 +48,13 @@ class ShellMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
     def use(self, agent_name: str) -> None:
         """
         Use shell
 
         Usage: shell
         """
+        self.selected = agent_name
         self.update_directory(agent_name)
 
     def update_directory(self, agent_name: str):
