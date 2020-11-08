@@ -146,6 +146,7 @@ class EmpireCli(object):
             if text == 'exit':
                 choice = self.shutdown()
                 if choice == 'y':
+                    # TODO: the exit command isn't working properly
                     sys.exit(0)
                 else:
                     continue
