@@ -1,5 +1,6 @@
 import re
 import shlex
+import sys
 from typing import get_type_hints, Dict
 
 import urllib3
@@ -137,7 +138,7 @@ class EmpireCli(object):
             except EOFError:
                 choice = self.shutdown()
                 if choice == 'y':
-                    break  # Control-D pressed.
+                    sys.exit(0)
                 else:
                     continue
 
