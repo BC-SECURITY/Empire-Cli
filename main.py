@@ -138,7 +138,7 @@ class EmpireCli(object):
             except EOFError:
                 choice = self.shutdown()
                 if choice == 'y':
-                    sys.exit(0)
+                    break
                 else:
                     continue
 
@@ -146,7 +146,7 @@ class EmpireCli(object):
             if text == 'exit':
                 choice = self.shutdown()
                 if choice == 'y':
-                    break
+                    sys.exit(0)
                 else:
                     continue
 

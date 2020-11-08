@@ -59,11 +59,11 @@ def title(version, modules, listeners, agents):
   |_______||__|  |__| | _|      |__| | _| `._____||_______|
 
 """)
-    print('       %s modules currently loaded' % modules)
+    print('       ' + color(modules, 'green') + ' modules currently loaded')
     print('')
-    print('       %s listeners currently active' % listeners)
+    print('       ' + color(listeners, 'green') + ' listeners currently active')
     print('')
-    print('       %s agents currently active' % agents)
+    print('       ' + color(agents, 'green') + ' agents currently active')
     print('')
 
 
