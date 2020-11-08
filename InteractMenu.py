@@ -57,7 +57,6 @@ class InteractMenu(Menu):
             return False
         else:
             self.use(kwargs['selected'])
-            self.info()
             return True
 
     def use(self, agent_name: str) -> None:
