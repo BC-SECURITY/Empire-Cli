@@ -132,9 +132,22 @@ class EmpireCli(object):
                 # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
             except KeyboardInterrupt:
+                print(print_util.color("[!] Type exit to quit"))
                 continue  # Control-C pressed. Try again.
             except EOFError:
-                break  # Control-D pressed.
+                choice = self.shutdown()
+                if choice == 'y':
+                    break  # Control-D pressed.
+                else:
+                    continue
+
+            # Shutdown if exit is typed
+            if text == 'exit':
+                choice = self.shutdown()
+                if choice == 'y':
+                    break
+                else:
+                    continue
 
             if len(cmd_line) == 0:
                 continue
@@ -196,7 +209,6 @@ class EmpireCli(object):
                     state.generate_report(cmd_line[1])
                 else:
                     state.generate_report('')
-
             elif text == 'back':
                 if self.current_menu != self.menus['MainMenu']:
                     del self.menu_history[-1]
@@ -230,6 +242,10 @@ class EmpireCli(object):
                     except SystemExit as e:
                         pass
 
+    def shutdown(self):
+        choice = input(print_util.color("\n[>] Exit? [y/N] "))
+        if choice.lower() != "" and choice.lower()[0] == "y":
+            return choice.lower()
 
 if __name__ == "__main__":
     empire = EmpireCli()
