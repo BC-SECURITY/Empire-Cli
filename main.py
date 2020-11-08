@@ -201,7 +201,7 @@ class EmpireCli(object):
                 else:
                     pass
             elif self.current_menu == self.menus['ShellMenu']:
-                if text == 'exit':
+                if text == 'quit':
                     self.change_menu(self.menus['InteractMenu'], selected=self.current_menu.selected)
                 else:
                     self.current_menu.shell(self.current_menu.selected, text)
