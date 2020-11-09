@@ -27,6 +27,7 @@ class ListenerMenu(Menu):
 
     def init(self):
         self.list()
+        return True
 
     @command
     def list(self) -> None:
