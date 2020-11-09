@@ -136,7 +136,7 @@ class EmpireCli(object):
             try:
                 with patch_stdout():
                     if self.current_menu == self.menus['InteractMenu']:
-                        text = session.prompt(HTML((f"Empire: <ansired>{self.current_menu.display_name}</ansired> > ")))
+                        text = session.prompt(HTML((f"(Empire: <ansired>{self.current_menu.display_name}</ansired>) > ")))
                     elif self.current_menu == self.menus['MainMenu']:
                         text = session.prompt(HTML((f"{self.current_menu.display_name} > ")))
                     else:
