@@ -119,15 +119,6 @@ class InteractMenu(Menu):
         agent_return.start()
 
     @command
-    def sysinfo(self) -> None:
-        """
-        Tasks an the specified agent to execute Get-Sysinfo.
-
-        Usage: sysinfo
-        """
-        state.agent_shell(self.selected, 'Get-Sysinfo')
-
-    @command
     def info(self) -> None:
         """
         Display agent info.

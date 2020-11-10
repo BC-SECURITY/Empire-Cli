@@ -2,6 +2,12 @@ from typing import List
 
 
 def filtered_search_list(prefix: str, keys) -> List[str]:
+    """
+    Filters the search list by a string prefix
+    :param prefix: the string prefix
+    :param keys: the list of strings to search
+    :return: filtered list
+    """
     return list(filter(lambda x: x.lower().startswith(prefix.lower()), keys))
 
 
@@ -9,10 +15,10 @@ def position_util(cmd_line: List[str], word_position: int, word_before_cursor: s
     """
     Util method for autocompletion conditions. Makes autocomplete work well.
 
-    :param cmd_line:
-    :param word_position:
-    :param word_before_cursor:
-    :return:
+    :param cmd_line: the list of command line words
+    :param word_position: the position of the word we are attempting to autocomplete
+    :param word_before_cursor: word_before_cursor parsed from the document
+    :return: True if we should try to autocomplete this word.
     """
     # Special case for no characters typed yet (we send in [''] as cmd_line which fucks with the logic)
     if word_position == 1 and len(cmd_line) == 1 and cmd_line[0] == '':

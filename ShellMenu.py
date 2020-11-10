@@ -28,7 +28,7 @@ class ShellMenu(Menu):
             return True
 
     def get_prompt(self) -> str:
-        return f"<ansiblue>({self.selected})</ansiblue> <ansired>{self.display_name}</ansired> >"
+        return f"<ansiblue>({self.selected})</ansiblue> <ansired>{self.display_name}</ansired> > "
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
