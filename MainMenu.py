@@ -10,7 +10,7 @@ from utils.cli_utils import register_cli_commands, command
 @register_cli_commands
 class MainMenu(Menu):
     def __init__(self):
-        super().__init__(display_name='')
+        super().__init__(display_name='(Empire)')
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         if not state.connected:
@@ -30,6 +30,9 @@ class MainMenu(Menu):
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
+
+    def get_prompt(self) -> str:
+        return f"{self.display_name} > "
 
     @command
     def connect(self, host: str, config: bool = False, port: int = 1337, socketport: int = 5000, username: str = None, password: str = None) -> None:

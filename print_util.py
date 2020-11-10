@@ -38,7 +38,7 @@ def color(string_name, color_name=None):
             return string_name
 
 
-def title(version):
+def title(version, modules, listeners, agents):
     """
     Print the tool title, with version.
     """
@@ -59,6 +59,13 @@ def title(version):
   |_______||__|  |__| | _|      |__| | _| `._____||_______|
 
 """)
+    print('       ' + color(modules, 'green') + ' modules currently loaded')
+    print('')
+    print('       ' + color(listeners, 'green') + ' listeners currently active')
+    print('')
+    print('       ' + color(agents, 'green') + ' agents currently active')
+    print('')
+
 
 
 def loading():

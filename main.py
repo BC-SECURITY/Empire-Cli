@@ -1,6 +1,7 @@
 import re
 import shlex
-from typing import get_type_hints
+import sys
+from typing import get_type_hints, Dict
 
 import urllib3
 from docopt import docopt
@@ -42,21 +43,28 @@ class MyCustomCompleter(Completer):
             pass
         else:
             if not state.connected:
-                yield from self.empire_cli.menus['MainMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['MainMenu'].get_completions(document, complete_event, cmd_line,
+                                                                             word_before_cursor)
             # These commands should be accessible anywhere.
             elif cmd_line[0] in ['uselistener']:
-                yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['UseListenerMenu'].get_completions(document, complete_event, cmd_line,
+                                                                                    word_before_cursor)
             elif cmd_line[0] in ['usestager']:
-                yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['UseStagerMenu'].get_completions(document, complete_event, cmd_line,
+                                                                                  word_before_cursor)
             elif cmd_line[0] in ['usemodule']:
-                yield from self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['UseModuleMenu'].get_completions(document, complete_event, cmd_line,
+                                                                                  word_before_cursor)
             elif cmd_line[0] in ['interact']:
-                yield from self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['InteractMenu'].get_completions(document, complete_event, cmd_line,
+                                                                                 word_before_cursor)
             elif cmd_line[0] in ['useplugin']:
-                yield from self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.menus['UsePluginMenu'].get_completions(document, complete_event, cmd_line,
+                                                                                  word_before_cursor)
             else:
                 # Menu specific commands
-                yield from self.empire_cli.current_menu.get_completions(document, complete_event, cmd_line, word_before_cursor)
+                yield from self.empire_cli.current_menu.get_completions(document, complete_event, cmd_line,
+                                                                        word_before_cursor)
 
 
 class EmpireCli(object):
@@ -127,11 +135,12 @@ class EmpireCli(object):
         while True:
             try:
                 with patch_stdout():
-                    text = session.prompt(HTML((f"<ansiblue>{self.current_menu.display_name}</ansiblue> > ")))
-                # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
-                # TODO what to do about case sensitivity for parsing options.
+                    text = session.prompt(HTML(self.current_menu.get_prompt()))
+                    # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
+                    # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
             except KeyboardInterrupt:
+                print(print_util.color("[!] Type exit to quit"))
                 continue  # Control-C pressed. Try again.
             except EOFError:
                 break  # Control-D pressed.
@@ -143,7 +152,7 @@ class EmpireCli(object):
 
             # Switch Menus
             if text == 'main':
-                print_util.title(state.empire_version)
+                print_util.title(state.empire_version, len(state.modules), len(state.listeners), len(state.agents))
                 self.change_menu(self.menus['MainMenu'])
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])
@@ -176,7 +185,8 @@ class EmpireCli(object):
             elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
                 if cmd_line[1] in state.modules:
                     if self.current_menu == self.menus['InteractMenu']:
-                        self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1], agent=self.current_menu.selected)
+                        self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1],
+                                         agent=self.current_menu.selected)
                     else:
                         self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1])
                 else:
@@ -187,16 +197,15 @@ class EmpireCli(object):
                 else:
                     pass
             elif self.current_menu == self.menus['ShellMenu']:
-                if text == 'exit':
-                    self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
+                if text == 'quit':
+                    self.change_menu(self.menus['InteractMenu'], selected=self.current_menu.selected)
                 else:
-                    self.current_menu.shell(self.current_menu.selected_type, text)
+                    self.current_menu.shell(self.current_menu.selected, text)
             elif cmd_line[0] == 'report':
                 if len(cmd_line) > 1:
                     state.generate_report(cmd_line[1])
                 else:
                     state.generate_report('')
-
             elif text == 'back':
                 if self.current_menu != self.menus['MainMenu']:
                     del self.menu_history[-1]
@@ -220,9 +229,9 @@ class EmpireCli(object):
                         # todo casting for type hinted values
                         for key, hint in get_type_hints(func).items():
                             # if args.get(key) is not None:
-                            if key is not 'return':
+                            if key != 'return':
                                 new_args[key] = args[key]
-                        #print(new_args)
+                        # print(new_args)
                         func(**new_args)
                     except Exception as e:
                         print(e)

@@ -47,7 +47,6 @@ class UseListenerMenu(Menu):
         """
         if module in state.listener_types:
             self.selected = module
-            self.display_name = 'uselistener/' + self.selected
             self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
 
     @command
@@ -107,9 +106,9 @@ class UseListenerMenu(Menu):
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected, post_body)
-        if response['success']:
+        if 'success' in response.keys():
             print(print_util.color('[+] ' + response['success']))
-        elif response['error']:
+        elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
 
