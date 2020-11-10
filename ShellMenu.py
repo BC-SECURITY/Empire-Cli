@@ -5,7 +5,7 @@ import print_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import position_util
-from utils.cli_utils import register_cli_commands
+from utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
@@ -26,6 +26,9 @@ class ShellMenu(Menu):
         else:
             self.use(kwargs['selected'])
             return True
+
+    def get_prompt(self) -> str:
+        return f"<ansiblue>({self.selected})</ansiblue> <ansired>{self.display_name}</ansired> >"
 
     def tasking_id_returns(self, agent_name, task_id: int):
         """
@@ -48,13 +51,13 @@ class ShellMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
     def use(self, agent_name: str) -> None:
         """
         Use shell
 
         Usage: shell
         """
+        self.selected = agent_name
         self.update_directory(agent_name)
 
     def update_directory(self, agent_name: str):

@@ -44,10 +44,8 @@ class UsePluginMenu(Menu):
         """
         if plugin_name in state.plugins:
             self.selected = plugin_name
-            self.display_name = 'useplugin/' + self.selected
             self.plugin_options = state.plugins[plugin_name]['options']
             self.plugin_info = state.plugins[plugin_name]
-            del self.plugin_info['options'] # todo why the del?
 
     @command
     def info(self):
