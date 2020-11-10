@@ -47,7 +47,6 @@ class UseListenerMenu(Menu):
         """
         if module in state.listener_types:
             self.selected = module
-            self.display_name = 'uselistener/' + self.selected
             self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
 
     @command
