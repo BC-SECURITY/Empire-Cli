@@ -31,6 +31,9 @@ class MainMenu(Menu):
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
 
+    def get_prompt(self) -> str:
+        return f"{self.display_name} > "
+
     @command
     def connect(self, host: str, config: bool = False, port: int = 1337, socketport: int = 5000, username: str = None, password: str = None) -> None:
         """

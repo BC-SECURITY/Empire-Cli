@@ -135,12 +135,7 @@ class EmpireCli(object):
         while True:
             try:
                 with patch_stdout():
-                    if self.current_menu == self.menus['InteractMenu']:
-                        text = session.prompt(HTML((f"(Empire: <ansired>{self.current_menu.display_name}</ansired>) > ")))
-                    elif self.current_menu == self.menus['MainMenu']:
-                        text = session.prompt(HTML((f"{self.current_menu.display_name} > ")))
-                    else:
-                        text = session.prompt(HTML((f"(Empire: <ansiblue>{self.current_menu.display_name}</ansiblue>) > ")))
+                    text = session.prompt(HTML(self.current_menu.get_prompt()))
                     # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
                     # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))

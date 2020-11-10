@@ -30,6 +30,17 @@ class InteractMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            return True
+
+    def get_prompt(self) -> str:
+        joined = '/'.join([self.display_name, self.selected]).strip('/')
+        return f"(Empire: <ansired>{joined}</ansired>) > "
+
     def tasking_id_returns(self, agent_name, task_id: int):
         """
         Polls and prints tasking data for taskID
@@ -52,13 +63,6 @@ class InteractMenu(Menu):
                 pass
             time.sleep(1)
 
-    def init(self, **kwargs) -> bool:
-        if 'selected' not in kwargs:
-            return False
-        else:
-            self.use(kwargs['selected'])
-            return True
-
     def use(self, agent_name: str) -> None:
         """
         Use the selected agent
@@ -67,7 +71,6 @@ class InteractMenu(Menu):
         """
         if agent_name in state.agents.keys():
             self.selected = agent_name
-            self.display_name = self.selected
             self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
