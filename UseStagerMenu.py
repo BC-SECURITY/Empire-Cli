@@ -50,7 +50,6 @@ class UseStagerMenu(Menu):
         """
         if module in state.stagers.keys(): # todo rename module?
             self.selected = module
-            self.display_name = 'usestager/' + module
             self.stager_options = state.stagers[module]['options']
 
             listener_list = []

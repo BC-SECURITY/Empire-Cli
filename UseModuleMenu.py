@@ -71,7 +71,6 @@ class UseModuleMenu(Menu):
         """
         if module in state.modules.keys():
             self.selected = module
-            self.display_name = 'usemodule/' + self.selected
             self.module_options = state.modules[module]['options']
 
     @command
