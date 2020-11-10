@@ -26,7 +26,16 @@ class UseModuleMenu(Menu):
         if cmd_line[0] == 'usemodule' and position_util(cmd_line, 2, word_before_cursor):
             for module in filtered_search_list(word_before_cursor, state.modules.keys()):
                 yield Completion(module, start_position=-len(word_before_cursor))
-        # todo still need autocomplete for set, unset, etc
+        elif cmd_line[0] in ['set', 'unset'] and position_util(cmd_line, 2, word_before_cursor):
+            for option in filtered_search_list(word_before_cursor, self.module_options):
+                yield Completion(option, start_position=-len(word_before_cursor))
+        elif cmd_line[0] == 'set' and position_util(cmd_line, 3, word_before_cursor):
+            if len(cmd_line) > 1 and cmd_line[1] == 'listener':
+                for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
+                    yield Completion(listener, start_position=-len(word_before_cursor))
+            if len(cmd_line) > 1 and cmd_line[1] == 'agent':
+                for listener in filtered_search_list(word_before_cursor, state.agents.keys()):
+                    yield Completion(listener, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
