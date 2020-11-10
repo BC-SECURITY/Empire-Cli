@@ -1,6 +1,5 @@
 import re
 import shlex
-import sys
 from typing import get_type_hints, Dict
 
 import urllib3
@@ -10,7 +9,7 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-import print_util
+from utils import print_util
 import Menu
 
 from AgentMenu import agent_menu

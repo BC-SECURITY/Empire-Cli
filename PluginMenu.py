@@ -1,4 +1,4 @@
-import table_util
+from utils import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import position_util
