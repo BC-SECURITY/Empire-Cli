@@ -1,11 +1,11 @@
 import time
 import threading
 
-import print_util
+from utils import print_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import position_util
-from utils.cli_utils import register_cli_commands, command
+from utils.cli_utils import register_cli_commands
 
 
 @register_cli_commands

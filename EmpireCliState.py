@@ -1,12 +1,10 @@
 import json
-import time
 from typing import Dict, Optional
 
 import requests
 import socketio
-import os
 
-import print_util
+from utils import print_util
 
 
 class EmpireCliState(object):
