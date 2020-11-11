@@ -88,6 +88,8 @@ class UseListenerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
+        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(listener_list, 'Listeners Options')
 
     @command

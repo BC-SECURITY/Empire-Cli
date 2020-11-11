@@ -60,6 +60,8 @@ class UsePluginMenu(Menu):
             temp = [key] + values
             plugin_list.append(temp)
 
+        plugin_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(plugin_list, 'Plugin Options')
 
     @command

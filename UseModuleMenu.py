@@ -121,6 +121,8 @@ class UseModuleMenu(Menu):
             temp = [key] + values
             module_list.append(temp)
 
+        module_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(module_list, 'Module Options')
 
     @command
