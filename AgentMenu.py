@@ -46,7 +46,7 @@ class AgentMenu(Menu):
                                x[agent_name]['lastseen_time'], x[agent_name]['listener']])
         agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
-        table_util.print_table(agent_list, 'Agents')
+        table_util.print_agent_table(agent_list, 'Agents')
 
     @command
     def kill(self, agent_name: string) -> None:
