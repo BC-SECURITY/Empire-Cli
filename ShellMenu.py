@@ -71,9 +71,13 @@ class ShellMenu(Menu):
 
         # Retrieve directory results and wait for response
         while temp_name is None:
-            temp_name = state.get_task_result(agent_name, task_id)['results']
+            try:
+                temp_name = state.get_task_result(agent_name, task_id)['results']
+            except:
+                pass
             time.sleep(1)
         self.display_name = temp_name
+        self.get_prompt()
 
     def shell(self, agent_name: str, shell_cmd: str):
         """
@@ -83,7 +87,8 @@ class ShellMenu(Menu):
         """
         response = state.agent_shell(agent_name, shell_cmd)
         if shell_cmd.split()[0].lower() in ['cd', 'set-location']:
-            self.update_directory(agent_name)
+            shell_return = threading.Thread(target=self.update_directory, args=[agent_name])
+            shell_return.start()
         else:
             shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
             shell_return.start()

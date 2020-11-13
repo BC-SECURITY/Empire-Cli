@@ -44,7 +44,7 @@ class AgentMenu(Menu):
                                x[agent_name]['process_name'], x[agent_name]['process_id'],
                                str(x[agent_name]['delay']) + '/' + str(x[agent_name]['jitter']),
                                x[agent_name]['lastseen_time'], x[agent_name]['listener']])
-        agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
+        agent_list.insert(0, ['ID', 'Name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
         table_util.print_agent_table(agent_list, 'Agents')
 
