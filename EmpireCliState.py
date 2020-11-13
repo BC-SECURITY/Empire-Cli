@@ -57,7 +57,12 @@ class EmpireCliState(object):
 
     def init_handlers(self):
         if self.sio:
-            self.sio.on('listeners/new', lambda data: print(data))
+            self.sio.on('listeners/new',
+                        lambda data: print(print_util.color('[+] Listener ' + data['name'] + ' successfully started')))
+            self.sio.on('agents/new',
+                        lambda data: print(print_util.color('[+] New agent ' + data['name'] + ' checked in')))
+            self.sio.on('agents/stage2', lambda data: print(
+                print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
 
     def disconnect(self):
         self.host = ''
