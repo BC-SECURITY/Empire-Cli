@@ -61,8 +61,9 @@ class EmpireCliState(object):
                         lambda data: print(print_util.color('[+] Listener ' + data['name'] + ' successfully started')))
             self.sio.on('agents/new',
                         lambda data: print(print_util.color('[+] New agent ' + data['name'] + ' checked in')))
-            self.sio.on('agents/stage2', lambda data: print(
-                print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
+
+            # Multiple checkin messages or a single one?
+            self.sio.on('agents/stage2', lambda data: print(print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
 
             # Todo: need to only display results from the current agent and user. Otherwise there will be too many returns when you add more users
             #self.sio.on('agents/task', lambda data: print(data['data']))
