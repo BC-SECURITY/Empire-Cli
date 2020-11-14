@@ -11,7 +11,7 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from utils import print_util
+from utils import print_util, table_util
 import Menu
 
 from AgentMenu import agent_menu
@@ -226,6 +226,19 @@ class EmpireCli(object):
                     break
                 else:
                     pass
+            elif text == 'help':
+                help_list = []
+                for x in range(len(self.current_menu._cmd_registry[0])):
+                    try:
+                        key = self.current_menu._cmd_registry[x]
+                        values = getattr(self.current_menu, key).__doc__.split('\n')[1].lstrip()
+                        help_list.append([key, values])
+                    except:
+                        pass
+
+                help_list.insert(0, ['Name', 'Description'])
+                table_util.print_table(help_list, 'Help Options')
+
             else:
                 func = None
                 try:
