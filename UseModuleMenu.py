@@ -5,8 +5,7 @@ import time
 
 from prompt_toolkit.completion import Completion
 
-import print_util
-import table_util
+from utils import print_util, table_util
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
@@ -27,7 +26,16 @@ class UseModuleMenu(Menu):
         if cmd_line[0] == 'usemodule' and position_util(cmd_line, 2, word_before_cursor):
             for module in filtered_search_list(word_before_cursor, state.modules.keys()):
                 yield Completion(module, start_position=-len(word_before_cursor))
-        # todo still need autocomplete for set, unset, etc
+        elif cmd_line[0] in ['set', 'unset'] and position_util(cmd_line, 2, word_before_cursor):
+            for option in filtered_search_list(word_before_cursor, self.module_options):
+                yield Completion(option, start_position=-len(word_before_cursor))
+        elif cmd_line[0] == 'set' and position_util(cmd_line, 3, word_before_cursor):
+            if len(cmd_line) > 1 and cmd_line[1] == 'listener':
+                for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
+                    yield Completion(listener, start_position=-len(word_before_cursor))
+            if len(cmd_line) > 1 and cmd_line[1] == 'agent':
+                for listener in filtered_search_list(word_before_cursor, state.agents.keys()):
+                    yield Completion(listener, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
@@ -72,7 +80,6 @@ class UseModuleMenu(Menu):
         """
         if module in state.modules.keys():
             self.selected = module
-            self.display_name = 'usemodule/' + self.selected
             self.module_options = state.modules[module]['options']
 
     @command
@@ -115,6 +122,8 @@ class UseModuleMenu(Menu):
             temp = [key] + values
             module_list.append(temp)
 
+        module_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(module_list, 'Module Options')
 
     @command
@@ -122,7 +131,7 @@ class UseModuleMenu(Menu):
         """
         Execute the selected module
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -131,10 +140,23 @@ class UseModuleMenu(Menu):
             post_body[key] = self.module_options[key]['Value']
 
         response = state.execute_module(self.selected, post_body)
+        if 'success' in response.keys():
+            print(print_util.color(
+                '[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
+            agent_return = threading.Thread(target=self.tasking_id_returns,
+                                            args=[self.module_options['Agent']['Value'], response['taskID']])
+            agent_return.start()
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
 
-        print(print_util.color('[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.module_options['Agent']['Value'], response['taskID']])
-        agent_return.start()
+    @command
+    def generate(self):
+        """
+        Execute the selected module
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_module_menu = UseModuleMenu()

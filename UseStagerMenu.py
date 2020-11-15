@@ -3,8 +3,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
-import print_util
-import table_util
+from utils import print_util, table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import filtered_search_list, position_util
@@ -50,7 +49,6 @@ class UseStagerMenu(Menu):
         """
         if module in state.stagers.keys(): # todo rename module?
             self.selected = module
-            self.display_name = 'usestager/' + module
             self.stager_options = state.stagers[module]['options']
 
             listener_list = []
@@ -100,14 +98,16 @@ class UseStagerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
+        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(listener_list, 'Stager Options')
 
     @command
-    def generate(self):
+    def execute(self):
         """
-        Generate the stager listener
+        Execute the stager
 
-        Usage: generate
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -118,6 +118,15 @@ class UseStagerMenu(Menu):
         response = state.create_stager(self.selected, post_body)
 
         print(response[self.selected]['Output'])
+
+    @command
+    def generate(self):
+        """
+        Generate the stager
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_stager_menu = UseStagerMenu()

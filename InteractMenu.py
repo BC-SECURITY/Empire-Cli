@@ -6,8 +6,7 @@ import time
 
 from prompt_toolkit.completion import Completion
 
-import print_util
-import table_util
+from utils import print_util, table_util
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
@@ -35,6 +34,17 @@ class InteractMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
+    def init(self, **kwargs) -> bool:
+        if 'selected' not in kwargs:
+            return False
+        else:
+            self.use(kwargs['selected'])
+            return True
+
+    def get_prompt(self) -> str:
+        joined = '/'.join([self.display_name, self.selected]).strip('/')
+        return f"(Empire: <ansired>{joined}</ansired>) > "
+
     def tasking_id_returns(self, agent_name, task_id: int):
         """
         Polls and prints tasking data for taskID
@@ -57,14 +67,6 @@ class InteractMenu(Menu):
                 pass
             time.sleep(1)
 
-    def init(self, **kwargs) -> bool:
-        if 'selected' not in kwargs:
-            return False
-        else:
-            self.use(kwargs['selected'])
-            self.info()
-            return True
-
     def use(self, agent_name: str) -> None:
         """
         Use the selected agent
@@ -84,11 +86,11 @@ class InteractMenu(Menu):
 
         Usage: shell <shell_cmd>
         """
-        response = state.agent_shell(self.selected_type, shell_cmd)
-        print(print_util.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
+        response = state.agent_shell(self.selected, shell_cmd)
+        print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
 
         # todo can we use asyncio?
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
         agent_return.start()
 
     @command
@@ -117,19 +119,10 @@ class InteractMenu(Menu):
 
         Usage: download <file_name>
         """
-        response = state.agent_download_file(self.selected_type, file_name)
-        print(print_util.color('[*] Tasked ' + self.selected_type + ' to run Task ' + str(response['taskID'])))
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected_type, response['taskID']])
+        response = state.agent_download_file(self.selected, file_name)
+        print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
         agent_return.start()
-
-    @command
-    def sysinfo(self) -> None:
-        """
-        Tasks an the specified agent to execute Get-Sysinfo.
-
-        Usage: sysinfo
-        """
-        state.agent_shell(self.selected, 'Get-Sysinfo')
 
     @command
     def info(self) -> None:

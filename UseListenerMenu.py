@@ -3,8 +3,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
-import print_util
-import table_util
+from utils import print_util, table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import filtered_search_list, position_util
@@ -47,7 +46,6 @@ class UseListenerMenu(Menu):
         """
         if module in state.listener_types:
             self.selected = module
-            self.display_name = 'uselistener/' + self.selected
             self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
 
     @command
@@ -90,14 +88,16 @@ class UseListenerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
+        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(listener_list, 'Listeners Options')
 
     @command
-    def start(self):
+    def execute(self):
         """
         Create the current listener
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # todo alias start to execute and generate
@@ -107,10 +107,19 @@ class UseListenerMenu(Menu):
             post_body[key] = self.listener_options[key]['Value']
 
         response = state.create_listener(self.selected, post_body)
-        if response['success']:
-            print(print_util.color('[+] ' + response['success']))
-        elif response['error']:
+        if 'success' in response.keys():
+            return
+        elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def generate(self):
+        """
+        Create the current listener
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_listener_menu = UseListenerMenu()

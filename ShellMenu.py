@@ -1,7 +1,7 @@
 import time
 import threading
 
-import print_util
+from utils import print_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import position_util
@@ -27,6 +27,9 @@ class ShellMenu(Menu):
             self.use(kwargs['selected'])
             return True
 
+    def get_prompt(self) -> str:
+        return f"<ansiblue>({self.selected})</ansiblue> <ansired>{self.display_name}</ansired> > "
+
     def tasking_id_returns(self, agent_name, task_id: int):
         """
         Polls and prints tasking data for taskID
@@ -48,13 +51,13 @@ class ShellMenu(Menu):
                 pass
             time.sleep(1)
 
-    @command
     def use(self, agent_name: str) -> None:
         """
         Use shell
 
         Usage: shell
         """
+        self.selected = agent_name
         self.update_directory(agent_name)
 
     def update_directory(self, agent_name: str):
@@ -68,9 +71,13 @@ class ShellMenu(Menu):
 
         # Retrieve directory results and wait for response
         while temp_name is None:
-            temp_name = state.get_task_result(agent_name, task_id)['results']
+            try:
+                temp_name = state.get_task_result(agent_name, task_id)['results']
+            except:
+                pass
             time.sleep(1)
         self.display_name = temp_name
+        self.get_prompt()
 
     def shell(self, agent_name: str, shell_cmd: str):
         """
@@ -80,7 +87,8 @@ class ShellMenu(Menu):
         """
         response = state.agent_shell(agent_name, shell_cmd)
         if shell_cmd.split()[0].lower() in ['cd', 'set-location']:
-            self.update_directory(agent_name)
+            shell_return = threading.Thread(target=self.update_directory, args=[agent_name])
+            shell_return.start()
         else:
             shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
             shell_return.start()

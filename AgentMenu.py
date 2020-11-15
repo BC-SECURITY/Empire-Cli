@@ -2,7 +2,7 @@ import string
 
 from prompt_toolkit.completion import Completion
 
-import table_util
+from utils import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import filtered_search_list, position_util
@@ -26,6 +26,7 @@ class AgentMenu(Menu):
 
     def init(self):
         self.list()
+        return True
 
     @command
     def list(self) -> None:
@@ -36,16 +37,20 @@ class AgentMenu(Menu):
         """
         # todo: Vin is going to hate this...
         agent_list = []
+        agent_formatting = []
         x = state.get_agents()
         for agent_name in x:
-            agent_list.append([str(x[agent_name]['ID']), x[agent_name]['name'], str(x[agent_name]['high_integrity']),
+            agent_list.append([str(x[agent_name]['ID']), x[agent_name]['name'],
                                x[agent_name]['language'], x[agent_name]['internal_ip'], x[agent_name]['username'],
                                x[agent_name]['process_name'], x[agent_name]['process_id'],
                                str(x[agent_name]['delay']) + '/' + str(x[agent_name]['jitter']),
                                x[agent_name]['lastseen_time'], x[agent_name]['listener']])
-        agent_list.insert(0, ['ID', 'name', 'High Integrity', 'Language', 'Internal IP', 'Username', 'Process',
+            agent_formatting.append([x[agent_name]['stale'], x[agent_name]['high_integrity']])
+
+        agent_formatting.insert(0, ['Stale', 'High Integrity'])
+        agent_list.insert(0, ['ID', 'Name', 'Language', 'Internal IP', 'Username', 'Process',
                               'PID', 'Delay', 'Last Seen', 'Listener'])
-        table_util.print_table(agent_list, 'Agents')
+        table_util.print_agent_table(agent_list, agent_formatting, 'Agents')
 
     @command
     def kill(self, agent_name: string) -> None:

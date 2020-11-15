@@ -3,7 +3,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
-import table_util
+from utils import table_util
 from EmpireCliState import state
 from Menu import Menu
 from utils.autocomplete_utils import filtered_search_list, position_util
@@ -27,6 +27,7 @@ class ListenerMenu(Menu):
 
     def init(self):
         self.list()
+        return True
 
     @command
     def list(self) -> None:

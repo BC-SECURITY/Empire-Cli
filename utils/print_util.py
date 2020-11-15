@@ -1,4 +1,5 @@
 import os
+import textwrap
 import time
 
 
@@ -38,7 +39,7 @@ def color(string_name, color_name=None):
             return string_name
 
 
-def title(version):
+def title(version, modules, listeners, agents):
     """
     Print the tool title, with version.
     """
@@ -59,6 +60,13 @@ def title(version):
   |_______||__|  |__| | _|      |__| | _| `._____||_______|
 
 """)
+    print('       ' + color(modules, 'green') + ' modules currently loaded')
+    print('')
+    print('       ' + color(listeners, 'green') + ' listeners currently active')
+    print('')
+    print('       ' + color(agents, 'green') + ' agents currently active')
+    print('')
+
 
 
 def loading():
@@ -108,3 +116,13 @@ def loading():
                 Welcome to the Empire""")
     time.sleep(3)
     os.system('clear')
+
+
+def text_wrap(text, width=35):
+    """
+    Wraps text to newlines given a maximum width per line.
+    :param text:
+    :param width:
+    :return: String wrapped by newlines at the given width
+    """
+    return '\n'.join(textwrap.wrap(str(text), width=width))

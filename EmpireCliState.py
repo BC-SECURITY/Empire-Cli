@@ -1,12 +1,10 @@
 import json
-import time
 from typing import Dict, Optional
 
 import requests
 import socketio
-import os
 
-import print_util
+from utils import print_util
 
 
 class EmpireCliState(object):
@@ -43,11 +41,11 @@ class EmpireCliState(object):
 
         # Wait for version to be returned
         self.empire_version = self.get_version()['version']
-        print_util.title(self.empire_version)
         print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
+        print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
 
     def init(self):
         self.get_listeners()
@@ -59,7 +57,16 @@ class EmpireCliState(object):
 
     def init_handlers(self):
         if self.sio:
-            self.sio.on('listeners/new', lambda data: print(data))
+            self.sio.on('listeners/new',
+                        lambda data: print(print_util.color('[+] Listener ' + data['name'] + ' successfully started')))
+            self.sio.on('agents/new',
+                        lambda data: print(print_util.color('[+] New agent ' + data['name'] + ' checked in')))
+
+            # Multiple checkin messages or a single one?
+            self.sio.on('agents/stage2', lambda data: print(print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
+
+            # Todo: need to only display results from the current agent and user. Otherwise there will be too many returns when you add more users
+            #self.sio.on('agents/task', lambda data: print(data['data']))
 
     def disconnect(self):
         self.host = ''
