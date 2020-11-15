@@ -71,6 +71,15 @@ class AgentMenu(Menu):
         state.clear_agent(agent_name)
 
     @command
+    def remove(self, agent_name: string) -> None:
+        """
+        Removes an agent from the controller specified by agent_name. Doesn't kill the agent first.
+
+        Usage: remove <agent_name>
+        """
+        state.clear_agent(agent_name)
+
+    @command
     def rename(self, agent_name: string, new_agent_name: string) -> None:
         """
         Rename selected listener

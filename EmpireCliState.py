@@ -177,6 +177,13 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def remove_agent(self, agent_name: str):
+        response = requests.delete(url=f'{self.host}:{self.port}/api/agents/{agent_name}',
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
     def clear_agent(self, agent_name: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/clear',
                                  verify=False,
