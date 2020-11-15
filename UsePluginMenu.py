@@ -95,7 +95,7 @@ class UsePluginMenu(Menu):
         """
         Run current plugin
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -105,6 +105,15 @@ class UsePluginMenu(Menu):
 
         response = state.execute_plugin(self.selected, post_body)
         #print(response)
+
+    @command
+    def generate(self):
+        """
+        Create the current listener
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_plugin_menu = UsePluginMenu()

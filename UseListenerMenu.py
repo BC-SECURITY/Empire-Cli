@@ -93,11 +93,11 @@ class UseListenerMenu(Menu):
         table_util.print_table(listener_list, 'Listeners Options')
 
     @command
-    def start(self):
+    def execute(self):
         """
         Create the current listener
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # todo alias start to execute and generate
@@ -111,6 +111,15 @@ class UseListenerMenu(Menu):
             return
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def generate(self):
+        """
+        Create the current listener
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_listener_menu = UseListenerMenu()

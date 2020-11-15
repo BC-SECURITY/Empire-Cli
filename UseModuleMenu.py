@@ -130,7 +130,7 @@ class UseModuleMenu(Menu):
         """
         Execute the selected module
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -147,6 +147,15 @@ class UseModuleMenu(Menu):
             agent_return.start()
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def generate(self):
+        """
+        Create the current listener
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_module_menu = UseModuleMenu()
