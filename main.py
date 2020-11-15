@@ -1,5 +1,7 @@
+import os
 import re
 import shlex
+import sys
 from typing import get_type_hints, Dict
 
 import urllib3
@@ -9,7 +11,7 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from utils import print_util
+from utils import print_util, table_util
 import Menu
 
 from AgentMenu import agent_menu
@@ -128,7 +130,9 @@ class EmpireCli(object):
             completer=self.completer,
             complete_in_thread=True,
             # complete_while_typing=True,
-            bottom_toolbar=self.bottom_toolbar
+            bottom_toolbar=self.bottom_toolbar,
+            #swap_light_and_dark_colors=True,
+            #mouse_support=True
         )
 
         while True:
@@ -147,7 +151,14 @@ class EmpireCli(object):
             if len(cmd_line) == 0:
                 continue
             if not state.connected and not cmd_line[0] == 'connect':
-                continue
+                if cmd_line[0] == 'exit':
+                    choice = input(print_util.color("[>] Exit? [y/N] ", "red"))
+                    if choice.lower() == "y":
+                        sys.exit()
+                    else:
+                        continue
+                else:
+                    continue
 
             # Switch Menus
             if text == 'main':
@@ -209,7 +220,12 @@ class EmpireCli(object):
                 if self.current_menu != self.menus['MainMenu']:
                     del self.menu_history[-1]
                     self.current_menu = self.menu_history[-1]
-
+            elif text == 'exit':
+                choice = input(print_util.color("[>] Exit? [y/N] ", "red"))
+                if choice.lower() == "y":
+                    break
+                else:
+                    pass
             else:
                 func = None
                 try:
@@ -238,7 +254,13 @@ class EmpireCli(object):
                     except SystemExit as e:
                         pass
 
+        return
+
 
 if __name__ == "__main__":
-    empire = EmpireCli()
-    empire.main()
+    try:
+        empire = EmpireCli()
+        empire.main()
+    finally:
+        # TODO: There has to be a better way to exit but sys.exit() is getting stuck on something
+        os._exit(0)

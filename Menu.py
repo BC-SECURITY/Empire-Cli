@@ -1,6 +1,8 @@
 from prompt_toolkit.completion import Completion
 
+from utils import table_util, print_util
 from utils.autocomplete_utils import filtered_search_list
+from utils.cli_utils import command
 
 
 class Menu(object):
@@ -9,6 +11,9 @@ class Menu(object):
         self.display_name = display_name
         # The selected item. Applicable for Menus such UseStager or UseListener.
         self.selected = selected
+        # Gets overwritten by the register_cli_commands decorator.
+        # Nice to have here just to stop the warnings
+        self._cmd_registry = [] if not self._cmd_registry else self._cmd_registry
 
     def autocomplete(self):
         """
@@ -17,7 +22,6 @@ class Menu(object):
         :return: list[str]
         """
         return [
-            'help',
             'main',
             'back',
             'interact',
@@ -61,3 +65,22 @@ class Menu(object):
         """
         joined = '/'.join([self.display_name, self.selected]).strip('/')
         return f"(Empire: <ansiblue>{joined}</ansiblue>) > "
+
+    @command
+    def help(self):
+        """
+        Display the help menu for the current menu
+
+        Usage: help
+        """
+        help_list = []
+        for name in self._cmd_registry:
+            try:
+                description = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[1].lstrip(), width=35)
+                usage = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[3].lstrip()[7:], width=35)
+                help_list.append([name, description, usage])
+            except:
+                continue
+
+        help_list.insert(0, ['Name', 'Description', 'Usage'])
+        table_util.print_table(help_list, 'Help Options')

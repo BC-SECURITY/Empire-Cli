@@ -121,6 +121,8 @@ class UseModuleMenu(Menu):
             temp = [key] + values
             module_list.append(temp)
 
+        module_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(module_list, 'Module Options')
 
     @command
@@ -128,7 +130,7 @@ class UseModuleMenu(Menu):
         """
         Execute the selected module
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -145,6 +147,15 @@ class UseModuleMenu(Menu):
             agent_return.start()
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def generate(self):
+        """
+        Execute the selected module
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_module_menu = UseModuleMenu()

@@ -60,6 +60,8 @@ class UsePluginMenu(Menu):
             temp = [key] + values
             plugin_list.append(temp)
 
+        plugin_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(plugin_list, 'Plugin Options')
 
     @command
@@ -93,7 +95,7 @@ class UsePluginMenu(Menu):
         """
         Run current plugin
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -103,6 +105,15 @@ class UsePluginMenu(Menu):
 
         response = state.execute_plugin(self.selected, post_body)
         #print(response)
+
+    @command
+    def generate(self):
+        """
+        Run current plugin
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_plugin_menu = UsePluginMenu()

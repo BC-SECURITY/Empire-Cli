@@ -88,14 +88,16 @@ class UseListenerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
+        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(listener_list, 'Listeners Options')
 
     @command
-    def start(self):
+    def execute(self):
         """
         Create the current listener
 
-        Usage: start
+        Usage: execute
         """
         # todo validation and error handling
         # todo alias start to execute and generate
@@ -106,9 +108,18 @@ class UseListenerMenu(Menu):
 
         response = state.create_listener(self.selected, post_body)
         if 'success' in response.keys():
-            print(print_util.color('[+] ' + response['success']))
+            return
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def generate(self):
+        """
+        Create the current listener
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_listener_menu = UseListenerMenu()

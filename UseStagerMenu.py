@@ -98,14 +98,16 @@ class UseStagerMenu(Menu):
             temp = [key] + values
             listener_list.append(temp)
 
+        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
+
         table_util.print_table(listener_list, 'Stager Options')
 
     @command
-    def generate(self):
+    def execute(self):
         """
-        Generate the stager listener
+        Execute the stager
 
-        Usage: generate
+        Usage: execute
         """
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
@@ -116,6 +118,15 @@ class UseStagerMenu(Menu):
         response = state.create_stager(self.selected, post_body)
 
         print(response[self.selected]['Output'])
+
+    @command
+    def generate(self):
+        """
+        Generate the stager
+
+        Usage: generate
+        """
+        self.execute()
 
 
 use_stager_menu = UseStagerMenu()
