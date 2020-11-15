@@ -20,7 +20,7 @@ def print_table(data: List[List[str]] = None, title: str = ''):
     print(table.table)
 
 
-def print_agent_table(data: List[List[str]] = None, title: str = ''):
+def print_agent_table(data: List[List[str]] = None, formatting: List[List[str]] = None, title: str = ''):
     if data is None:
         return
 
@@ -29,23 +29,19 @@ def print_agent_table(data: List[List[str]] = None, title: str = ''):
         data[0][x] = print_utils.color(data[0][x], 'blue')
 
     for x in range(len(data))[1:]:
-        stamp_date = datetime.strptime(data[x][9], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(tz=None)  # Display local
+        stamp_date = datetime.strptime(data[x][8], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(tz=None)  # Display local
         stamp_display_local = stamp_date.strftime('%Y-%m-%d %H:%M:%S')
 
-        # Get values for color
-        delta = getutcnow() - stamp_date
-        delay = data[x][8].split("/")[0]
-        jitter = data[x][8].split("/")[1].split(".")[1]
+        # Add asterisk for high-integrity agents
+        if formatting[x][1]:
+            data[x][1] = data[x][1] + '*'
 
         # color agents
-        if delta.total_seconds() > int(delay) * (int(jitter) + 1) * 7:
-            data[x][9] = stamp_display_local
+        if formatting[x][0]:
+            data[x][8] = stamp_display_local
             color = 'red'
-        elif delta.total_seconds() > int(delay) * (int(jitter) + 1) * 3:
-            data[x][9] = stamp_display_local
-            color = 'yellow'
-        else:
-            data[x][9] = stamp_display_local
+        elif not formatting[x][0]:
+            data[x][8] = stamp_display_local
             color = 'green'
 
         # Set colors for entire row
