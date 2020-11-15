@@ -105,19 +105,6 @@ class EmpireCli(object):
             self.current_menu = menu
             self.menu_history.append(menu)
 
-    def help_menu(self):
-        help_list = []
-        for x in range(len(self.current_menu._cmd_registry[0])):
-            try:
-                key = self.current_menu._cmd_registry[x]
-                values = getattr(self.current_menu, key).__doc__.split('\n')[1].lstrip()
-                help_list.append([key, values])
-            except:
-                continue
-
-        help_list.insert(0, ['Name', 'Description'])
-        table_util.print_table(help_list, 'Help Options')
-
     def main(self):
         if empire_config.yaml.get('suppress-self-cert-warning', True):
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -239,8 +226,6 @@ class EmpireCli(object):
                     break
                 else:
                     pass
-            elif text == 'help':
-                self.help_menu()
             else:
                 func = None
                 try:

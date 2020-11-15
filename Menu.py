@@ -1,6 +1,8 @@
 from prompt_toolkit.completion import Completion
 
+from utils import table_util
 from utils.autocomplete_utils import filtered_search_list
+from utils.cli_utils import command
 
 
 class Menu(object):
@@ -61,3 +63,23 @@ class Menu(object):
         """
         joined = '/'.join([self.display_name, self.selected]).strip('/')
         return f"(Empire: <ansiblue>{joined}</ansiblue>) > "
+
+    @command
+    def help(self):
+        """
+        Create the current listener
+
+        Usage: help
+        """
+        help_list = []
+        for x in range(len(self._cmd_registry[0])):
+            try:
+                key = self._cmd_registry[x]
+                values = getattr(self, key).__doc__.split('\n')[1].lstrip()
+                usage = getattr(self, key).__doc__.split('\n')[3].lstrip()[7:]
+                help_list.append([key, values, usage])
+            except:
+                continue
+
+        help_list.insert(0, ['Name', 'Description', 'Usage'])
+        table_util.print_table(help_list, 'Help Options')
