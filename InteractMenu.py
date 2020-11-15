@@ -150,5 +150,19 @@ class InteractMenu(Menu):
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
+    @command
+    def killdate(self, kill_date: str) -> None:
+        """
+        Set an agent's killdate (01/01/2020)
+
+        Usage: killdate <kill_date>
+        """
+        response = state.update_agent_killdate(self.selected, kill_date)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' killdate to ' + kill_date))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
 
 interact_menu = InteractMenu()

@@ -193,6 +193,14 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def update_agent_killdate(self, agent_name: str, kill_date: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/killdate',
+                                   json={'kill_date': kill_date},
+                                   verify=False,
+                                   params={'token': self.token})
+
+        return json.loads(response.content)
+
     def clear_agent(self, agent_name: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/clear',
                                  verify=False,
