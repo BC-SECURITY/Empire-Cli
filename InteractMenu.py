@@ -164,5 +164,19 @@ class InteractMenu(Menu):
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
+    @command
+    def workinghours(self, working_hours: str) -> None:
+        """
+        Set an agent's working hours (9:00-17:00)
+
+        Usage: workinghours <working_hours>
+        """
+        response = state.update_agent_working_hours(self.selected, working_hours)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' workinghours to ' + working_hours))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
 
 interact_menu = InteractMenu()

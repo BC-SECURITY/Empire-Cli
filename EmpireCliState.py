@@ -201,6 +201,13 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def update_agent_working_hours(self, agent_name: str, working_hours: str):
+        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/workinghours',
+                                   json={'working_hours': working_hours},
+                                   verify=False,
+                                   params={'token': self.token})
+
+        return json.loads(response.content)
     def clear_agent(self, agent_name: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/clear',
                                  verify=False,
