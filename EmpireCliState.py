@@ -186,7 +186,7 @@ class EmpireCliState(object):
         return json.loads(response.content)
 
     def update_agent_comms(self, agent_name: str, listener_name: str):
-        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/update_comms',
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/update_comms',
                                    json={'listener': listener_name},
                                    verify=False,
                                    params={'token': self.token})
@@ -194,7 +194,7 @@ class EmpireCliState(object):
         return json.loads(response.content)
 
     def update_agent_killdate(self, agent_name: str, kill_date: str):
-        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/killdate',
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/killdate',
                                    json={'kill_date': kill_date},
                                    verify=False,
                                    params={'token': self.token})
@@ -202,12 +202,13 @@ class EmpireCliState(object):
         return json.loads(response.content)
 
     def update_agent_working_hours(self, agent_name: str, working_hours: str):
-        response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/workinghours',
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/workinghours',
                                    json={'working_hours': working_hours},
                                    verify=False,
                                    params={'token': self.token})
 
         return json.loads(response.content)
+
     def clear_agent(self, agent_name: str):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/clear',
                                  verify=False,
