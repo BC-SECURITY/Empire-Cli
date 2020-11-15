@@ -136,5 +136,19 @@ class InteractMenu(Menu):
 
         table_util.print_table(agent_list, 'Agent Options')
 
+    @command
+    def update_comms(self, listener_name: str) -> None:
+        """
+        Update the listener for an agent.
+
+        Usage: update_comms <listener_name>
+        """
+        response = state.update_agent_comms(self.selected, listener_name)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' listener ' + listener_name))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
 
 interact_menu = InteractMenu()
