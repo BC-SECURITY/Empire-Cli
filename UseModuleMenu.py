@@ -151,7 +151,7 @@ class UseModuleMenu(Menu):
     @command
     def generate(self):
         """
-        Create the current listener
+        Execute the selected module
 
         Usage: generate
         """

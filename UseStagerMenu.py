@@ -105,7 +105,7 @@ class UseStagerMenu(Menu):
     @command
     def execute(self):
         """
-        Generate the stager listener
+        Execute the stager
 
         Usage: execute
         """
@@ -122,7 +122,7 @@ class UseStagerMenu(Menu):
     @command
     def generate(self):
         """
-        Create the current listener
+        Generate the stager
 
         Usage: generate
         """

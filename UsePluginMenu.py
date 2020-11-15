@@ -109,7 +109,7 @@ class UsePluginMenu(Menu):
     @command
     def generate(self):
         """
-        Create the current listener
+        Run current plugin
 
         Usage: generate
         """
