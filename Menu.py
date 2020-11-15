@@ -22,7 +22,6 @@ class Menu(object):
         :return: list[str]
         """
         return [
-            'help',
             'main',
             'back',
             'interact',
