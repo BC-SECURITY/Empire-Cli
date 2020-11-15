@@ -1,6 +1,6 @@
 from prompt_toolkit.completion import Completion
 
-from utils import table_util
+from utils import table_util, print_util
 from utils.autocomplete_utils import filtered_search_list
 from utils.cli_utils import command
 
@@ -11,6 +11,9 @@ class Menu(object):
         self.display_name = display_name
         # The selected item. Applicable for Menus such UseStager or UseListener.
         self.selected = selected
+        # Gets overwritten by the register_cli_commands decorator.
+        # Nice to have here just to stop the warnings
+        self._cmd_registry = [] if not self._cmd_registry else self._cmd_registry
 
     def autocomplete(self):
         """
@@ -67,17 +70,16 @@ class Menu(object):
     @command
     def help(self):
         """
-        Create the current listener
+        Display the help menu for the current menu
 
         Usage: help
         """
         help_list = []
-        for x in range(len(self._cmd_registry[0])):
+        for name in self._cmd_registry:
             try:
-                key = self._cmd_registry[x]
-                values = getattr(self, key).__doc__.split('\n')[1].lstrip()
-                usage = getattr(self, key).__doc__.split('\n')[3].lstrip()[7:]
-                help_list.append([key, values, usage])
+                description = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[1].lstrip(), width=35)
+                usage = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[3].lstrip()[7:], width=35)
+                help_list.append([name, description, usage])
             except:
                 continue
 

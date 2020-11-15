@@ -1,4 +1,5 @@
 import os
+import textwrap
 import time
 
 
@@ -115,3 +116,13 @@ def loading():
                 Welcome to the Empire""")
     time.sleep(3)
     os.system('clear')
+
+
+def text_wrap(text, width=35):
+    """
+    Wraps text to newlines given a maximum width per line.
+    :param text:
+    :param width:
+    :return: String wrapped by newlines at the given width
+    """
+    return '\n'.join(textwrap.wrap(str(text), width=width))
