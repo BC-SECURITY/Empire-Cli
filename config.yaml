@@ -30,10 +30,36 @@ shortcuts:
       module: powershell/privesc/sherlock
     mimikatz:
       module: powershell/credentials/mimikatz/logonpasswords
+    psinject:
+      module: powershell/management/psinject
+      params:
+        - name: Listener
+          dynamic: true
+        - name: ProcId
+          dynamic: true
+    revtoself:
+      module: powershell/credentials/tokens'
+      params:
+        - name: RevToSelf
+          value: true
+    shinject:
+      module: powershell/management/shinject
+      params:
+        - name: Listener
+          dynamic: true
+        - name: ProcId
+          dynamic: true
     spawn:
       module: powershell/management/spawn
       params:
         - name: Listener
+          dynamic: true
+    steal_token:
+      module: powershell/credentials/tokens
+      params:
+        - name: ImpersonateUser
+          value: true
+        - name: ProcessID
           dynamic: true
     bypassUAC:
       module: powershell/privesc/bypassuac_eventvwr
