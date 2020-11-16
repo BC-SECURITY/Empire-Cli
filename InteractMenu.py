@@ -89,7 +89,6 @@ class InteractMenu(Menu):
         """
         if agent_name in state.agents.keys():
             self.selected = agent_name
-            self.display_name = self.selected
             self.agent_options = state.agents[agent_name]  # todo rename agent_options
             self.agent_language = self.agent_options['language']
 
