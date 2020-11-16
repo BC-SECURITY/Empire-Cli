@@ -6,10 +6,10 @@ import time
 
 from prompt_toolkit.completion import Completion
 
-from utils import print_util, table_util
-from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
+from ShortcutHandler import shortcut_handler
+from utils import print_util, table_util
 from utils.autocomplete_utils import filtered_search_list, position_util
 from utils.cli_utils import register_cli_commands, command
 
@@ -19,13 +19,12 @@ class InteractMenu(Menu):
     def __init__(self):
         super().__init__(display_name='', selected='')
         self.agent_options = {}
-        self.shortcuts = empire_config.yaml.get('shortcuts', {})
         self.agent_language = ''
 
     def autocomplete(self):
-        return self._cmd_registry +\
-               super().autocomplete() +\
-               list(map(lambda x: x['name'], self.shortcuts.get(self.agent_language, [])))
+        return self._cmd_registry + \
+               super().autocomplete() + \
+               shortcut_handler.get_names(self.agent_language)
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         if cmd_line[0] in ['interact'] and position_util(cmd_line, 2, word_before_cursor):
@@ -33,6 +32,16 @@ class InteractMenu(Menu):
                 yield Completion(agent, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
+        elif cmd_line[0] in shortcut_handler.get_names(self.agent_language):
+            position = len(cmd_line)
+            params = shortcut_handler.get_dynamic_param_names(self.agent_language, cmd_line[0])
+            if position - 1 < len(params):
+                if params[position - 1].lower() == 'listener':
+                    for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
+                        yield Completion(listener, start_position=-len(word_before_cursor))
+                if params[position - 1].lower() == 'agent':
+                    for agent in filtered_search_list(word_before_cursor, state.agents.keys()):
+                        yield Completion(agent, start_position=-len(word_before_cursor))
 
     def init(self, **kwargs) -> bool:
         if 'selected' not in kwargs:
@@ -76,8 +85,8 @@ class InteractMenu(Menu):
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.display_name = self.selected
+            self.agent_options = state.agents[agent_name]  # todo rename agent_options
             self.agent_language = self.agent_options['language']
-            self.agent_options = state.agents[agent_name] # todo rename agent_options
 
     @command
     def shell(self, shell_cmd: str) -> None:
@@ -143,9 +152,35 @@ class InteractMenu(Menu):
 
         table_util.print_table(agent_list, 'Agent Options')
 
+    @command
+    def help(self):
+        """
+        Display the help menu for the current menu
+
+        Usage: help
+        """
+        help_list = []
+        for name in self._cmd_registry:
+            try:
+                description = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[1].lstrip(), width=35)
+                usage = print_util.text_wrap(getattr(self, name).__doc__.split('\n')[3].lstrip()[7:], width=35)
+                help_list.append([name, description, usage])
+            except:
+                continue
+
+        for name in shortcut_handler.get_names(self.agent_language):
+            try:
+                description = shortcut_handler.get_help_description(self.agent_language, name)
+                usage = shortcut_handler.get_usage_string(self.agent_language, name)
+                help_list.append([name, description, usage])
+            except:
+                continue
+        help_list.insert(0, ['Name', 'Description', 'Usage'])
+        table_util.print_table(help_list, 'Help Options')
+
     def execute_shortcut(self, command_name: str):
-        shortcuts = {x['name']: x for x in self.shortcuts.get(self.agent_language, [])}
-        shortcut = shortcuts.get(command_name)
+        shortcut = shortcut_handler.get(self.agent_language, command_name)
+
         if not shortcut:
             return None
         module_options = dict.copy(state.modules[shortcut['module']]['options'])
@@ -161,3 +196,10 @@ class InteractMenu(Menu):
 
 
 interact_menu = InteractMenu()
+
+if __name__ == "__main__":
+    interact_menu.agent_language = 'python'
+    state.modules = {}
+    state.modules['python/collection/osx/screenshot'] = {}
+    state.modules['python/collection/osx/screenshot']['options'] = {'SavePath': '/tmp/out.png'}
+    interact_menu.execute_shortcut('sc')
