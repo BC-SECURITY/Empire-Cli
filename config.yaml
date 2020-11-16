@@ -50,6 +50,13 @@ shortcuts:
           dynamic: true
         - name: Agent
           dynamic: true
+    keylog:
+      module: python/collection/osx/keylogger
+      params:
+        - name: LogFile
+          dynamic: true
+        - name: SomeOtherStaticValue
+          value: XYZ
 
 servers:
   localhost:

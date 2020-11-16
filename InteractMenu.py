@@ -195,7 +195,8 @@ class InteractMenu(Menu):
         post_body = {}
 
         for i, shortcut_param in enumerate(shortcut.get_dynamic_params()):
-            post_body[shortcut_param.name] = params[i]
+            if shortcut_param.name in module_options:
+                post_body[shortcut_param.name] = params[i]
 
         # TODO Still haven't figured out other data types. Right now everything is a string.
         #  Which I think is how it is in the old cli
