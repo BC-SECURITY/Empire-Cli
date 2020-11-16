@@ -1,13 +1,16 @@
 import base64
+import json
 import os
 import textwrap
 import threading
 import time
+from typing import List, Optional
 
 from prompt_toolkit.completion import Completion
 
 from EmpireCliState import state
 from Menu import Menu
+from Shortcut import Shortcut
 from ShortcutHandler import shortcut_handler
 from utils import print_util, table_util
 from utils.autocomplete_utils import filtered_search_list, position_util
@@ -34,7 +37,8 @@ class InteractMenu(Menu):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
         elif cmd_line[0] in shortcut_handler.get_names(self.agent_language):
             position = len(cmd_line)
-            params = shortcut_handler.get_dynamic_param_names(self.agent_language, cmd_line[0])
+            shortcut = shortcut_handler.get(self.agent_language, cmd_line[0])
+            params = shortcut.get_dynamic_param_names()
             if position - 1 < len(params):
                 if params[position - 1].lower() == 'listener':
                     for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
@@ -54,6 +58,7 @@ class InteractMenu(Menu):
         joined = '/'.join([self.display_name, self.selected]).strip('/')
         return f"(Empire: <ansired>{joined}</ansired>) > "
 
+    # todo is this the same exact code in the other menus?
     def tasking_id_returns(self, agent_name, task_id: int):
         """
         Polls and prints tasking data for taskID
@@ -168,31 +173,49 @@ class InteractMenu(Menu):
             except:
                 continue
 
-        for name in shortcut_handler.get_names(self.agent_language):
+        for name, shortcut in shortcut_handler.shortcuts['python'].items():
             try:
-                description = shortcut_handler.get_help_description(self.agent_language, name)
-                usage = shortcut_handler.get_usage_string(self.agent_language, name)
+                description = shortcut.get_help_description()
+                usage = shortcut.get_usage_string()
                 help_list.append([name, description, usage])
             except:
                 continue
         help_list.insert(0, ['Name', 'Description', 'Usage'])
         table_util.print_table(help_list, 'Help Options')
 
-    def execute_shortcut(self, command_name: str):
-        shortcut = shortcut_handler.get(self.agent_language, command_name)
+    def execute_shortcut(self, command_name: str, params: List[str]):
+        shortcut: Shortcut = shortcut_handler.get(self.agent_language, command_name)
 
         if not shortcut:
             return None
-        module_options = dict.copy(state.modules[shortcut['module']]['options'])
+        if not len(params) == len(shortcut.get_dynamic_param_names()):
+            return None  # todo log message
+        module_options = dict.copy(state.modules[shortcut.module]['options'])
 
         post_body = {}
+
+        for i, shortcut_param in enumerate(shortcut.get_dynamic_params()):
+            post_body[shortcut_param.name] = params[i]
+
+        # TODO Still haven't figured out other data types. Right now everything is a string.
+        #  Which I think is how it is in the old cli
         for key, value in module_options.items():
-            if key in shortcut.get('params', {}):
-                post_body[key] = shortcut['params'][key]
+            if key in shortcut.get_dynamic_param_names():
+                continue
+            elif key in shortcut.get_static_param_names():
+                post_body[key] = shortcut.get_param(key).value
             else:
                 post_body[key] = module_options[key]['Value']
         post_body['Agent'] = self.selected
-        state.execute_module(shortcut['module'], post_body)
+        response = state.execute_module(shortcut.module, post_body)
+        if 'success' in response.keys():
+            print(print_util.color(
+                '[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
+            agent_return = threading.Thread(target=self.tasking_id_returns,
+                                            args=[self.selected, response['taskID']])
+            agent_return.start()
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
 
 
 interact_menu = InteractMenu()
@@ -202,4 +225,4 @@ if __name__ == "__main__":
     state.modules = {}
     state.modules['python/collection/osx/screenshot'] = {}
     state.modules['python/collection/osx/screenshot']['options'] = {'SavePath': '/tmp/out.png'}
-    interact_menu.execute_shortcut('sc')
+    interact_menu.execute_shortcut('sc', ['http1', '/tmp', 'agent'])

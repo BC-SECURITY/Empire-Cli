@@ -50,15 +50,6 @@ shortcuts:
           dynamic: true
         - name: Agent
           dynamic: true
-    other:
-      module: python/collection/osx/screenshot
-      params:
-        - name: Listener
-          dynamic: true
-        - name: SavePath
-          value: Hello!
-        - name: Agent
-          dynamic: true
 
 servers:
   localhost:
