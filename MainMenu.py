@@ -3,6 +3,7 @@ from prompt_toolkit.completion import Completion
 from EmpireCliConfig import empire_config
 from EmpireCliState import state
 from Menu import Menu
+from utils import print_util
 from utils.autocomplete_utils import filtered_search_list, position_util
 from utils.cli_utils import register_cli_commands, command
 
@@ -54,9 +55,15 @@ class MainMenu(Menu):
             server: dict = empire_config.yaml.get('servers').get(host)
             if not server:
                 print(f'Could not find server in config.yaml for {host}')
-            state.connect(server['host'], server['port'], server['socketport'], server['username'], server['password'])
+            response = state.connect(server['host'], server['port'], server['socketport'], server['username'], server['password'])
         else:
-            state.connect(host, port, socketport, username, password)
+            response = state.connect(host, port, socketport, username, password)
+
+        if hasattr(response, 'status_code'):
+            if response.status_code == 200:
+                print(print_util.color('[*] Connected to ' + host))
+        else:
+            print(print_util.color("[!] Error: " + response.args[0].reason.args[0]))
 
     @command
     def disconnect(self):

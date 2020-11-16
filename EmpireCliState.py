@@ -29,9 +29,12 @@ class EmpireCliState(object):
     def connect(self, host, port, socketport, username, password):
         self.host = host
         self.port = port
-        response = requests.post(url=f'{host}:{port}/api/admin/login',
+        try:
+            response = requests.post(url=f'{host}:{port}/api/admin/login',
                                  json={'username': username, 'password': password},
                                  verify=False)
+        except Exception as e:
+            return e
 
         self.token = json.loads(response.content)['token']
         self.connected = True
@@ -41,11 +44,11 @@ class EmpireCliState(object):
 
         # Wait for version to be returned
         self.empire_version = self.get_version()['version']
-        print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
         print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
+        return response
 
     def init(self):
         self.get_listeners()
