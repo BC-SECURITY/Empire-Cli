@@ -74,9 +74,10 @@ class InteractMenu(Menu):
             try:
                 results = state.get_agent_result(agent_name)['results'][0]['AgentResults'][task_id - 1]
                 if results['results'] is not None:
-                    print(print_util.color('[*] Task ' + str(results['taskID']) + " results received"))
-                    print(print_util.color(results['results']))
-                    status_result = True
+                    if 'Job started:' not in results['results']:
+                        print(print_util.color('[*] Task ' + str(results['taskID']) + " results received"))
+                        print(print_util.color(results['results']))
+                        status_result = True
             except:
                 pass
             time.sleep(1)
@@ -172,7 +173,7 @@ class InteractMenu(Menu):
             except:
                 continue
 
-        for name, shortcut in shortcut_handler.shortcuts['python'].items():
+        for name, shortcut in shortcut_handler.shortcuts[self.agent_language].items():
             try:
                 description = shortcut.get_help_description()
                 usage = shortcut.get_usage_string()
@@ -219,10 +220,3 @@ class InteractMenu(Menu):
 
 
 interact_menu = InteractMenu()
-
-if __name__ == "__main__":
-    interact_menu.agent_language = 'python'
-    state.modules = {}
-    state.modules['python/collection/osx/screenshot'] = {}
-    state.modules['python/collection/osx/screenshot']['options'] = {'SavePath': '/tmp/out.png'}
-    interact_menu.execute_shortcut('sc', ['http1', '/tmp', 'agent'])
