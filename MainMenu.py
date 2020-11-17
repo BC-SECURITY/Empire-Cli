@@ -16,7 +16,7 @@ class MainMenu(Menu):
         if not state.connected:
             if cmd_line[0] == 'connect' and position_util(cmd_line, 2, word_before_cursor):
                 yield Completion('-c', start_position=-len(word_before_cursor))
-            elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config']\
+            elif cmd_line[0] == 'connect' and len(cmd_line) > 1 and cmd_line[1] in ['-c', '--config'] \
                     and position_util(cmd_line, 3, word_before_cursor):
                 for server in filtered_search_list(word_before_cursor, empire_config.yaml.get('servers', [])):
                     yield Completion(server, start_position=-len(word_before_cursor))
@@ -35,7 +35,8 @@ class MainMenu(Menu):
         return f"{self.display_name} > "
 
     @command
-    def connect(self, host: str, config: bool = False, port: int = 1337, socketport: int = 5000, username: str = None, password: str = None) -> None:
+    def connect(self, host: str, config: bool = False, port: int = 1337, socketport: int = 5000, username: str = None,
+                password: str = None) -> None:
         """
         Connect to empire instance
 

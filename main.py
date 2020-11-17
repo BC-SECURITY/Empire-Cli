@@ -23,6 +23,7 @@ from ListenerMenu import listener_menu
 from MainMenu import main_menu
 from PluginMenu import plugin_menu
 from ShellMenu import shell_menu
+from AdminMenu import admin_menu
 from UseListenerMenu import use_listener_menu
 from UseModuleMenu import use_module_menu
 from UsePluginMenu import use_plugin_menu
@@ -84,7 +85,7 @@ class EmpireCli(object):
             'CredentialMenu': credential_menu,
             'PluginMenu': plugin_menu,
             'UsePluginMenu': use_plugin_menu,
-
+            'AdminMenu': admin_menu,
         }
         self.current_menu = self.menus['MainMenu']
         self.menu_history = [self.menus['MainMenu']]
@@ -172,6 +173,8 @@ class EmpireCli(object):
                 self.change_menu(self.menus['CredentialMenu'])
             elif text == 'plugins':
                 self.change_menu(self.menus['PluginMenu'])
+            elif text == 'admin':
+                self.change_menu(self.menus['AdminMenu'])
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if cmd_line[1] in state.listener_types:
                     self.change_menu(self.menus['UseListenerMenu'], selected=cmd_line[1])
