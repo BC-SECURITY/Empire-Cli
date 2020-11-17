@@ -215,6 +215,45 @@ class InteractMenu(Menu):
             agent_return = threading.Thread(target=self.tasking_id_returns,
                                             args=[self.selected, response['taskID']])
             agent_return.start()
+
+    def update_comms(self, listener_name: str) -> None:
+        """
+        Update the listener for an agent.
+
+        Usage: update_comms <listener_name>
+        """
+        response = state.update_agent_comms(self.selected, listener_name)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' listener ' + listener_name))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def killdate(self, kill_date: str) -> None:
+        """
+        Set an agent's killdate (01/01/2020)
+
+        Usage: killdate <kill_date>
+        """
+        response = state.update_agent_killdate(self.selected, kill_date)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' killdate to ' + kill_date))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def workinghours(self, working_hours: str) -> None:
+        """
+        Set an agent's working hours (9:00-17:00)
+
+        Usage: workinghours <working_hours>
+        """
+        response = state.update_agent_working_hours(self.selected, working_hours)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated agent ' + self.selected + ' workinghours to ' + working_hours))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
