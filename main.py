@@ -11,6 +11,7 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
+from ShortcutHandler import shortcut_handler
 from utils import print_util, table_util
 import Menu
 
@@ -239,9 +240,8 @@ class EmpireCli(object):
                             func.__doc__,
                             argv=cmd_line[1:]
                         ))
-                        # ST does this in the @command decorator
                         new_args = {}
-                        # todo casting for type hinted values
+                        # todo casting for type hinted values?
                         for key, hint in get_type_hints(func).items():
                             # if args.get(key) is not None:
                             if key != 'return':
@@ -253,6 +253,9 @@ class EmpireCli(object):
                         pass
                     except SystemExit as e:
                         pass
+                elif not func and self.current_menu == self.menus['InteractMenu']:
+                    if cmd_line[0] in shortcut_handler.get_names(self.menus['InteractMenu'].agent_language):
+                        self.current_menu.execute_shortcut(cmd_line[0], cmd_line[1:])
 
         return
 
