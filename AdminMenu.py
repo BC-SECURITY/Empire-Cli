@@ -28,7 +28,7 @@ class AdminMenu(Menu):
     @command
     def obfuscate(self, obfucate_bool: str):
         """
-        Turn on obfuscate all future powershell commands run on all agents.
+        Turn on obfuscate all future powershell commands run on all agents. CANNOT BE USED WITH KEYWORD_OBFUSCATION.
 
         Usage: obfuscate <obfucate_bool>
         """
@@ -58,6 +58,22 @@ class AdminMenu(Menu):
         # Return results and error message
         if 'success' in response.keys():
             print(print_util.color('[*] Set obfuscate_command to %s' % (obfucation_type)))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def keyword_obfuscation(self, keyword: str, replacement: str = None):
+        """
+        Add key words to to be obfuscated from commands. Must wrap with quotes to be ingested. CANNOT BE USED WITH OBFUSCATE.
+
+        Usage: keyword_obfuscation <keyword> [replacement]
+        """
+        options = {'keyword_obfuscation': keyword, 'keyword_replacement': replacement}
+        response = state.set_admin_options(options)
+
+        # Return results and error message
+        if 'success' in response.keys():
+            print(print_util.color('[*] Added keyword_obfuscation'))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
