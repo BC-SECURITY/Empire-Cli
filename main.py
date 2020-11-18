@@ -2,6 +2,8 @@ import os
 import re
 import shlex
 import sys
+import threading
+import time
 from typing import get_type_hints, Dict
 
 import urllib3
@@ -139,7 +141,9 @@ class EmpireCli(object):
         while True:
             try:
                 with patch_stdout():
-                    text = session.prompt(HTML(self.current_menu.get_prompt()))
+                    t = threading.Thread(target=self.update_in_bg, args=[session])
+                    t.start()
+                    text = session.prompt(HTML(self.current_menu.get_prompt()), refresh_interval=None)
                     # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
                     # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
@@ -258,6 +262,12 @@ class EmpireCli(object):
                         self.current_menu.execute_shortcut(cmd_line[0], cmd_line[1:])
 
         return
+
+    def update_in_bg(self, session: PromptSession):
+        while True:
+            time.sleep(3)
+            session.message = HTML(self.current_menu.get_prompt())
+            session.app.invalidate()
 
 
 if __name__ == "__main__":
