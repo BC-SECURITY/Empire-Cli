@@ -33,6 +33,7 @@ class Menu(object):
             'agents',
             'usemodule',
             'credentials',
+            'admin',
             'exit',
         ]
 
