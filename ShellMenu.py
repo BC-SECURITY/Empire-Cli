@@ -58,9 +58,13 @@ class ShellMenu(Menu):
         Usage: shell
         """
         self.selected = agent_name
-        self.update_directory(agent_name)
+        self.language = state.agents[self.selected]['language']
+        if self.language == 'powershell':
+            self.powershell_update_directory(agent_name)
+        elif self.language == 'python':
+            self.python_update_directory(agent_name)
 
-    def update_directory(self, agent_name: str):
+    def powershell_update_directory(self, agent_name: str):
         """
         Update current directory
 
@@ -79,6 +83,25 @@ class ShellMenu(Menu):
         self.display_name = temp_name
         self.get_prompt()
 
+    def python_update_directory(self, agent_name: str):
+        """
+        Update current directory
+
+        Usage:  update_directory <agent_name>
+        """
+        temp_name = None
+        task_id: str = str(state.agent_shell(agent_name, 'echo $PWD')['taskID'])
+
+        # Retrieve directory results and wait for response
+        while temp_name is None:
+            try:
+                temp_name = state.get_task_result(agent_name, task_id)['results'].split('\r')[0]
+            except:
+                pass
+            time.sleep(1)
+        self.display_name = temp_name
+        self.get_prompt()
+
     def shell(self, agent_name: str, shell_cmd: str):
         """
         Tasks an the specified agent_name to execute a shell command.
@@ -87,8 +110,12 @@ class ShellMenu(Menu):
         """
         response = state.agent_shell(agent_name, shell_cmd)
         if shell_cmd.split()[0].lower() in ['cd', 'set-location']:
-            shell_return = threading.Thread(target=self.update_directory, args=[agent_name])
-            shell_return.start()
+            if self.language == 'powershell':
+                shell_return = threading.Thread(target=self.powershell_update_directory, args=[agent_name])
+                shell_return.start()
+            elif self.language == 'python':
+                shell_return = threading.Thread(target=self.python_update_directory, args=[agent_name])
+                shell_return.start()
         else:
             shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
             shell_return.start()
