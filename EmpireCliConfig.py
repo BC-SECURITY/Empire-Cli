@@ -3,7 +3,6 @@ from typing import Dict
 import yaml
 
 
-# todo can we load shortcuts from the yaml
 class EmpireCliConfig(object):
     def __init__(self):
         self.yaml: Dict = {}

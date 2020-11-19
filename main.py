@@ -2,6 +2,8 @@ import os
 import re
 import shlex
 import sys
+import threading
+import time
 from typing import get_type_hints, Dict
 
 import urllib3
@@ -11,6 +13,7 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
+from ShortcutHandler import shortcut_handler
 from utils import print_util, table_util
 import Menu
 
@@ -23,6 +26,7 @@ from ListenerMenu import listener_menu
 from MainMenu import main_menu
 from PluginMenu import plugin_menu
 from ShellMenu import shell_menu
+from AdminMenu import admin_menu
 from UseListenerMenu import use_listener_menu
 from UseModuleMenu import use_module_menu
 from UsePluginMenu import use_plugin_menu
@@ -84,7 +88,7 @@ class EmpireCli(object):
             'CredentialMenu': credential_menu,
             'PluginMenu': plugin_menu,
             'UsePluginMenu': use_plugin_menu,
-
+            'AdminMenu': admin_menu,
         }
         self.current_menu = self.menus['MainMenu']
         self.menu_history = [self.menus['MainMenu']]
@@ -134,11 +138,13 @@ class EmpireCli(object):
             #swap_light_and_dark_colors=True,
             #mouse_support=True
         )
+        t = threading.Thread(target=self.update_in_bg, args=[session])
+        t.start()
 
         while True:
             try:
                 with patch_stdout():
-                    text = session.prompt(HTML(self.current_menu.get_prompt()))
+                    text = session.prompt(HTML(self.current_menu.get_prompt()), refresh_interval=None)
                     # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
                     # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
@@ -172,6 +178,8 @@ class EmpireCli(object):
                 self.change_menu(self.menus['CredentialMenu'])
             elif text == 'plugins':
                 self.change_menu(self.menus['PluginMenu'])
+            elif text == 'admin':
+                self.change_menu(self.menus['AdminMenu'])
             elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
                 if cmd_line[1] in state.listener_types:
                     self.change_menu(self.menus['UseListenerMenu'], selected=cmd_line[1])
@@ -239,9 +247,8 @@ class EmpireCli(object):
                             func.__doc__,
                             argv=cmd_line[1:]
                         ))
-                        # ST does this in the @command decorator
                         new_args = {}
-                        # todo casting for type hinted values
+                        # todo casting for type hinted values?
                         for key, hint in get_type_hints(func).items():
                             # if args.get(key) is not None:
                             if key != 'return':
@@ -253,8 +260,17 @@ class EmpireCli(object):
                         pass
                     except SystemExit as e:
                         pass
+                elif not func and self.current_menu == self.menus['InteractMenu']:
+                    if cmd_line[0] in shortcut_handler.get_names(self.menus['InteractMenu'].agent_language):
+                        self.current_menu.execute_shortcut(cmd_line[0], cmd_line[1:])
 
         return
+
+    def update_in_bg(self, session: PromptSession):
+        while True:
+            time.sleep(3)
+            session.message = HTML(self.current_menu.get_prompt())
+            session.app.invalidate()
 
 
 if __name__ == "__main__":

@@ -8,8 +8,7 @@ def filtered_search_list(prefix: str, keys) -> List[str]:
     :param keys: the list of strings to search
     :return: filtered list
     """
-    return list(filter(lambda x: x.lower().startswith(prefix.lower()), keys))
-
+    return list(filter(lambda x: (prefix.lower()) in x.lower(), keys))
 
 def position_util(cmd_line: List[str], word_position: int, word_before_cursor: str) -> bool:
     """

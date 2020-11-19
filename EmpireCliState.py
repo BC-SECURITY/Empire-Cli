@@ -29,9 +29,12 @@ class EmpireCliState(object):
     def connect(self, host, port, socketport, username, password):
         self.host = host
         self.port = port
-        response = requests.post(url=f'{host}:{port}/api/admin/login',
-                                 json={'username': username, 'password': password},
-                                 verify=False)
+        try:
+            response = requests.post(url=f'{host}:{port}/api/admin/login',
+                                     json={'username': username, 'password': password},
+                                     verify=False)
+        except Exception as e:
+            return e
 
         self.token = json.loads(response.content)['token']
         self.connected = True
@@ -41,11 +44,11 @@ class EmpireCliState(object):
 
         # Wait for version to be returned
         self.empire_version = self.get_version()['version']
-        print(print_util.color('[*] Connected to ' + host))
 
         self.init()
         self.init_handlers()
         print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
+        return response
 
     def init(self):
         self.get_listeners()
@@ -63,10 +66,11 @@ class EmpireCliState(object):
                         lambda data: print(print_util.color('[+] New agent ' + data['name'] + ' checked in')))
 
             # Multiple checkin messages or a single one?
-            self.sio.on('agents/stage2', lambda data: print(print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
+            self.sio.on('agents/stage2', lambda data: print(
+                print_util.color('[*] Sending agent (stage 2) to ' + data['name'] + ' at ' + data['external_ip'])))
 
             # Todo: need to only display results from the current agent and user. Otherwise there will be too many returns when you add more users
-            #self.sio.on('agents/task', lambda data: print(data['data']))
+            # self.sio.on('agents/task', lambda data: print(data['data']))
 
     def disconnect(self):
         self.host = ''
@@ -89,6 +93,14 @@ class EmpireCliState(object):
         response = requests.get(url=f'{self.host}:{self.port}/api/version',
                                 verify=False,
                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def set_admin_options(self, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/admin/options',
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
 
         return json.loads(response.content)
 
@@ -174,6 +186,37 @@ class EmpireCliState(object):
         response = requests.post(url=f'{self.host}:{self.port}/api/agents/{agent_name}/kill',
                                  verify=False,
                                  params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def remove_agent(self, agent_name: str):
+        response = requests.delete(url=f'{self.host}:{self.port}/api/agents/{agent_name}',
+                                   verify=False,
+                                   params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_agent_comms(self, agent_name: str, listener_name: str):
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/update_comms',
+                                   json={'listener': listener_name},
+                                   verify=False,
+                                   params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_agent_killdate(self, agent_name: str, kill_date: str):
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/killdate',
+                                   json={'kill_date': kill_date},
+                                   verify=False,
+                                   params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def update_agent_working_hours(self, agent_name: str, working_hours: str):
+        response = requests.put(url=f'{self.host}:{self.port}/api/agents/{agent_name}/workinghours',
+                                   json={'working_hours': working_hours},
+                                   verify=False,
+                                   params={'token': self.token})
 
         return json.loads(response.content)
 
