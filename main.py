@@ -137,12 +137,12 @@ class EmpireCli(object):
             #swap_light_and_dark_colors=True,
             #mouse_support=True
         )
+        t = threading.Thread(target=self.update_in_bg, args=[session])
+        t.start()
 
         while True:
             try:
                 with patch_stdout():
-                    t = threading.Thread(target=self.update_in_bg, args=[session])
-                    t.start()
                     text = session.prompt(HTML(self.current_menu.get_prompt()), refresh_interval=None)
                     # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
                     # TODO what to do about case sensitivity for parsing options.
