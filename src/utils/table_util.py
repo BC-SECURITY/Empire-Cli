@@ -3,7 +3,7 @@ from typing import List
 
 from terminaltables import SingleTable
 
-import utils.print_util as print_utils
+import src.utils.print_util as print_utils
 
 
 def print_table(data: List[List[str]] = None, title: str = ''):

@@ -1,20 +1,19 @@
 import base64
-import json
 import os
 import textwrap
 import threading
 import time
-from typing import List, Optional
+from typing import List
 
 from prompt_toolkit.completion import Completion
 
-from EmpireCliState import state
-from Menu import Menu
-from Shortcut import Shortcut
-from ShortcutHandler import shortcut_handler
-from utils import print_util, table_util
-from utils.autocomplete_utils import filtered_search_list, position_util
-from utils.cli_utils import register_cli_commands, command
+from src.EmpireCliState import state
+from src.menus.Menu import Menu
+from src.Shortcut import Shortcut
+from src.ShortcutHandler import shortcut_handler
+from src.utils import table_util, print_util
+from src.utils.autocomplete_util import filtered_search_list, position_util
+from src.utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands

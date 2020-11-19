@@ -1,8 +1,8 @@
 from prompt_toolkit.completion import Completion
 
-from utils import table_util, print_util
-from utils.autocomplete_utils import filtered_search_list
-from utils.cli_utils import command
+from src.utils import table_util, print_util
+from src.utils.autocomplete_util import filtered_search_list
+from src.utils.cli_utils import command
 
 
 class Menu(object):
