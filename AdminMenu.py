@@ -33,7 +33,7 @@ class AdminMenu(Menu):
         Usage: obfuscate <obfucate_bool>
         """
         # todo: should it be set <key> <value> to be consistent?
-        if obfucate_bool.lower() == 'true' or 'false':
+        if obfucate_bool.lower() in ['true', 'false']:
             options = {'obfuscate': obfucate_bool}
             response = state.set_admin_options(options)
         else:
@@ -64,7 +64,7 @@ class AdminMenu(Menu):
     @command
     def keyword_obfuscation(self, keyword: str, replacement: str = None):
         """
-        Add key words to to be obfuscated from commands. Must wrap with quotes to be ingested. CANNOT BE USED WITH OBFUSCATE.
+        Add key words to to be obfuscated from commands. Empire will generate a random word if no replacement word is provided. CANNOT BE USED WITH OBFUSCATE.
 
         Usage: keyword_obfuscation <keyword> [replacement]
         """
