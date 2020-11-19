@@ -1,10 +1,10 @@
 from typing import List, Optional
 
 
-# https://yzhong-cs.medium.com/serialize-and-deserialize-complex-json-in-python-205ecc636caa
 from utils import print_util
 
 
+# https://yzhong-cs.medium.com/serialize-and-deserialize-complex-json-in-python-205ecc636caa
 class ShortcutParam(object):
     def __init__(self, name: str, dynamic: bool = False, value: Optional[str] = ''):
         self.name = name
