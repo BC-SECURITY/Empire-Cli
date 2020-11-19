@@ -6,6 +6,10 @@ from Shortcut import Shortcut
 
 
 class ShortcutHandler:
+    """
+    Handler class to get shortcuts.
+    """
+
     def __init__(self):
         shortcuts_raw = empire_config.yaml.get('shortcuts', {})
         python: Dict[str, Shortcut] = {}
