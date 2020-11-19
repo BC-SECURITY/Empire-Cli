@@ -13,24 +13,24 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from ShortcutHandler import shortcut_handler
-from utils import print_util, table_util
-import Menu
+from src.ShortcutHandler import shortcut_handler
+from src.utils import print_util
+from src.menus import Menu
 
-from AgentMenu import agent_menu
-from CredentialMenu import credential_menu
-from EmpireCliConfig import empire_config
-from EmpireCliState import state
-from InteractMenu import interact_menu
-from ListenerMenu import listener_menu
-from MainMenu import main_menu
-from PluginMenu import plugin_menu
-from ShellMenu import shell_menu
-from AdminMenu import admin_menu
-from UseListenerMenu import use_listener_menu
-from UseModuleMenu import use_module_menu
-from UsePluginMenu import use_plugin_menu
-from UseStagerMenu import use_stager_menu
+from src.menus.AgentMenu import agent_menu
+from src.menus.CredentialMenu import credential_menu
+from src.EmpireCliConfig import empire_config
+from src.EmpireCliState import state
+from src.menus.InteractMenu import interact_menu
+from src.menus.ListenerMenu import listener_menu
+from src.menus.MainMenu import main_menu
+from src.menus.PluginMenu import plugin_menu
+from src.menus.ShellMenu import shell_menu
+from src.menus.AdminMenu import admin_menu
+from src.menus.UseListenerMenu import use_listener_menu
+from src.menus.UseModuleMenu import use_module_menu
+from src.menus.UsePluginMenu import use_plugin_menu
+from src.menus.UseStagerMenu import use_stager_menu
 
 
 class MyCustomCompleter(Completer):

@@ -1,8 +1,8 @@
 import json
 from typing import List, Dict
 
-from EmpireCliConfig import empire_config
-from Shortcut import Shortcut
+from src.EmpireCliConfig import empire_config
+from src.Shortcut import Shortcut
 
 
 class ShortcutHandler:

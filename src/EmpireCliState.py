@@ -4,7 +4,7 @@ from typing import Dict, Optional
 import requests
 import socketio
 
-from utils import print_util
+from src.utils import print_util
 
 
 class EmpireCliState(object):
