@@ -96,6 +96,14 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
+    def set_admin_options(self, options: Dict):
+        response = requests.post(url=f'{self.host}:{self.port}/api/admin/options',
+                                 json=options,
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
     def kill_listener(self, listener_name: str):
         response = requests.delete(url=f'{self.host}:{self.port}/api/listeners/{listener_name}',
                                    verify=False,
