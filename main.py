@@ -27,6 +27,7 @@ from src.menus.MainMenu import main_menu
 from src.menus.PluginMenu import plugin_menu
 from src.menus.ShellMenu import shell_menu
 from src.menus.AdminMenu import admin_menu
+from src.menus.ChatMenu import chat_menu
 from src.menus.UseListenerMenu import use_listener_menu
 from src.menus.UseModuleMenu import use_module_menu
 from src.menus.UsePluginMenu import use_plugin_menu
@@ -89,6 +90,7 @@ class EmpireCli(object):
             'PluginMenu': plugin_menu,
             'UsePluginMenu': use_plugin_menu,
             'AdminMenu': admin_menu,
+            'ChatMenu': chat_menu
         }
         self.current_menu = self.menus['MainMenu']
         self.menu_history = [self.menus['MainMenu']]
@@ -172,6 +174,8 @@ class EmpireCli(object):
                 self.change_menu(self.menus['MainMenu'])
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])
+            elif text == 'chat':
+                self.change_menu(self.menus['ChatMenu'])
             elif text == 'agents':
                 self.change_menu(self.menus['AgentMenu'])
             elif text == 'credentials':
