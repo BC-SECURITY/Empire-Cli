@@ -1,7 +1,9 @@
-from src.utils import print_util
+from src.utils import print_util, table_util
+
+from src.utils import table_util
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
-from src.utils.autocomplete_util import position_util
+from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_utils import register_cli_commands, command
 
 
@@ -18,6 +20,7 @@ class AdminMenu(Menu):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def init(self):
+        self.user_id = state.get_user_me()['id']
         return True
 
     @command
@@ -69,6 +72,121 @@ class AdminMenu(Menu):
         # Return results and error message
         if 'success' in response.keys():
             print(print_util.color('[*] Added keyword_obfuscation'))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def user_list(self) -> None:
+        """
+        Display all Empire user accounts
+
+        Usage: user_list
+        """
+        users_list = []
+        self.users = state.get_users()['users']
+
+        for x in range(len(self.users)):
+            users_list.append([str(self.users[x]['ID']), self.users[x]['username'],
+                               str(self.users[x]['admin']), str(self.users[x]['enabled']),
+                               self.users[x]['last_logon_time']])
+
+        users_list.insert(0, ['ID', 'Username', 'Admin', 'Enabled', 'Last Logon Time'])
+
+        table_util.print_table(users_list, 'Users')
+
+    @command
+    def create_user(self, username: str, password: str):
+        """
+        Create user account for Empire
+
+        Usage: create_user <username> <password>
+        """
+        options = {'username': username, 'password': password}
+        response = state.create_user(options)
+
+        # Return results and error message
+        if 'success' in response.keys():
+            print(print_util.color('[*] Added user: %s' % (username)))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def disable_user(self, user_id: str):
+        """
+        Disable user account for Empire
+
+        Usage: disable_user <user_id>
+        """
+        options = {'disable': 'True'}
+        username = state.get_user(user_id)['username']
+        response = state.disable_user(user_id, options)
+
+        # Return results and error message
+        if 'success' in response.keys():
+            print(print_util.color('[*] Disabled user: %s' % (username)))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def enable_user(self, user_id: str):
+        """
+        Enable user account for Empire
+
+        Usage: enable_user <user_id>
+        """
+        options = {'disable': ''}
+        username = state.get_user(user_id)['username']
+        response = state.disable_user(user_id, options)
+
+        # Return results and error message
+        if 'success' in response.keys():
+            print(print_util.color('[*] Enabled user: %s' % (username)))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def notes(self) -> None:
+        """
+        Display your notes
+
+        Usage: notes
+        """
+        self.user_notes = state.get_user_me()['notes']
+
+        if not self.user_notes:
+            print(print_util.color('[*] Notes are empty'))
+        else:
+            print(self.user_notes)
+
+    @command
+    def add_notes(self, add_user_notes: str):
+        """
+        Add user notes (use quotes)
+
+        Usage: notes <add_user_notes>
+        """
+        self.user_notes = state.get_user_me()['notes']
+
+        options = {'notes': self.user_notes + '\n' + add_user_notes}
+        response = state.update_user_notes(self.user_id, options)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Updated notes'))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
+
+    @command
+    def clear_notes(self):
+        """
+        Clear user notes
+
+        Usage: clear_notes
+        """
+        options = {'notes': ''}
+        response = state.update_user_notes(self.user_id, options)
+
+        if 'success' in response.keys():
+            print(print_util.color('[*] Cleared notes'))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
