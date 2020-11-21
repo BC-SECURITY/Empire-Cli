@@ -1,7 +1,7 @@
 import sys
 import threading
 
-from prompt_toolkit import PromptSession
+from prompt_toolkit import PromptSession, HTML
 from prompt_toolkit.patch_stdout import patch_stdout
 
 from src.utils import print_util, table_util
@@ -31,16 +31,14 @@ class ChatMenu(Menu):
     def init(self):
         self.HEADER_LENGTH = 10
 
-        self.IP = state.host
-        self.PORT = 333
+        self.IP = state.host.split('//')[1]
+        self.PORT = 12345
         self.my_username = state.get_user_me()['username']
         # Create a socket
         # socket.AF_INET - address family, IPv4, some other possible are AF_INET6, AF_BLUETOOTH, AF_UNIX
         # socket.SOCK_STREAM - TCP, conection-based, socket.SOCK_DGRAM - UDP, connectionless, datagrams, socket.SOCK_RAW - raw IP packets
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.start_client()
 
-    def start_client(self):
         # Connect to a given ip and port
         self.client_socket.connect((self.IP, self.PORT))
 
@@ -60,7 +58,7 @@ class ChatMenu(Menu):
         while True:
             try:
                 with patch_stdout():
-                    message = chatsession.prompt(f'{self.my_username} > ')
+                    message = chatsession.prompt(HTML(f'<ansired>{self.my_username}</ansired> > '))
             except KeyboardInterrupt:
                 continue  # Control-C pressed. Try again.
             except EOFError:
@@ -102,7 +100,7 @@ class ChatMenu(Menu):
                     message = self.client_socket.recv(message_length).decode('utf-8')
 
                     # Print message
-                    print(f'{username} > {message}')
+                    print(print_util.color(username, 'blue') + ' > ' + message)
 
             except IOError as e:
                 # This is normal on non blocking connections - when there are no incoming data error is going to be raised

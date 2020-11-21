@@ -175,7 +175,10 @@ class EmpireCli(object):
             elif text == 'listeners':
                 self.change_menu(self.menus['ListenerMenu'])
             elif text == 'chat':
-                self.change_menu(self.menus['ChatMenu'])
+                if 'chatroom' not in state.plugins:
+                    print(print_util.color('[!] Chatroom plugin not loaded'))
+                else:
+                    self.change_menu(self.menus['ChatMenu'])
             elif text == 'agents':
                 self.change_menu(self.menus['AgentMenu'])
             elif text == 'credentials':
