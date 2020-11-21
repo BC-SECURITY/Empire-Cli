@@ -31,14 +31,16 @@ class ChatMenu(Menu):
     def init(self):
         self.HEADER_LENGTH = 10
 
-        IP = "127.0.0.1"
-        PORT = 1234
+        self.IP = state.host
+        self.PORT = 333
         my_username = state.get_user_me()['username']
         # Create a socket
         # socket.AF_INET - address family, IPv4, some other possible are AF_INET6, AF_BLUETOOTH, AF_UNIX
         # socket.SOCK_STREAM - TCP, conection-based, socket.SOCK_DGRAM - UDP, connectionless, datagrams, socket.SOCK_RAW - raw IP packets
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+
+    def start_client(self):
         # Connect to a given ip and port
         self.client_socket.connect((IP, PORT))
 
