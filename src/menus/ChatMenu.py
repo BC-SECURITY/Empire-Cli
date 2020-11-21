@@ -34,13 +34,21 @@ class ChatMenu(Menu):
         self.IP = state.host.split('//')[1]
         self.PORT = 12345
         self.my_username = state.get_user_me()['username']
+
+        # Create a seperate promptsession to run in
+        chatsession = PromptSession()
+
         # Create a socket
         # socket.AF_INET - address family, IPv4, some other possible are AF_INET6, AF_BLUETOOTH, AF_UNIX
         # socket.SOCK_STREAM - TCP, conection-based, socket.SOCK_DGRAM - UDP, connectionless, datagrams, socket.SOCK_RAW - raw IP packets
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Connect to a given ip and port
-        self.client_socket.connect((self.IP, self.PORT))
+        try:
+            self.client_socket.connect((self.IP, self.PORT))
+        except:
+            print(print_util.color('[!] Chatroom server not reachable'))
+            return True
 
         # Set connection to non-blocking state, so .recv() call won;t block, just return some exception we'll handle
         self.client_socket.setblocking(False)
@@ -53,7 +61,6 @@ class ChatMenu(Menu):
 
         chat = threading.Thread(target=self.chat_client, args=[])
         chat.start()
-        chatsession = PromptSession()
 
         while True:
             try:
