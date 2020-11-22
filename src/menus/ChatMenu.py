@@ -10,6 +10,7 @@ from src.utils.cli_utils import register_cli_commands, command
 class ChatMenu(Menu):
     def __init__(self):
         super().__init__(display_name='chat', selected='')
+        self.my_username = ''
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -19,15 +20,14 @@ class ChatMenu(Menu):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def init(self):
-        if 'chatserver' not in state.plugins:
-            print(print_util.color('[!] Chatroom plugin not loaded'))
-            return
-
-        self.my_username = state.get_user_me()['username']
+        # if 'chatserver' not in state.plugins:
+        #     print(print_util.color('[!] Chatroom plugin not loaded'))
+        #     return
+        self.my_username = state.me['username']
 
         # log into room and get chat history
-        state.sio.emit('chat/join', {'username': self.my_username, 'room': 'general'})
-        state.sio.emit('chat/history', {'room': 'general'})
+        state.sio.emit('chat/join')
+        state.sio.emit('chat/history')
 
         # subscribe to chat notifications
         state.sio.on('chat/join', lambda data: print(print_util.color('[+] ' + data['message'])))
@@ -39,10 +39,10 @@ class ChatMenu(Menu):
         return True
 
     def send_chat(self, text):
-        state.sio.emit('chat/message', {'username': self.my_username, 'message': text, 'room': 'general'})
+        state.sio.emit('chat/message', {'message': text})
 
     def exit_room(self):
-        state.sio.emit('chat/leave', {'username': self.my_username, 'room': 'general'})
+        state.sio.emit('chat/leave')
 
 
 chat_menu = ChatMenu()
