@@ -1,20 +1,10 @@
-import sys
-import threading
-
-from prompt_toolkit import PromptSession, HTML
-from prompt_toolkit.patch_stdout import patch_stdout
-
 from src.utils import print_util, table_util
 
-from src.utils import table_util
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
 from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_utils import register_cli_commands, command
 
-import socket
-import select
-import errno
 
 @register_cli_commands
 class ChatMenu(Menu):
@@ -34,12 +24,17 @@ class ChatMenu(Menu):
             return
 
         self.my_username = state.get_user_me()['username']
+
+        # log into room and get chat history
         state.sio.emit('chat/join', {'username': self.my_username, 'room': 'general'})
+        state.sio.emit('chat/history', {'room': 'general'})
 
         # subscribe to chat notifications
         state.sio.on('chat/join', lambda data: print(print_util.color('[+] ' + data['message'])))
         state.sio.on('chat/leave', lambda data: print(print_util.color('[+] ' + data['message'])))
         state.sio.on('chat/message',
+                     lambda data: print(print_util.color(data['username'], 'red') + ': ' + data['message']))
+        state.sio.on('chat/history',
                      lambda data: print(print_util.color(data['username'], 'red') + ': ' + data['message']))
         return True
 
