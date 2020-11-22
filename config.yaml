@@ -1,7 +1,23 @@
 suppress-self-cert-warning: true
-default-obfuscation:
-  string: Token\1\All
-  enabled: true
+servers:
+  localhost:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
+  other-server:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
+  another-one:
+    host: https://localhost
+    port: 1337
+    socketport: 5000
+    username: empireadmin
+    password: password123
 shortcuts:
   # Params can be a list like
   # params:
@@ -61,7 +77,7 @@ shortcuts:
           value: true
         - name: ProcessID
           dynamic: true
-    bypassUAC:
+    bypassuac:
       module: powershell/privesc/bypassuac_eventvwr
       params:
         - name: Listener
@@ -70,36 +86,10 @@ shortcuts:
     sc:
       module: python/collection/osx/screenshot
       params:
-        - name: Listener
-          dynamic: true
         - name: SavePath
-          dynamic: true
-        - name: Agent
           dynamic: true
     keylog:
       module: python/collection/osx/keylogger
       params:
         - name: LogFile
           dynamic: true
-        - name: SomeOtherStaticValue
-          value: XYZ
-
-servers:
-  localhost:
-    host: https://localhost
-    port: 1337
-    socketport: 5000
-    username: empireadmin
-    password: password123
-  other-server:
-    host: https://localhost
-    port: 1337
-    socketport: 5000
-    username: empireadmin
-    password: password123
-  another-one:
-    host: https://localhost
-    port: 1337
-    socketport: 5000
-    username: empireadmin
-    password: password123
