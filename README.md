@@ -88,7 +88,7 @@ The parameters are passed in the order they are defined in config.yaml. There ar
 #### Main Menu
 When first loading Empire-Cli, the user will be dropped into the main menu. The only command available is `connect`.
 The "short way" to connect is to load the server into config.yaml and call it like `connect -c localhost`.
-The "long way" to connect is to provide the host, port, username, password as parameters like `c
+The "long way" to connect is to provide the host, port, username, password as parameters... todo.
 
 #### Admin Menu
 
