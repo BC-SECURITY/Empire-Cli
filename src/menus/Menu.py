@@ -47,9 +47,9 @@ class Menu(object):
             if word.startswith(word_before_cursor):
                 yield Completion(word, start_position=-len(word_before_cursor))
 
-    def init(self, **kwargs) -> bool:
+    def on_enter(self, **kwargs) -> bool:
         """
-        When a user changes menus, the init method will be called. Returning True means that
+        When a user changes menus, the on_enter method will be called. Returning True means that
         changing menus succeeded. Any initialization that needs to happen should happen here before returning.
         For example: Checking to see that the requested module is available, setting it to self.selected, and then
         printing out its options.
@@ -57,6 +57,13 @@ class Menu(object):
         :return: bool
         """
         return True
+
+    def on_leave(self):
+        """
+        Wgen a user changes menus, the on_leave method will be called. Any cleanup that needs to happen should happen at this point.
+        :return:
+        """
+        pass
 
     def get_prompt(self) -> str:
         """

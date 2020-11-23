@@ -33,7 +33,7 @@ class UseStagerMenu(Menu):
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    def init(self, **kwargs) -> bool:
+    def on_enter(self, **kwargs) -> bool:
         if 'selected' not in kwargs:
             return False
         else:

@@ -107,9 +107,16 @@ class EmpireCli(object):
         return {re.sub('[^A-Za-z0-9 _]+', '', k): v for k, v in options.items()}
 
     def change_menu(self, menu: Menu, **kwargs):
-        if menu.init(**kwargs):
+        if menu.on_enter(**kwargs):
+            self.current_menu.on_leave()
             self.current_menu = menu
             self.menu_history.append(menu)
+
+    def change_menu_back(self):
+        if self.current_menu != self.menus['MainMenu']:
+            self.current_menu.on_leave()
+            del self.menu_history[-1]
+            self.current_menu = self.menu_history[-1]
 
     def main(self):
         if empire_config.yaml.get('suppress-self-cert-warning', True):
@@ -178,10 +185,7 @@ class EmpireCli(object):
                 self.change_menu(self.menus['ChatMenu'])
             elif self.current_menu == self.menus['ChatMenu']:
                 if text == 'back':
-                    if self.current_menu != self.menus['MainMenu']:
-                        self.current_menu.exit_room()
-                        del self.menu_history[-1]
-                        self.current_menu = self.menu_history[-1]
+                    self.change_menu_back()
                 else:
                     self.current_menu.send_chat(text)
             elif text == 'agents':
@@ -237,9 +241,7 @@ class EmpireCli(object):
                 else:
                     state.generate_report('')
             elif text == 'back':
-                if self.current_menu != self.menus['MainMenu']:
-                    del self.menu_history[-1]
-                    self.current_menu = self.menu_history[-1]
+                self.change_menu_back()
             elif text == 'exit':
                 choice = input(print_util.color("[>] Exit? [y/N] ", "red"))
                 if choice.lower() == "y":

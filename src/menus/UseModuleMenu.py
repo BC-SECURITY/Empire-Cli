@@ -60,7 +60,7 @@ class UseModuleMenu(Menu):
                 pass
             time.sleep(1)
 
-    def init(self, **kwargs) -> bool:
+    def on_enter(self, **kwargs) -> bool:
         if 'selected' not in kwargs:
             return False
         else:
