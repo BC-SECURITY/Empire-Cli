@@ -30,7 +30,8 @@ class InteractMenu(Menu):
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
         if cmd_line[0] in ['interact'] and position_util(cmd_line, 2, word_before_cursor):
-            for agent in filtered_search_list(word_before_cursor, state.agents.keys()):
+            active_agents = list(map(lambda a: a['name'], filter(lambda a: a['stale'] is not True, state.agents.values())))
+            for agent in filtered_search_list(word_before_cursor, active_agents):
                 yield Completion(agent, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
