@@ -1,6 +1,7 @@
 import functools
 
-
+# Credit to SilentTrinity on these decorators.
+# https://github.com/byt3bl33d3r/SILENTTRINITY/blob/master/silenttrinity/core/client/utils.py
 def command(func):
     func._command = True
 
