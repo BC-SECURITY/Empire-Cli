@@ -101,11 +101,23 @@ once they are sent to the server.
 
 #### Listener Menu
 
-#### Use Listener Menu
+#### Use Listener Menu 
+The listener commands include:
+
+- View the listener info: `info`
+- Set listener settings: `set <listener_option>`
+- Execute/generate the current listener: `execute`
 
 #### Stager Menu
 
 #### Use Stager Menu
+Empire implements various stagers in a modular format in ./lib/stagers/*. These include DLLs, macros, one-liners, 
+and more. To use a stager type `usestager <stager_name>` or tap tab-complete to select an available stager. The stager 
+commands include:
+
+- View the stager info: `info`
+- Set stager settings: `set <stager_option>`
+- Execute/generate the current stager: `execute`
 
 #### Plugin Menu
 Plugins are an extension of Empire that allow for custom scripts to be loaded. This allows anyone to easily build or 
@@ -132,6 +144,10 @@ and returned to the interactive shell window. To run the interactive shell, just
 to exit the shell session, type `exit` to return to the agent.
 
 #### Credential Menu
+Empire will attempt to parse standard Mimikatz outputs and keep them in an internal credential store. Credentials can 
+be viewed from anywhere with the `credentials` command. The credential store can effectively operate as a golden and 
+silver ticket catalog generating the appropriate ticket on demand, storing passwords, and hashes. Credentials can be 
+added to the database by typing `add <domain> <username> <password>`.
 
 #### Use Module Menu
 
