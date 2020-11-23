@@ -104,6 +104,7 @@ class InteractMenu(Menu):
 
         # todo can we use asyncio?
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return.daemon = True
         agent_return.start()
 
     @command
@@ -123,6 +124,7 @@ class InteractMenu(Menu):
         response = state.agent_upload_file(self.selected, file_name, file_data)
         print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return.daemon = True
         agent_return.start()
 
     @command
@@ -135,6 +137,7 @@ class InteractMenu(Menu):
         response = state.agent_download_file(self.selected, file_name)
         print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return.daemon = True
         agent_return.start()
 
     @command
@@ -213,6 +216,7 @@ class InteractMenu(Menu):
                 '[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
             agent_return = threading.Thread(target=self.tasking_id_returns,
                                             args=[self.selected, response['taskID']])
+            agent_return.daemon = True
             agent_return.start()
 
     def update_comms(self, listener_name: str) -> None:

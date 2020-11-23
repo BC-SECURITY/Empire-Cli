@@ -80,6 +80,12 @@ class EmpireCliState(object):
         self.token = ''
         self.connected = False
 
+    def shutdown(self):
+        self.disconnect()
+        if self.sio:
+            self.sio.emit('chat/leave')
+            self.sio.disconnect()
+
     # I think we we will break out the socketio handler and http requests to new classes that the state imports.
     # This will do for this iteration.
     def get_listeners(self):
