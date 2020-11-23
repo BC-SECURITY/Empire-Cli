@@ -17,7 +17,7 @@ class PluginMenu(Menu):
         if position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    def init(self):
+    def on_enter(self):
         self.list()
         return True
 

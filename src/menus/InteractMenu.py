@@ -46,7 +46,7 @@ class InteractMenu(Menu):
                     for agent in filtered_search_list(word_before_cursor, state.agents.keys()):
                         yield Completion(agent, start_position=-len(word_before_cursor))
 
-    def init(self, **kwargs) -> bool:
+    def on_enter(self, **kwargs) -> bool:
         if 'selected' not in kwargs:
             return False
         else:
