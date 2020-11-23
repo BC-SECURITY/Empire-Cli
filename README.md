@@ -91,6 +91,13 @@ The "short way" to connect is to load the server into config.yaml and call it li
 The "long way" to connect is to provide the host, port, username, password as parameters... todo.
 
 #### Admin Menu
+The admin menu is an administrative menu which gives the team server admin the options to manage users and server options.
+The admin menu can be accessed by typing `admin` into the console. Once on this page, the admin can add/remove users from
+the team server and can modify the types of obfuscation the agents will use.
+
+Regular users will not be able to modify settings, but will have access to accessing the notes features. Notes allow users
+to record information within their session and have them stored on the server. They can access their notes from any session
+once they are sent to the server.
 
 #### Listener Menu
 
@@ -101,15 +108,31 @@ The "long way" to connect is to provide the host, port, username, password as pa
 #### Use Stager Menu
 
 #### Plugin Menu
+Plugins are an extension of Empire that allow for custom scripts to be loaded. This allows anyone to easily build or 
+add community projects to extend Empire functionality. Plugins can be accessed from the Empire CLI as long 
+as the plugin follows the [template example](./plugins/example.py). A list of Empire Plugins is located 
+[here](plugins/PLUGINS.md).
+
+The Plugins Menu, is displays all of the currently loaded plugins available to the user. You will then need to call 
+`useplugin` to be able to access the functionality of a plugin.
 
 #### Use Plugin Menu
+Interacting with plugins will look very similliar to you interact with modules. You will type `useplugin <plugi_name>` 
+to load a specific plugin. Next, you can edit the options using the `set` command. Once you are done, `execute` will 
+launch the plugin's functionality.
 
 #### Agent Menu
 
 #### Interact Menu
 
 #### Shell Menu
+The interactive shell menu opens a shell-like environment for an agent that gives the look/feel of a real shell session. 
+This window includes the current working directory being displayed to the user. All commands will be sent to the agent 
+and returned to the interactive shell window. To run the interactive shell, just type `shell` inside of any agent and 
+to exit the shell session, type `exit` to return to the agent.
 
 #### Credential Menu
 
 #### Use Module Menu
+
+#### Chat Menu
