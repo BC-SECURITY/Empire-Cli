@@ -26,11 +26,13 @@ class MainMenu(Menu):
                     yield Completion('connect', start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
-        elif position_util(cmd_line, 1, word_before_cursor):
-            yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def autocomplete(self):
-        return self._cmd_registry + super().autocomplete()
+        commands = self._cmd_registry + super().autocomplete()
+        if state.connected:
+            commands.remove('connect')
+
+        return commands
 
     def get_prompt(self) -> str:
         return f"{self.display_name} > "
@@ -51,6 +53,8 @@ class MainMenu(Menu):
             --username=<u>     Username for empire. if not provided, will attempt to pull from yaml
             --password=<pw>    Password for empire. if not provided, will attempt to pull from yaml
         """
+        if state.connected:
+            return
         if config is True:
             # Check for name in yaml
             server: dict = empire_config.yaml.get('servers').get(host)
@@ -69,7 +73,17 @@ class MainMenu(Menu):
 
     @command
     def disconnect(self):
-        print('todo')
+        """
+        Disconnect from an empire instance
+
+        Usage: disconnect
+        """
+        if not state.connected:
+            return
+
+        host = state.host
+        state.disconnect()
+        print(print_util.color('[*] Disconnected from ' + host))
 
 
 main_menu = MainMenu()
