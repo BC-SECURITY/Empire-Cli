@@ -101,7 +101,7 @@ once they are sent to the server.
 
 #### Listener Menu
 
-#### Use Listener Menu 
+#### Use Listener Menu
 The listener commands include:
 
 - View the listener info: `info`
@@ -129,11 +129,14 @@ The Plugins Menu, is displays all of the currently loaded plugins available to t
 `useplugin` to be able to access the functionality of a plugin.
 
 #### Use Plugin Menu
-Interacting with plugins will look very similliar to you interact with modules. You will type `useplugin <plugi_name>` 
+Interacting with plugins will look very similar to you interact with modules. You will type `useplugin <plugi_name>` 
 to load a specific plugin. Next, you can edit the options using the `set` command. Once you are done, `execute` will 
 launch the plugin's functionality.
 
 #### Agent Menu
+Agents are Empire's implants that are used to interact and assign tasks and collect information. A list of active agents
+is displayed when entering this page and highlghts active agents green and stale agents red. From this menu, you can 
+kill, remove, rename, and clear an agent using their respective commands.
 
 #### Interact Menu
 
@@ -150,5 +153,19 @@ silver ticket catalog generating the appropriate ticket on demand, storing passw
 added to the database by typing `add <domain> <username> <password>`.
 
 #### Use Module Menu
+Modules are containers for embedding programs into PowerShell and Python scripts. 
+This includes the following module categories:
+- Code Execution
+- Collection
+- Credentials
+- Lateral Movements
+- Management
+- Persistence
+- Privilege Escalation
+- Situational Awareness
+- Trollsploit
 
 #### Chat Menu
+The chat menu interacts with the chat server in Empire. This allows users to drop in and out of the chatroom by typing
+`chat`. The 20 most recent messages will be displayed when you login to the room. When you are ready to return to your 
+previous task,type `back` and you return to your previous menu.
