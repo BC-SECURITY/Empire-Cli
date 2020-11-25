@@ -144,6 +144,7 @@ class UseModuleMenu(Menu):
                 '[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
             agent_return = threading.Thread(target=self.tasking_id_returns,
                                             args=[self.module_options['Agent']['Value'], response['taskID']])
+            agent_return.daemon = True
             agent_return.start()
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))

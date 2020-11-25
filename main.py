@@ -1,7 +1,5 @@
-import os
 import re
 import shlex
-import sys
 import threading
 import time
 from typing import get_type_hints, Dict
@@ -13,25 +11,24 @@ from prompt_toolkit.completion import Completer
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 
-from src.ShortcutHandler import shortcut_handler
-from src.utils import print_util
-from src.menus import Menu
-
-from src.menus.AgentMenu import agent_menu
-from src.menus.CredentialMenu import credential_menu
 from src.EmpireCliConfig import empire_config
 from src.EmpireCliState import state
+from src.ShortcutHandler import shortcut_handler
+from src.menus import Menu
+from src.menus.AdminMenu import admin_menu
+from src.menus.AgentMenu import agent_menu
+from src.menus.ChatMenu import chat_menu
+from src.menus.CredentialMenu import credential_menu
 from src.menus.InteractMenu import interact_menu
 from src.menus.ListenerMenu import listener_menu
 from src.menus.MainMenu import main_menu
 from src.menus.PluginMenu import plugin_menu
 from src.menus.ShellMenu import shell_menu
-from src.menus.AdminMenu import admin_menu
-from src.menus.ChatMenu import chat_menu
 from src.menus.UseListenerMenu import use_listener_menu
 from src.menus.UseModuleMenu import use_module_menu
 from src.menus.UsePluginMenu import use_plugin_menu
 from src.menus.UseStagerMenu import use_stager_menu
+from src.utils import print_util
 
 
 class MyCustomCompleter(Completer):
@@ -148,6 +145,7 @@ class EmpireCli(object):
             #mouse_support=True
         )
         t = threading.Thread(target=self.update_in_bg, args=[session])
+        t.daemon = True
         t.start()
 
         while True:
@@ -169,7 +167,7 @@ class EmpireCli(object):
                 if cmd_line[0] == 'exit':
                     choice = input(print_util.color("[>] Exit? [y/N] ", "red"))
                     if choice.lower() == "y":
-                        sys.exit()
+                        break
                     else:
                         continue
                 else:
@@ -292,5 +290,4 @@ if __name__ == "__main__":
         empire = EmpireCli()
         empire.main()
     finally:
-        # TODO: There has to be a better way to exit but sys.exit() is getting stuck on something
-        os._exit(0)
+        state.shutdown()
