@@ -100,6 +100,7 @@ to record information within their session and have them stored on the server. T
 once they are sent to the server.
 
 #### Listener Menu
+The listener menu gives an overview list of all active listeners. A listener can be killed by typing the command `kill <listener_name>.
 
 #### Use Listener Menu
 The listener commands include:
@@ -107,8 +108,6 @@ The listener commands include:
 - View the listener info: `info`
 - Set listener settings: `set <listener_option>`
 - Execute/generate the current listener: `execute`
-
-#### Stager Menu
 
 #### Use Stager Menu
 Empire implements various stagers in a modular format in ./lib/stagers/*. These include DLLs, macros, one-liners, 
@@ -139,6 +138,7 @@ is displayed when entering this page and highlghts active agents green and stale
 kill, remove, rename, and clear an agent using their respective commands.
 
 #### Interact Menu
+Interacting with an agent is how operators manage their implants. Usemodule is accessible from inside an agent and will prepopulate the agent in the options. The interactive shell menu can be accessed by typing `shell`, or you can run a command directly by `shell <command>`. Other options are downloading and uploading files, managing agent comms, and agent configurations.
 
 #### Shell Menu
 The interactive shell menu opens a shell-like environment for an agent that gives the look/feel of a real shell session. 
