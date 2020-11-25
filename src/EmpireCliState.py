@@ -24,6 +24,7 @@ class EmpireCliState(object):
         self.modules = {}
         self.agents = {}
         self.plugins = {}
+        self.me = {}
         self.empire_version = ''
 
     def connect(self, host, port, socketport, username, password):
@@ -57,6 +58,7 @@ class EmpireCliState(object):
         self.get_modules()
         self.get_agents()
         self.get_active_plugins()
+        self.get_user_me()
 
     def init_handlers(self):
         if self.sio:
@@ -77,6 +79,12 @@ class EmpireCliState(object):
         self.port = ''
         self.token = ''
         self.connected = False
+        if self.sio:
+            self.sio.emit('chat/leave')
+            self.sio.disconnect()
+
+    def shutdown(self):
+        self.disconnect()
 
     # I think we we will break out the socketio handler and http requests to new classes that the state imports.
     # This will do for this iteration.
@@ -346,6 +354,45 @@ class EmpireCliState(object):
                                  json=notes,
                                  verify=False,
                                  params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_users(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/users',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def create_user(self, new_user):
+        response = requests.post(url=f'{self.host}:{self.port}/api/users',
+                                json=new_user,
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def disable_user(self, user_id: str, account_status: str):
+        response = requests.put(url=f'{self.host}:{self.port}/api/users/{user_id}/disable',
+                                 json=account_status,
+                                 verify=False,
+                                 params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_user(self, user_id: str):
+        response = requests.get(url=f'{self.host}:{self.port}/api/users/{user_id}',
+                                verify=False,
+                                params={'token': self.token})
+
+        return json.loads(response.content)
+
+    def get_user_me(self):
+        response = requests.get(url=f'{self.host}:{self.port}/api/users/me',
+                                verify=False,
+                                params={'token': self.token})
+
+        self.me = json.loads(response.content)
 
         return json.loads(response.content)
 

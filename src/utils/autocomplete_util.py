@@ -1,14 +1,15 @@
 from typing import List
 
 
-def filtered_search_list(prefix: str, keys) -> List[str]:
+def filtered_search_list(search: str, keys) -> List[str]:
     """
-    Filters the search list by a string prefix
-    :param prefix: the string prefix
+    Filters the search list by a search string
+    :param search: the string prefix
     :param keys: the list of strings to search
     :return: filtered list
     """
-    return list(filter(lambda x: (prefix.lower()) in x.lower(), keys))
+    return list(filter(lambda x: (search.lower()) in x.lower(), keys))
+
 
 def position_util(cmd_line: List[str], word_position: int, word_before_cursor: str) -> bool:
     """

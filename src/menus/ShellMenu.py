@@ -20,7 +20,7 @@ class ShellMenu(Menu):
         if position_util(cmd_line, 1, word_before_cursor):
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
-    def init(self, **kwargs) -> bool:
+    def on_enter(self, **kwargs) -> bool:
         if 'selected' not in kwargs:
             return False
         else:
@@ -112,12 +112,15 @@ class ShellMenu(Menu):
         if shell_cmd.split()[0].lower() in ['cd', 'set-location']:
             if self.language == 'powershell':
                 shell_return = threading.Thread(target=self.powershell_update_directory, args=[agent_name])
+                shell_return.daemon = True
                 shell_return.start()
             elif self.language == 'python':
                 shell_return = threading.Thread(target=self.python_update_directory, args=[agent_name])
+                shell_return.daemon = True
                 shell_return.start()
         else:
             shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+            shell_return.daemon = True
             shell_return.start()
 
 
