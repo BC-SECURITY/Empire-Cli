@@ -426,12 +426,5 @@ class EmpireCliState(object):
 
         return json.loads(response.content)
 
-    def get_user_me(self):
-        response = requests.get(url=f'{self.host}:{self.port}/api/users/me',
-                                verify=False,
-                                params={'token': self.token})
-
-        return json.loads(response.content)
-
 
 state = EmpireCliState()
