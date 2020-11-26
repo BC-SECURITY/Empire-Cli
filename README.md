@@ -17,7 +17,6 @@ It provides many enhancements over the current CLI including:
 	- [Admin Menu](#admin-menu)
 	- [Listener Menu](#listener-menu)
 	- [Use Listener Menu](#use-listener-menu)
-	- [Stager Menu](#stager-menu)
 	- [Use Stager Menu](#use-stager-menu)
 	- [Plugin Menu](#plugin-menu)
 	- [Use Plugin Menu](#use-plugin-menu)
