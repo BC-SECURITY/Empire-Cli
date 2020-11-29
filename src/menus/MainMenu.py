@@ -8,6 +8,9 @@ from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_utils import register_cli_commands, command
 
 
+def patch_protocol(host):
+    return host if host.startswith('http://') or host.startswith('https://') else f'https://{host}'
+
 @register_cli_commands
 class MainMenu(Menu):
     def __init__(self):
@@ -60,9 +63,11 @@ class MainMenu(Menu):
             server: dict = empire_config.yaml.get('servers').get(host)
             if not server:
                 print(f'Could not find server in config.yaml for {host}')
+                server['host'] = patch_protocol(server['host'])
             response = state.connect(server['host'], server['port'], server['socketport'], server['username'],
                                      server['password'])
         else:
+            host = patch_protocol(host)
             response = state.connect(host, port, socketport, username, password)
 
         if hasattr(response, 'status_code'):
