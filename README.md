@@ -3,7 +3,7 @@ Please provide feedback and bugs in the [issues](https://github.com/BC-SECURITY/
 
 Empire-Cli
 =============================
-The new Empire CLI is a a python command-line application written using [python-prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit).
+The new Empire CLI is a python command-line application written using [python-prompt-toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit).
 It provides many enhancements over the current CLI including:
 * Support for multiple users at a time
 * Custom agent shortcuts
