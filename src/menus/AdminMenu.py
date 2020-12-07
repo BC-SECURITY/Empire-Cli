@@ -106,7 +106,7 @@ class AdminMenu(Menu):
 
         # Return results and error message
         if 'success' in response.keys():
-            print(print_util.color('[*] Added user: %s' % (username)))
+            print(print_util.color('[*] Added user: %s' % username))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
@@ -123,7 +123,7 @@ class AdminMenu(Menu):
 
         # Return results and error message
         if 'success' in response.keys():
-            print(print_util.color('[*] Disabled user: %s' % (username)))
+            print(print_util.color('[*] Disabled user: %s' % username))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 
@@ -140,7 +140,7 @@ class AdminMenu(Menu):
 
         # Return results and error message
         if 'success' in response.keys():
-            print(print_util.color('[*] Enabled user: %s' % (username)))
+            print(print_util.color('[*] Enabled user: %s' % username))
         elif 'error' in response.keys():
             print(print_util.color('[!] Error: ' + response['error']))
 

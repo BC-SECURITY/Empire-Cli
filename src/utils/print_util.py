@@ -68,7 +68,6 @@ def title(version, modules, listeners, agents):
     print('')
 
 
-
 def loading():
     """
     Print and ascii loading screen.
