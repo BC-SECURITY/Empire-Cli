@@ -90,6 +90,7 @@ class InteractMenu(Menu):
         """
         if agent_name in state.agents.keys():
             self.selected = agent_name
+            self.session_id = state.agents[self.selected]['session_id']
             self.agent_options = state.agents[agent_name]  # todo rename agent_options
             self.agent_language = self.agent_options['language']
 
@@ -100,11 +101,11 @@ class InteractMenu(Menu):
 
         Usage: shell <shell_cmd>
         """
-        response = state.agent_shell(self.selected, shell_cmd)
-        print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
+        response = state.agent_shell(self.session_id, shell_cmd)
+        print(print_util.color('[*] Tasked ' + self.session_id + ' to run Task ' + str(response['taskID'])))
 
         # todo can we use asyncio?
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.session_id, response['taskID']])
         agent_return.daemon = True
         agent_return.start()
 
@@ -122,9 +123,9 @@ class InteractMenu(Menu):
         if destination_file_name:
             file_name = destination_file_name
 
-        response = state.agent_upload_file(self.selected, file_name, file_data)
+        response = state.agent_upload_file(self.session_id, file_name, file_data)
         print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.session_id, response['taskID']])
         agent_return.daemon = True
         agent_return.start()
 
@@ -135,9 +136,9 @@ class InteractMenu(Menu):
 
         Usage: download <file_name>
         """
-        response = state.agent_download_file(self.selected, file_name)
+        response = state.agent_download_file(self.session_id, file_name)
         print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
-        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+        agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.session_id, response['taskID']])
         agent_return.daemon = True
         agent_return.start()
 
@@ -210,13 +211,13 @@ class InteractMenu(Menu):
                 post_body[key] = shortcut.get_param(key).value
             else:
                 post_body[key] = module_options[key]['Value']
-        post_body['Agent'] = self.selected
+        post_body['Agent'] = self.session_id
         response = state.execute_module(shortcut.module, post_body)
         if 'success' in response.keys():
             print(print_util.color(
                 '[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
             agent_return = threading.Thread(target=self.tasking_id_returns,
-                                            args=[self.selected, response['taskID']])
+                                            args=[self.session_id, response['taskID']])
             agent_return.daemon = True
             agent_return.start()
 
@@ -226,7 +227,7 @@ class InteractMenu(Menu):
 
         Usage: update_comms <listener_name>
         """
-        response = state.update_agent_comms(self.selected, listener_name)
+        response = state.update_agent_comms(self.session_id, listener_name)
 
         if 'success' in response.keys():
             print(print_util.color('[*] Updated agent ' + self.selected + ' listener ' + listener_name))
@@ -240,7 +241,7 @@ class InteractMenu(Menu):
 
         Usage: killdate <kill_date>
         """
-        response = state.update_agent_killdate(self.selected, kill_date)
+        response = state.update_agent_killdate(self.session_id, kill_date)
 
         if 'success' in response.keys():
             print(print_util.color('[*] Updated agent ' + self.selected + ' killdate to ' + kill_date))
@@ -254,7 +255,7 @@ class InteractMenu(Menu):
 
         Usage: workinghours <working_hours>
         """
-        response = state.update_agent_working_hours(self.selected, working_hours)
+        response = state.update_agent_working_hours(self.session_id, working_hours)
 
         if 'success' in response.keys():
             print(print_util.color('[*] Updated agent ' + self.selected + ' workinghours to ' + working_hours))
