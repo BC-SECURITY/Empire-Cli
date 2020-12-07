@@ -63,9 +63,11 @@ class EmpireCliState(object):
     def init_handlers(self):
         if self.sio:
             self.sio.on('listeners/new',
-                        lambda data: print(print_util.color('[+] Listener ' + data['name'] + ' successfully started')))
+                        lambda data: [print(print_util.color('[+] Listener ' + data['name'] + ' successfully started')),
+                                      self.get_listeners()])
             self.sio.on('agents/new',
-                        lambda data: print(print_util.color('[+] New agent ' + data['name'] + ' checked in')))
+                        lambda data: [print(print_util.color('[+] New agent ' + data['name'] + ' checked in')),
+                                      self.get_agents()])
 
             # Multiple checkin messages or a single one?
             self.sio.on('agents/stage2', lambda data: print(
