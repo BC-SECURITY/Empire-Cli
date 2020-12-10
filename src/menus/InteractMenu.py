@@ -88,6 +88,7 @@ class InteractMenu(Menu):
 
         Usage: use <agent_name>
         """
+        state.get_agents()
         if agent_name in state.agents.keys():
             self.selected = agent_name
             self.session_id = state.agents[self.selected]['session_id']
