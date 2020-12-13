@@ -130,7 +130,7 @@ class EmpireCli(object):
         print_util.loading()
         print("\n")
         print("Use the 'connect' command to connect to your Empire server.")
-        print("connect localhost will connect to a local empire instance with all the defaults")
+        print("'connect -c localhost' will connect to a local empire instance with all the defaults")
         print("including the default username and password.")
 
         session = PromptSession(

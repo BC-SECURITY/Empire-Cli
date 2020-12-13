@@ -16,8 +16,13 @@ class ShortcutParam(object):
 
 
 class Shortcut(object):
-    def __init__(self, name: str, module: str, params: List[ShortcutParam]):
+    def __init__(self, name: str, module: Optional[str] = None, shell: Optional[str] = None, params: List[ShortcutParam] = None):
+        if not module and not shell:
+            print(print_util.color('Must provide either module name or shell command to a shortcut', color_name='red'))
+            raise TypeError
+
         self.name = name
+        self.shell = None if not shell else shell
         self.module = module
         self.params = [] if not params else params
 
@@ -51,6 +56,9 @@ class Shortcut(object):
         return usage
 
     def get_help_description(self) -> str:
+        if self.shell:
+            return print_util.text_wrap(f"Tasks an agent to run the shell command '{self.shell}'")
+
         module = self.module
         default_params = list(map(lambda x: f"{x.name}: {x.value}", self.get_static_params()))
         description = f"Tasks the agent to run module {module}."
@@ -62,5 +70,8 @@ class Shortcut(object):
 
     @classmethod
     def from_json(cls, data):
-        data['params'] = [] if 'params' not in data else list(map(ShortcutParam.from_json, data['params']))
+        if 'params' not in data or data['params'] is None:
+            data['params'] = []
+        else:
+            data['params'] = list(map(ShortcutParam.from_json, data['params']))
         return cls(**data)

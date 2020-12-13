@@ -32,6 +32,10 @@ shortcuts:
   # when calling the shortcut in the order they appear like 'sc http1'
   # Because order matters, we use a sequence instead of a map
   powershell:
+    whoami:
+      shell: whoami
+    ps:
+      shell: ps
     sc:
       module: powershell/collection/screenshot
       params:
@@ -83,6 +87,10 @@ shortcuts:
         - name: Listener
           dynamic: true
   python:
+    whoami:
+      shell: whoami
+    ps:
+      shell: ps
     sc:
       module: python/collection/osx/screenshot
       params:

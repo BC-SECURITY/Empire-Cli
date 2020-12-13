@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from src.EmpireCliConfig import empire_config
 from src.Shortcut import Shortcut
+from src.utils import print_util
 
 
 class ShortcutHandler:
@@ -15,11 +16,17 @@ class ShortcutHandler:
         python: Dict[str, Shortcut] = {}
         powershell: Dict[str, Shortcut] = {}
         for key, value in shortcuts_raw['python'].items():
-            value['name'] = key
-            python[key] = Shortcut.from_json(json.loads(json.dumps(value)))
+            try:
+                value['name'] = key
+                python[key] = Shortcut.from_json(json.loads(json.dumps(value)))
+            except TypeError as e:
+                print(print_util.color(f'Could not parse shortcut: {key}', color_name='red'))
         for key, value in shortcuts_raw['powershell'].items():
-            value['name'] = key
-            powershell[key] = Shortcut.from_json(json.loads(json.dumps(value)))
+            try:
+                value['name'] = key
+                powershell[key] = Shortcut.from_json(json.loads(json.dumps(value)))
+            except TypeError as e:
+                print(print_util.color(f'Could not parse shortcut: {key}', color_name='red'))
         self.shortcuts: Dict[str, Dict[str, Shortcut]] = {'python': python, 'powershell': powershell}
 
     def get(self, language: str, name: str) -> Shortcut:
