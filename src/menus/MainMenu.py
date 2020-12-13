@@ -11,6 +11,7 @@ from src.utils.cli_utils import register_cli_commands, command
 def patch_protocol(host):
     return host if host.startswith('http://') or host.startswith('https://') else f'https://{host}'
 
+
 @register_cli_commands
 class MainMenu(Menu):
     def __init__(self):

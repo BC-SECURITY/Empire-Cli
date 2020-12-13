@@ -36,9 +36,9 @@ class ListenerMenu(Menu):
 
         Usage: list
         """
-        listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_type'], x['created_at']],
+        listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_category'], x['created_at']],
                                  state.listeners.values()))
-        listener_list.insert(0, ['ID', 'Name', 'Module', 'Listener Type', 'Created At'])
+        listener_list.insert(0, ['ID', 'Name', 'Module', 'Listener Category', 'Created At'])
 
         table_util.print_table(listener_list, 'Listeners List')
 

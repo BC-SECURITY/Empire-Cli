@@ -5,7 +5,6 @@ from src.utils.autocomplete_util import position_util
 from src.utils.cli_utils import register_cli_commands, command
 
 
-
 @register_cli_commands
 class CredentialMenu(Menu):
     def __init__(self):

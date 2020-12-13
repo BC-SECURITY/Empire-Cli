@@ -58,44 +58,45 @@ class ShellMenu(Menu):
         Usage: shell
         """
         self.selected = agent_name
+        self.session_id = state.agents[self.selected]['session_id']
         self.language = state.agents[self.selected]['language']
         if self.language == 'powershell':
-            self.powershell_update_directory(agent_name)
+            self.powershell_update_directory(self.session_id)
         elif self.language == 'python':
-            self.python_update_directory(agent_name)
+            self.python_update_directory(self.session_id)
 
-    def powershell_update_directory(self, agent_name: str):
+    def powershell_update_directory(self, session_id: str):
         """
         Update current directory
 
-        Usage:  update_directory <agent_name>
+        Usage:  update_directory <session_id>
         """
         temp_name = None
-        task_id: str = str(state.agent_shell(agent_name, '(Resolve-Path .\).Path')['taskID'])
+        task_id: str = str(state.agent_shell(session_id, '(Resolve-Path .\).Path')['taskID'])
 
         # Retrieve directory results and wait for response
         while temp_name is None:
             try:
-                temp_name = state.get_task_result(agent_name, task_id)['results']
+                temp_name = state.get_task_result(session_id, task_id)['results']
             except:
                 pass
             time.sleep(1)
         self.display_name = temp_name
         self.get_prompt()
 
-    def python_update_directory(self, agent_name: str):
+    def python_update_directory(self, session_id: str):
         """
         Update current directory
 
-        Usage:  update_directory <agent_name>
+        Usage:  update_directory <session_id>
         """
         temp_name = None
-        task_id: str = str(state.agent_shell(agent_name, 'echo $PWD')['taskID'])
+        task_id: str = str(state.agent_shell(session_id, 'echo $PWD')['taskID'])
 
         # Retrieve directory results and wait for response
         while temp_name is None:
             try:
-                temp_name = state.get_task_result(agent_name, task_id)['results'].split('\r')[0]
+                temp_name = state.get_task_result(session_id, task_id)['results'].split('\r')[0]
             except:
                 pass
             time.sleep(1)
@@ -119,7 +120,7 @@ class ShellMenu(Menu):
                 shell_return.daemon = True
                 shell_return.start()
         else:
-            shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.selected, response['taskID']])
+            shell_return = threading.Thread(target=self.tasking_id_returns, args=[self.session_id, response['taskID']])
             shell_return.daemon = True
             shell_return.start()
 

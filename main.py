@@ -141,8 +141,8 @@ class EmpireCli(object):
             complete_in_thread=True,
             # complete_while_typing=True,
             bottom_toolbar=self.bottom_toolbar,
-            #swap_light_and_dark_colors=True,
-            #mouse_support=True
+            # swap_light_and_dark_colors=True,
+            # mouse_support=True
         )
         t = threading.Thread(target=self.update_in_bg, args=[session])
         t.daemon = True

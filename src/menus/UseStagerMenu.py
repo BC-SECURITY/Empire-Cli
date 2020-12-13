@@ -47,7 +47,7 @@ class UseStagerMenu(Menu):
 
         Usage: use <module>
         """
-        if module in state.stagers.keys(): # todo rename module?
+        if module in state.stagers.keys():  # todo rename module?
             self.selected = module
             self.stager_options = state.stagers[module]['options']
 

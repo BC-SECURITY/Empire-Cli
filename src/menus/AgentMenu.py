@@ -2,7 +2,7 @@ import string
 
 from prompt_toolkit.completion import Completion
 
-from src.utils import table_util
+from src.utils import table_util, print_util
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
 from src.utils.autocomplete_util import filtered_search_list, position_util
@@ -76,7 +76,11 @@ class AgentMenu(Menu):
 
         Usage: remove <agent_name>
         """
-        state.clear_agent(agent_name)
+        response = state.remove_agent(agent_name)
+        if 'success' in response.keys():
+            print(print_util.color('[*] Removed agent ' + agent_name))
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
 
     @command
     def rename(self, agent_name: string, new_agent_name: string) -> None:
