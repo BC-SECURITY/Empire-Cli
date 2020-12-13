@@ -22,6 +22,7 @@ class InteractMenu(Menu):
         super().__init__(display_name='', selected='')
         self.agent_options = {}
         self.agent_language = ''
+        self.session_id = ''
 
     def autocomplete(self):
         return self._cmd_registry + \
