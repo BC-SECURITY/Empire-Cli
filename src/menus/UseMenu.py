@@ -6,7 +6,7 @@ from src.EmpireCliState import state
 from src.menus.Menu import Menu
 from src.utils import print_util, table_util
 from src.utils.autocomplete_util import position_util, filtered_search_list
-from src.utils.cli_utils import command
+from src.utils.cli_util import command
 
 
 class UseMenu(Menu):

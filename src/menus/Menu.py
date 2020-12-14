@@ -2,7 +2,7 @@ from prompt_toolkit.completion import Completion
 
 from src.utils import table_util, print_util
 from src.utils.autocomplete_util import filtered_search_list
-from src.utils.cli_utils import command
+from src.utils.cli_util import command
 
 
 class Menu(object):

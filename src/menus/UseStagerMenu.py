@@ -6,7 +6,7 @@ from prompt_toolkit.completion import Completion
 from src.EmpireCliState import state
 from src.menus.UseMenu import UseMenu
 from src.utils.autocomplete_util import filtered_search_list, position_util
-from src.utils.cli_utils import register_cli_commands, command
+from src.utils.cli_util import register_cli_commands, command
 
 
 @register_cli_commands
