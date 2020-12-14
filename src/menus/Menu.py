@@ -6,10 +6,15 @@ from src.utils.cli_utils import command
 
 
 class Menu(object):
+    """
+    Base Menu object.
+    """
     def __init__(self, display_name: str = '', selected: str = ''):
-        # The display name for the menu. This is used by the default get_prompt method.
+        """
+        :param display_name: The display name for the menu. This is used by the default get_prompt method.
+        :param selected: The selected item. Applicable for Menus such UseStager or UseListener.
+        """
         self.display_name = display_name
-        # The selected item. Applicable for Menus such UseStager or UseListener.
         self.selected = selected
         # Gets overwritten by the register_cli_commands decorator.
         # Nice to have here just to stop the warnings

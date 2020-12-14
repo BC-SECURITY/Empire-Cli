@@ -1,6 +1,6 @@
-from src.utils import table_util
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
+from src.utils import table_util
 from src.utils.autocomplete_util import position_util
 from src.utils.cli_utils import register_cli_commands, command
 

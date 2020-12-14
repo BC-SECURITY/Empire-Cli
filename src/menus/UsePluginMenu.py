@@ -1,21 +1,15 @@
-import string
-import textwrap
-
 from prompt_toolkit.completion import Completion
 
-from src.utils import table_util, print_util
 from src.EmpireCliState import state
-from src.menus.Menu import Menu
+from src.menus.UseMenu import UseMenu
 from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_utils import register_cli_commands, command
 
 
 @register_cli_commands
-class UsePluginMenu(Menu):
+class UsePluginMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='useplugin', selected='')
-        self.plugin_options = {}
-        self.plugin_info = {}
+        super().__init__(display_name='useplugin', selected='', record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -24,7 +18,7 @@ class UsePluginMenu(Menu):
         if cmd_line[0] == 'useplugin' and position_util(cmd_line, 2, word_before_cursor):
             for plugin in filtered_search_list(word_before_cursor, state.plugins.keys()):
                 yield Completion(plugin, start_position=-len(word_before_cursor))
-        elif position_util(cmd_line, 1, word_before_cursor):
+        else:
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def on_enter(self, **kwargs) -> bool:
@@ -43,52 +37,7 @@ class UsePluginMenu(Menu):
         """
         if plugin_name in state.plugins:
             self.selected = plugin_name
-            self.plugin_options = state.plugins[plugin_name]['options']
-            self.plugin_info = state.plugins[plugin_name]
-
-    @command
-    def info(self):
-        """
-        Print the plugin options
-
-        Usage: info
-        """
-        plugin_list = []
-        for key, value in self.plugin_options.items():
-            values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-            values.reverse()
-            temp = [key] + values
-            plugin_list.append(temp)
-
-        plugin_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
-
-        table_util.print_table(plugin_list, 'Plugin Options')
-
-    @command
-    def set(self, key: string, value: string) -> None:
-        """
-        Set a field for the current plugin
-
-        Usage: set <key> <value>
-        """
-        if key in self.plugin_options:
-            self.plugin_options[key]['Value'] = value
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Set %s to %s' % (key, value)))
-
-    @command
-    def unset(self, key: str) -> None:
-        """
-        Unset a plugin option.
-
-        Usage: unset <key>
-        """
-        if key in self.plugin_options:
-            self.plugin_options[key]['Value'] = ''
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Unset %s' % key))
+            self.record_options = state.plugins[plugin_name]['options']
 
     @command
     def execute(self):
@@ -100,8 +49,8 @@ class UsePluginMenu(Menu):
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
-        for key, value in self.plugin_options.items():
-            post_body[key] = self.plugin_options[key]['Value']
+        for key, value in self.record_options.items():
+            post_body[key] = self.record_options[key]['Value']
 
         response = state.execute_plugin(self.selected, post_body)
         #print(response)
