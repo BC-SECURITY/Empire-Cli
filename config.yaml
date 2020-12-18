@@ -54,7 +54,7 @@ shortcuts:
         - name: ProcId
           dynamic: true
     revtoself:
-      module: powershell/credentials/tokens'
+      module: powershell/credentials/tokens
       params:
         - name: RevToSelf
           value: true

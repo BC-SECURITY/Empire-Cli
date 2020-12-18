@@ -1,20 +1,16 @@
-import string
-import textwrap
-
 from prompt_toolkit.completion import Completion
 
-from src.utils import table_util, print_util
 from src.EmpireCliState import state
-from src.menus.Menu import Menu
+from src.menus.UseMenu import UseMenu
+from src.utils import print_util
 from src.utils.autocomplete_util import filtered_search_list, position_util
-from src.utils.cli_utils import register_cli_commands, command
+from src.utils.cli_util import register_cli_commands, command
 
 
 @register_cli_commands
-class UseListenerMenu(Menu):
+class UseListenerMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='uselistener', selected='')
-        self.listener_options = {}
+        super().__init__(display_name='uselistener', selected='', record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -23,11 +19,7 @@ class UseListenerMenu(Menu):
         if cmd_line[0] == 'uselistener' and position_util(cmd_line, 2, word_before_cursor):
             for listener in filtered_search_list(word_before_cursor, state.listener_types):
                 yield Completion(listener, start_position=-len(word_before_cursor))
-        elif cmd_line[0] in ['set', 'unset'] and position_util(cmd_line, 2, word_before_cursor):
-            # Todo need to refactor to not make api requests on every autocomplete. Look at usestager
-            for option in filtered_search_list(word_before_cursor, state.get_listener_options(self.selected)['listeneroptions']):
-                yield Completion(option, start_position=-len(word_before_cursor))
-        elif position_util(cmd_line, 1, word_before_cursor):
+        else:
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def on_enter(self, **kwargs) -> bool:
@@ -46,51 +38,7 @@ class UseListenerMenu(Menu):
         """
         if module in state.listener_types:
             self.selected = module
-            self.listener_options = state.get_listener_options(self.selected)['listeneroptions']
-
-    @command
-    def set(self, key: string, value: string) -> None:
-        """
-        Set a field for the current listener
-
-        Usage: set <key> <value>
-        """
-        if key in self.listener_options:
-            self.listener_options[key]['Value'] = value
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Set %s to %s' % (key, value)))
-
-    @command
-    def unset(self, key: str) -> None:
-        """
-        Unset a listener option.
-
-        Usage: unset <key>
-        """
-        if key in self.listener_options:
-            self.listener_options[key]['Value'] = ''
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Unset %s' % key))
-
-    @command
-    def info(self):
-        """
-        Print the current listener options
-
-        Usage: info
-        """
-        listener_list = []
-        for key, value in self.listener_options.items():
-            values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-            values.reverse()
-            temp = [key] + values
-            listener_list.append(temp)
-
-        listener_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
-
-        table_util.print_table(listener_list, 'Listeners Options')
+            self.record_options = state.get_listener_options(self.selected)['listeneroptions']
 
     @command
     def execute(self):
@@ -103,8 +51,8 @@ class UseListenerMenu(Menu):
         # todo alias start to execute and generate
         # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
-        for key, value in self.listener_options.items():
-            post_body[key] = self.listener_options[key]['Value']
+        for key, value in self.record_options.items():
+            post_body[key] = self.record_options[key]['Value']
 
         response = state.create_listener(self.selected, post_body)
         if 'success' in response.keys():

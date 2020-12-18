@@ -1,22 +1,19 @@
-import string
-import textwrap
 import threading
 import time
 
 from prompt_toolkit.completion import Completion
 
-from src.utils import table_util, print_util
 from src.EmpireCliState import state
-from src.menus.Menu import Menu
+from src.menus.UseMenu import UseMenu
+from src.utils import print_util
 from src.utils.autocomplete_util import filtered_search_list, position_util
-from src.utils.cli_utils import register_cli_commands, command
+from src.utils.cli_util import register_cli_commands, command
 
 
 @register_cli_commands
-class UseModuleMenu(Menu):
+class UseModuleMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='usemodule', selected='')
-        self.module_options = {}
+        super().__init__(display_name='usemodule', selected='', record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -25,17 +22,7 @@ class UseModuleMenu(Menu):
         if cmd_line[0] == 'usemodule' and position_util(cmd_line, 2, word_before_cursor):
             for module in filtered_search_list(word_before_cursor, state.modules.keys()):
                 yield Completion(module, start_position=-len(word_before_cursor))
-        elif cmd_line[0] in ['set', 'unset'] and position_util(cmd_line, 2, word_before_cursor):
-            for option in filtered_search_list(word_before_cursor, self.module_options):
-                yield Completion(option, start_position=-len(word_before_cursor))
-        elif cmd_line[0] == 'set' and position_util(cmd_line, 3, word_before_cursor):
-            if len(cmd_line) > 1 and cmd_line[1] == 'listener':
-                for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
-                    yield Completion(listener, start_position=-len(word_before_cursor))
-            if len(cmd_line) > 1 and cmd_line[1] == 'agent':
-                for listener in filtered_search_list(word_before_cursor, state.agents.keys()):
-                    yield Completion(listener, start_position=-len(word_before_cursor))
-        elif position_util(cmd_line, 1, word_before_cursor):
+        else:
             yield from super().get_completions(document, complete_event, cmd_line, word_before_cursor)
 
     def tasking_id_returns(self, agent_name, task_id: int):
@@ -66,7 +53,7 @@ class UseModuleMenu(Menu):
         else:
             self.use(kwargs['selected'])
 
-            if 'agent' in kwargs and 'Agent' in self.module_options:
+            if 'agent' in kwargs and 'Agent' in self.record_options:
                 self.set('Agent', kwargs['agent'])
             self.info()
             return True
@@ -79,51 +66,7 @@ class UseModuleMenu(Menu):
         """
         if module in state.modules.keys():
             self.selected = module
-            self.module_options = state.modules[module]['options']
-
-    @command
-    def set(self, key: string, value: string) -> None:
-        """
-        Set a field for the current module
-
-        Usage: set <key> <value>
-        """
-        if key in self.module_options:
-            self.module_options[key]['Value'] = value
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Set %s to %s' % (key, value)))
-
-    @command
-    def unset(self, key: str) -> None:
-        """
-        Unset a module option.
-
-        Usage: unset <key>
-        """
-        if key in self.module_options:
-            self.module_options[key]['Value'] = ''
-
-        # todo use python prompt print methods for formatting
-        print(print_util.color('[*] Unset %s' % key))
-
-    @command
-    def info(self):
-        """
-        Print the current module options
-
-        Usage: info
-        """
-        module_list = []
-        for key, value in self.module_options.items():
-            values = list(map(lambda x: '\n'.join(textwrap.wrap(str(x), width=35)), value.values()))
-            values.reverse()
-            temp = [key] + values
-            module_list.append(temp)
-
-        module_list.insert(0, ['Name', 'Required', 'Value', 'Description'])
-
-        table_util.print_table(module_list, 'Module Options')
+            self.record_options = state.modules[module]['options']
 
     @command
     def execute(self):
@@ -135,15 +78,15 @@ class UseModuleMenu(Menu):
         # todo validation and error handling
         # Hopefully this will force us to provide more info in api errors ;)
         post_body = {}
-        for key, value in self.module_options.items():
-            post_body[key] = self.module_options[key]['Value']
+        for key, value in self.record_options.items():
+            post_body[key] = self.record_options[key]['Value']
 
         response = state.execute_module(self.selected, post_body)
         if 'success' in response.keys():
             print(print_util.color(
-                '[*] Tasked ' + self.module_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
+                '[*] Tasked ' + self.record_options['Agent']['Value'] + ' to run Task ' + str(response['taskID'])))
             agent_return = threading.Thread(target=self.tasking_id_returns,
-                                            args=[self.module_options['Agent']['Value'], response['taskID']])
+                                            args=[self.record_options['Agent']['Value'], response['taskID']])
             agent_return.daemon = True
             agent_return.start()
         elif 'error' in response.keys():
