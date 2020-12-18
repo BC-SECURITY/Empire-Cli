@@ -1,4 +1,4 @@
-**This code is in a closed beta state. There may be bugs and major changes before a full release.
+**This code is in a beta state. There may be bugs and major changes before a full release.
 Please provide feedback and bugs in the [issues](https://github.com/BC-SECURITY/Empire-Cli/issues) or in our Discord**
 
 Empire-Cli
