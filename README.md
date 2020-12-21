@@ -82,6 +82,14 @@ This third one gets a bit more complex. Instead of providing a `value` to the pa
 This tells the CLI that it expects the user to send the parameters as part of their command. In other words the user needs to type `bypassuac http1` in order for this to execute.
 The parameters are passed in the order they are defined in config.yaml. There are some convenient autocompletes if the field is named `Listener` or `Agent`.
 
+```yaml
+shortcuts:
+  powershell:
+    whoami:
+      shell: whoami
+```
+The last one is much more simple. Instead of running a module, we run a shell command.
+
 ### Usage
 
 #### Main Menu
