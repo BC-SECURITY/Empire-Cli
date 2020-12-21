@@ -147,11 +147,11 @@ def display_module(module_name, module):
     if module['Techniques']:
         print("\nMITRE ATT&CK Techniques:")
         for techniques in module['Techniques']:
-            print("https://attack.mitre.org/techniques/" + techniques)
+            print("  https://attack.mitre.org/techniques/" + techniques)
 
     if module['Software']:
         print("\nMITRE ATT&CK Software:")
-        print("https://attack.mitre.org/software/" + module['Software'])
+        print("  https://attack.mitre.org/software/" + module['Software'])
 
     print("\nAuthors:")
     for author in module['Author']:
