@@ -128,36 +128,36 @@ def text_wrap(text, width=35):
 
 
 def display_module(module_name, module):
-    print('\n{0: >20}'.format("Name: ") + str(module_name.split('/')[-1]))
-    print('{0: >20}'.format("Module: ") + str(module['Name']))
+    print(color('\n{0: >20}'.format("Name: "), 'blue') + str(module_name.split('/')[-1]))
+    print(color('{0: >20}'.format("Module: "), 'blue') + str(module['Name']))
     if 'NeedsAdmin' in module:
-        print('{0: >20}'.format("NeedsAdmin: ") + ("True" if module['NeedsAdmin'] else "False"))
+        print(color('{0: >20}'.format("NeedsAdmin: "), 'blue') + ("True" if module['NeedsAdmin'] else "False"))
     if 'OpsecSafe' in module:
-        print('{0: >20}'.format("OpsecSafe: ") + ("True" if module['OpsecSafe'] else "False"))
+        print(color('{0: >20}'.format("OpsecSafe: "), 'blue') + ("True" if module['OpsecSafe'] else "False"))
     if 'Language' in module:
-        print('{0: >20}'.format("Language: ") + str(module['Language']))
+        print(color('{0: >20}'.format("Language: "), 'blue') + str(module['Language']))
     if 'MinLanguageVersion' in module:
-        print('{0: >20}'.format("MinLanguageVersion: ") + str(module['MinLanguageVersion']))
+        print(color('{0: >20}'.format("MinLanguageVersion: "), 'blue') + str(module['MinLanguageVersion']))
     if 'Background' in module:
-        print('{0: >20}'.format("Background: ") + ("True" if module['Background'] else "False"))
+        print(color('{0: >20}'.format("Background: "), 'blue') + ("True" if module['Background'] else "False"))
     if 'OutputExtension' in module:
-        print('{0: >20}'.format("OutputExtension: ") + (
+        print(color('{0: >20}'.format("OutputExtension: "), 'blue') + (
             str(module['OutputExtension']) if module['OutputExtension'] else "None"))
 
     if module['Techniques']:
-        print("\nMITRE ATT&CK Techniques:")
+        print(color("\nMITRE ATT&CK Techniques:", 'blue'))
         for techniques in module['Techniques']:
             print("  https://attack.mitre.org/techniques/" + techniques)
 
     if module['Software']:
-        print("\nMITRE ATT&CK Software:")
+        print(color("\nMITRE ATT&CK Software:", 'blue'))
         print("  https://attack.mitre.org/software/" + module['Software'])
 
-    print("\nAuthors:")
+    print(color("\nAuthors:", 'blue'))
     for author in module['Author']:
         print("  " + author)
 
-    print("\nDescription:")
+    print(color("\nDescription:", 'blue'))
     desc = wrap_string(module['Description'], width=60, indent=2, indentAll=True)
     if len(desc.splitlines()) == 1:
         print("  " + str(desc))
@@ -169,7 +169,7 @@ def display_module(module_name, module):
         if isinstance(comments, list):
             comments = ' '.join(comments)
         if comments.strip() != '':
-            print("\nComments:")
+            print(color("\nComments:", 'blue'))
             if isinstance(comments, list):
                 comments = ' '.join(comments)
             comment = wrap_string(comments, width=60, indent=2, indentAll=True)
@@ -215,13 +215,13 @@ def display_stager(stager):
     Displays a stager's information structure.
     """
 
-    print("\nName: " + stager['Name'])
+    print(color("\nName: ", 'blue') + stager['Name'])
 
-    print("\nAuthors:")
+    print(color("\nAuthors:", 'blue'))
     for author in stager['Author']:
         print("  " + author)
 
-    print("\nDescription:")
+    print(color("\nDescription:", 'blue'))
     desc = wrap_string(stager['Description'], width=50, indent=2, indentAll=True)
     if len(desc.splitlines()) == 1:
         print("  " + str(desc))
@@ -233,7 +233,7 @@ def display_stager(stager):
         if isinstance(comments, list):
             comments = ' '.join(comments)
         if comments.strip() != '':
-            print("\nComments:")
+            print(color("\nComments:", 'blue'))
             if isinstance(comments, list):
                 comments = ' '.join(comments)
             comment = wrap_string(comments, width=60, indent=2, indentAll=True)
