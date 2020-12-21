@@ -145,11 +145,11 @@ class InteractMenu(Menu):
         agent_return.start()
 
     @command
-    def options(self) -> None:
+    def info(self) -> None:
         """
-        Display agent options.
+        Display agent info.
 
-        Usage: options
+        Usage: info
         """
         agent_list = []
         for key, value in self.agent_options.items():
