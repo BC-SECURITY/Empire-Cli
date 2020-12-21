@@ -125,3 +125,122 @@ def text_wrap(text, width=35):
     :return: String wrapped by newlines at the given width
     """
     return '\n'.join(textwrap.wrap(str(text), width=width))
+
+
+def display_module(module_name, module):
+    print('\n{0: >20}'.format("Name: ") + str(module_name.split('/')[-1]))
+    print('{0: >20}'.format("Module: ") + str(module['Name']))
+    if 'NeedsAdmin' in module:
+        print('{0: >20}'.format("NeedsAdmin: ") + ("True" if module['NeedsAdmin'] else "False"))
+    if 'OpsecSafe' in module:
+        print('{0: >20}'.format("OpsecSafe: ") + ("True" if module['OpsecSafe'] else "False"))
+    if 'Language' in module:
+        print('{0: >20}'.format("Language: ") + str(module['Language']))
+    if 'MinLanguageVersion' in module:
+        print('{0: >20}'.format("MinLanguageVersion: ") + str(module['MinLanguageVersion']))
+    if 'Background' in module:
+        print('{0: >20}'.format("Background: ") + ("True" if module['Background'] else "False"))
+    if 'OutputExtension' in module:
+        print('{0: >20}'.format("OutputExtension: ") + (
+            str(module['OutputExtension']) if module['OutputExtension'] else "None"))
+
+    if module['Techniques']:
+        print("\nMITRE ATT&CK Techniques:")
+        for techniques in module['Techniques']:
+            print("https://attack.mitre.org/techniques/" + techniques)
+
+    if module['Software']:
+        print("\nMITRE ATT&CK Software:")
+        print("https://attack.mitre.org/software/" + module['Software'])
+
+    print("\nAuthors:")
+    for author in module['Author']:
+        print("  " + author)
+
+    print("\nDescription:")
+    desc = wrap_string(module['Description'], width=60, indent=2, indentAll=True)
+    if len(desc.splitlines()) == 1:
+        print("  " + str(desc))
+    else:
+        print(desc)
+
+    if 'Comments' in module:
+        comments = module['Comments']
+        if isinstance(comments, list):
+            comments = ' '.join(comments)
+        if comments.strip() != '':
+            print("\nComments:")
+            if isinstance(comments, list):
+                comments = ' '.join(comments)
+            comment = wrap_string(comments, width=60, indent=2, indentAll=True)
+            if len(comment.splitlines()) == 1:
+                print("  " + str(comment))
+            else:
+                print(comment)
+    print("\n")
+
+
+def wrap_string(data, width, indent, indentAll=False, followingHeader=None):
+    """
+    Print a option description message in a nicely
+    wrapped and formatted paragraph.
+
+    followingHeader -> text that also goes on the first line
+    """
+
+    data = str(data)
+
+    if len(data) > width:
+        lines = textwrap.wrap(textwrap.dedent(data).strip(), width=width)
+
+        if indentAll:
+            returnString = ' ' * indent + lines[0]
+            if followingHeader:
+                returnString += " " + followingHeader
+        else:
+            returnString = lines[0]
+            if followingHeader:
+                returnString += " " + followingHeader
+        i = 1
+        while i < len(lines):
+            returnString += "\n" + ' ' * indent + (lines[i]).strip()
+            i += 1
+        return returnString
+    else:
+        return data.strip()
+
+
+def display_stager(stager):
+    """
+    Displays a stager's information structure.
+    """
+
+    print("\nName: " + stager['Name'])
+
+    print("\nAuthors:")
+    for author in stager['Author']:
+        print("  " + author)
+
+    print("\nDescription:")
+    desc = wrap_string(stager['Description'], width=50, indent=2, indentAll=True)
+    if len(desc.splitlines()) == 1:
+        print("  " + str(desc))
+    else:
+        print(desc)
+
+    if 'Comments' in stager['Comments']:
+        comments = stager['Comments']
+        if isinstance(comments, list):
+            comments = ' '.join(comments)
+        if comments.strip() != '':
+            print("\nComments:")
+            if isinstance(comments, list):
+                comments = ' '.join(comments)
+            comment = wrap_string(comments, width=60, indent=2, indentAll=True)
+            if len(comment.splitlines()) == 1:
+                print("  " + str(comment))
+            else:
+                print(comment)
+
+    print("\n")
+

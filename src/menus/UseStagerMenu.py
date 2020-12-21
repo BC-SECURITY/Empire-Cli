@@ -4,6 +4,7 @@ import textwrap
 
 from prompt_toolkit.completion import Completion
 
+from src.utils import print_util
 from src.EmpireCliState import state
 from src.menus.UseMenu import UseMenu
 from src.utils.autocomplete_util import filtered_search_list, position_util
@@ -31,6 +32,7 @@ class UseStagerMenu(UseMenu):
         else:
             self.use(kwargs['selected'])
             self.info()
+            self.options()
             return True
 
     def use(self, module: string) -> None:
@@ -41,6 +43,7 @@ class UseStagerMenu(UseMenu):
         """
         if module in state.stagers.keys():  # todo rename module?
             self.selected = module
+            self.stager = state.stagers[module]
             self.record_options = state.stagers[module]['options']
 
             listener_list = []
@@ -83,6 +86,15 @@ class UseStagerMenu(UseMenu):
         Usage: generate
         """
         self.execute()
+
+    @command
+    def info(self):
+        """
+        Info about current stager (ex: Authors, Description, etc)
+
+        Usage: info
+        """
+        print_util.display_stager(self.stager)
 
 
 use_stager_menu = UseStagerMenu()

@@ -26,7 +26,7 @@ class UsePluginMenu(UseMenu):
             return False
         else:
             self.use(kwargs['selected'])
-            self.info()
+            self.options()
             return True
 
     def use(self, plugin_name: str) -> None:

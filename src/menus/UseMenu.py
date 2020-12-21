@@ -68,11 +68,11 @@ class UseMenu(Menu):
             print(print_util.color(f'Could not find field: {key}'))
 
     @command
-    def info(self):
+    def options(self):
         """
         Print the current record options
 
-        Usage: info
+        Usage: options
         """
         record_list = []
         for key, value in self.record_options.items():

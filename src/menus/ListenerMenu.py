@@ -19,7 +19,7 @@ class ListenerMenu(Menu):
         return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
-        if cmd_line[0] in ['kill', 'info'] and position_util(cmd_line, 2, word_before_cursor):
+        if cmd_line[0] in ['kill', 'info', 'options'] and position_util(cmd_line, 2, word_before_cursor):
             for listener in filtered_search_list(word_before_cursor, state.listeners.keys()):
                 yield Completion(listener, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
@@ -43,11 +43,11 @@ class ListenerMenu(Menu):
         table_util.print_table(listener_list, 'Listeners List')
 
     @command
-    def info(self, listener_name: string) -> None:
+    def options(self, listener_name: string) -> None:
         """
-        Get details for the selected listener
+        Get option details for the selected listener
 
-        Usage: info <listener_name>
+        Usage: options <listener_name>
         """
         if listener_name not in state.listeners:
             return None

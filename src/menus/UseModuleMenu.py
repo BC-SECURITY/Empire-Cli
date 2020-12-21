@@ -56,6 +56,7 @@ class UseModuleMenu(UseMenu):
             if 'agent' in kwargs and 'Agent' in self.record_options:
                 self.set('Agent', kwargs['agent'])
             self.info()
+            self.options()
             return True
 
     def use(self, module: str) -> None:
@@ -66,6 +67,7 @@ class UseModuleMenu(UseMenu):
         """
         if module in state.modules.keys():
             self.selected = module
+            self.module = state.modules[module]
             self.record_options = state.modules[module]['options']
 
     @command
@@ -100,6 +102,15 @@ class UseModuleMenu(UseMenu):
         Usage: generate
         """
         self.execute()
+
+    @command
+    def info(self):
+        """
+        Info about current module (ex: Authors, Description, etc)
+
+        Usage: info
+        """
+        print_util.display_module(self.selected, self.module)
 
 
 use_module_menu = UseModuleMenu()
