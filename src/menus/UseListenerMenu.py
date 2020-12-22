@@ -10,7 +10,7 @@ from src.utils.cli_util import register_cli_commands, command
 @register_cli_commands
 class UseListenerMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='uselistener', selected='', record_options=None)
+        super().__init__(display_name='uselistener', selected='', record=None, record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -39,7 +39,7 @@ class UseListenerMenu(UseMenu):
         if module in state.listener_types:
             self.selected = module
             # TODO: Add API endpoint for listener info
-            # self.listener = state.get_listener_info(self.selected)
+            # self.record = state.get_listener_info(self.selected)
             self.record_options = state.get_listener_options(self.selected)['listeneroptions']
 
     @command

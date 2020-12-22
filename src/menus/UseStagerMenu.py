@@ -14,7 +14,7 @@ from src.utils.cli_util import register_cli_commands, command
 @register_cli_commands
 class UseStagerMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='usestager', selected='', record_options=None)
+        super().__init__(display_name='usestager', selected='', record=None, record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -43,7 +43,7 @@ class UseStagerMenu(UseMenu):
         """
         if module in state.stagers.keys():  # todo rename module?
             self.selected = module
-            self.stager = state.stagers[module]
+            self.record = state.stagers[module]
             self.record_options = state.stagers[module]['options']
 
             listener_list = []
@@ -86,15 +86,6 @@ class UseStagerMenu(UseMenu):
         Usage: generate
         """
         self.execute()
-
-    @command
-    def info(self):
-        """
-        Info about current stager (ex: Authors, Description, etc)
-
-        Usage: info
-        """
-        print_util.display_stager(self.stager)
 
 
 use_stager_menu = UseStagerMenu()
