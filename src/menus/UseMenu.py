@@ -14,6 +14,7 @@ class UseMenu(Menu):
     A base menu object that can be used when needing the typical "use" behavior.
     Such as set, unset, info
     """
+
     def __init__(self, display_name='', selected='', record=None, record_options=None):
         """
         :param display_name: See Menu
@@ -96,8 +97,17 @@ class UseMenu(Menu):
         """
         record_list = []
 
-        for key, value in self.record.items():
-            if key in ['Author', 'Comments', 'Description']:
-                record_list.append([print_util.color(key, 'blue'), print_util.text_wrap(value)])
+        for key, values in self.record.items():
+            if (key in ['Name', 'Author', 'Comments', 'Description', 'Language', 'Background', 'NeedsAdmin',
+                        'OpsecSafe', 'Techniques', 'Software']):
+                if isinstance(values, list):
+                    if values[0] != '':
+                        for i, value in enumerate(values):
+                            if i == 0:
+                                record_list.append([print_util.color(key, 'blue'), print_util.text_wrap(value, width=40)])
+                            else:
+                                record_list.append(['', print_util.text_wrap(value)])
+                elif values != '':
+                    record_list.append([print_util.color(key, 'blue'), print_util.text_wrap(values, width=40)])
 
         table_util.print_table(record_list, 'Record Info', colored_header=False, no_borders=True)
