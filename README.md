@@ -45,7 +45,7 @@ servers:
     socketport: 5000
     username: empireadmin
     password: password123
-    autoconnect: True
+    autoconnect: true
 ```
 - **suppress-self-cert-warning** - Suppress the http warnings when connecting to an Empire instance that uses a self-signed cert
 - **shortcuts** - Shortcuts defined here allow the user to define their own frequently used modules and assign a command to them.
