@@ -4,7 +4,7 @@ from prompt_toolkit.completion import Completion
 
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
-from src.utils import table_util, print_util
+from src.utils import table_util, print_util, date_util
 from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_util import register_cli_commands, command
 
@@ -37,14 +37,13 @@ class AgentMenu(Menu):
         """
         agent_list = []
         agent_formatting = []
-        x = state.get_agents()
-        for agent_name in x:
-            agent_list.append([str(x[agent_name]['ID']), x[agent_name]['name'],
-                               x[agent_name]['language'], x[agent_name]['internal_ip'], x[agent_name]['username'],
-                               x[agent_name]['process_name'], x[agent_name]['process_id'],
-                               str(x[agent_name]['delay']) + '/' + str(x[agent_name]['jitter']),
-                               x[agent_name]['lastseen_time'], x[agent_name]['listener']])
-            agent_formatting.append([x[agent_name]['stale'], x[agent_name]['high_integrity']])
+        for agent in state.get_agents().values():
+            agent_list.append([str(agent['ID']), agent['name'],
+                               agent['language'], agent['internal_ip'], agent['username'],
+                               agent['process_name'], agent['process_id'],
+                               str(agent['delay']) + '/' + str(agent['jitter']),
+                               date_util.humanize_datetime(agent['lastseen_time']), agent['listener']])
+            agent_formatting.append([agent['stale'], agent['high_integrity']])
 
         agent_formatting.insert(0, ['Stale', 'High Integrity'])
         agent_list.insert(0, ['ID', 'Name', 'Language', 'Internal IP', 'Username', 'Process',

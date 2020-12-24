@@ -13,6 +13,7 @@ prompt-toolkit = "^3.0.8"
 docopt = "^0.6.2"
 python-socketio = {extras = ["client"], version = "^4.6.0"}
 PyYAML = "^5.3.1"
+humanize = "^3.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
