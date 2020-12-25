@@ -13,7 +13,9 @@ from prompt_toolkit.patch_stdout import patch_stdout
 
 from src.EmpireCliConfig import empire_config
 from src.EmpireCliState import state
+from src.MenuState import menu_state
 from src.ShortcutHandler import shortcut_handler
+from src.bindings import bindings
 from src.menus import Menu
 from src.menus.AdminMenu import admin_menu
 from src.menus.AgentMenu import agent_menu
@@ -66,7 +68,7 @@ class MyCustomCompleter(Completer):
                                                                                   word_before_cursor)
             else:
                 # Menu specific commands
-                yield from self.empire_cli.current_menu.get_completions(document, complete_event, cmd_line,
+                yield from menu_state.current_menu.get_completions(document, complete_event, cmd_line,
                                                                         word_before_cursor)
 
 
@@ -75,7 +77,6 @@ class CliExitException(BaseException):
 
 
 class EmpireCli(object):
-
     def __init__(self) -> None:
         self.completer = MyCustomCompleter(self)
         self.menus: Dict[Menu] = {
@@ -93,8 +94,6 @@ class EmpireCli(object):
             'AdminMenu': admin_menu,
             'ChatMenu': chat_menu
         }
-        self.current_menu = self.menus['MainMenu']
-        self.menu_history = [self.menus['MainMenu']]
 
     @staticmethod
     def bottom_toolbar():
@@ -122,22 +121,11 @@ class EmpireCli(object):
 
         return None
 
-    def change_menu(self, menu: Menu, **kwargs):
-        if menu.on_enter(**kwargs):
-            self.current_menu.on_leave()
-            self.current_menu = menu
-            self.menu_history.append(menu)
-
-    def change_menu_back(self):
-        if self.current_menu != self.menus['MainMenu']:
-            self.current_menu.on_leave()
-            del self.menu_history[-1]
-            self.current_menu = self.menu_history[-1]
-
-    def update_in_bg(self, session: PromptSession):
+    @staticmethod
+    def update_in_bg(session: PromptSession):
         while True:
-            time.sleep(3)
-            session.message = HTML(self.current_menu.get_prompt())
+            time.sleep(2)
+            session.message = HTML(menu_state.current_menu.get_prompt())
             session.app.invalidate()
 
     def main(self):
@@ -159,6 +147,7 @@ class EmpireCli(object):
         print("including the default username and password.")
 
         session = PromptSession(
+            key_bindings=bindings,
             history=history,
             # auto_suggest=AutoSuggestFromHistory(),
             # enable_history_search=True,
@@ -194,7 +183,7 @@ class EmpireCli(object):
         while True:
             try:
                 with patch_stdout():
-                    text = session.prompt(HTML(self.current_menu.get_prompt()), refresh_interval=None)
+                    text = session.prompt(HTML(menu_state.current_menu.get_prompt()), refresh_interval=None)
                     # cmd_line = list(map(lambda s: s.lower(), shlex.split(text)))
                     # TODO what to do about case sensitivity for parsing options.
                     cmd_line = list(shlex.split(text))
@@ -222,70 +211,67 @@ class EmpireCli(object):
         # Switch Menus
         if text == 'main':
             print_util.title(state.empire_version, len(state.modules), len(state.listeners), len(state.agents))
-            self.change_menu(self.menus['MainMenu'])
+            menu_state.push(self.menus['MainMenu'])
         elif text == 'listeners':
-            self.change_menu(self.menus['ListenerMenu'])
+            menu_state.push(self.menus['ListenerMenu'])
         elif text == 'chat':
-            self.change_menu(self.menus['ChatMenu'])
-        elif self.current_menu == self.menus['ChatMenu']:
-            if text == 'back':
-                self.change_menu_back()
-            else:
-                self.current_menu.send_chat(text)
+            menu_state.push(self.menus['ChatMenu'])
+        elif menu_state.current_menu_name == 'ChatMenu':
+            menu_state.current_menu.send_chat(text)
         elif text == 'agents':
-            self.change_menu(self.menus['AgentMenu'])
+            menu_state.push(self.menus['AgentMenu'])
         elif text == 'credentials':
-            self.change_menu(self.menus['CredentialMenu'])
+            menu_state.push(self.menus['CredentialMenu'])
         elif text == 'plugins':
-            self.change_menu(self.menus['PluginMenu'])
+            menu_state.push(self.menus['PluginMenu'])
         elif text == 'admin':
-            self.change_menu(self.menus['AdminMenu'])
+            menu_state.push(self.menus['AdminMenu'])
         elif cmd_line[0] == 'uselistener' and len(cmd_line) > 1:
             if cmd_line[1] in state.listener_types:
-                self.change_menu(self.menus['UseListenerMenu'], selected=cmd_line[1])
+                menu_state.push(self.menus['UseListenerMenu'], selected=cmd_line[1])
             else:
                 print(f'No listener {cmd_line[1]}')
         elif cmd_line[0] == 'usestager' and len(cmd_line) > 1:
             if cmd_line[1] in state.stagers:
-                self.change_menu(self.menus['UseStagerMenu'], selected=cmd_line[1])
+                menu_state.push(self.menus['UseStagerMenu'], selected=cmd_line[1])
             else:
                 print(f'No stager {cmd_line[1]}')
         elif cmd_line[0] == 'interact' and len(cmd_line) > 1:
             if cmd_line[1] in state.agents:
-                self.change_menu(self.menus['InteractMenu'], selected=cmd_line[1])
+                menu_state.push(self.menus['InteractMenu'], selected=cmd_line[1])
             else:
                 print(f'No agent {cmd_line[1]}')
         elif cmd_line[0] == 'useplugin' and len(cmd_line) > 1:
             if cmd_line[1] in state.plugins:
-                self.change_menu(self.menus['UsePluginMenu'], selected=cmd_line[1])
+                menu_state.push(self.menus['UsePluginMenu'], selected=cmd_line[1])
             else:
                 print(f'No plugin {cmd_line[1]}')
         elif cmd_line[0] == 'usemodule' and len(cmd_line) > 1:
             if cmd_line[1] in state.modules:
-                if self.current_menu == self.menus['InteractMenu']:
-                    self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1],
-                                     agent=self.current_menu.selected)
+                if menu_state.current_menu_name == 'InteractMenu':
+                    menu_state.push(self.menus['UseModuleMenu'], selected=cmd_line[1],
+                                    agent=menu_state.current_menu.selected)
                 else:
-                    self.change_menu(self.menus['UseModuleMenu'], selected=cmd_line[1])
+                    menu_state.push(self.menus['UseModuleMenu'], selected=cmd_line[1])
             else:
                 print(f'No module {cmd_line[1]}')
         elif text == 'shell':
-            if self.current_menu == self.menus['InteractMenu']:
-                self.change_menu(self.menus['ShellMenu'], selected=self.current_menu.selected)
+            if menu_state.current_menu_name == 'InteractMenu':
+                menu_state.push(self.menus['ShellMenu'], selected=menu_state.current_menu.selected)
             else:
                 pass
-        elif self.current_menu == self.menus['ShellMenu']:
+        elif menu_state.current_menu_name == 'ShellMenu':
             if text == 'exit':
-                self.change_menu(self.menus['InteractMenu'], selected=self.current_menu.selected)
+                menu_state.push(self.menus['InteractMenu'], selected=menu_state.current_menu.selected)
             else:
-                self.current_menu.shell(self.current_menu.selected, text)
+                menu_state.current_menu.shell(menu_state.current_menu.selected, text)
         elif cmd_line[0] == 'report':
             if len(cmd_line) > 1:
                 state.generate_report(cmd_line[1])
             else:
                 state.generate_report('')
         elif text == 'back':
-            self.change_menu_back()
+            menu_state.pop()
         elif text == 'exit':
             choice = input(print_util.color("[>] Exit? [y/N] ", "red"))
             if choice.lower() == "y":
@@ -295,7 +281,7 @@ class EmpireCli(object):
         else:
             func = None
             try:
-                func = getattr(self.current_menu if hasattr(self.current_menu, cmd_line[0]) else self, cmd_line[0])
+                func = getattr(menu_state.current_menu if hasattr(menu_state.current_menu, cmd_line[0]) else self, cmd_line[0])
             except:
                 pass
 
@@ -318,9 +304,9 @@ class EmpireCli(object):
                     pass
                 except SystemExit as e:
                     pass
-            elif not func and self.current_menu == self.menus['InteractMenu']:
+            elif not func and menu_state.current_menu_name == 'InteractMenu':
                 if cmd_line[0] in shortcut_handler.get_names(self.menus['InteractMenu'].agent_language):
-                    self.current_menu.execute_shortcut(cmd_line[0], cmd_line[1:])
+                    menu_state.current_menu.execute_shortcut(cmd_line[0], cmd_line[1:])
 
 
 if __name__ == "__main__":

@@ -22,6 +22,7 @@ class ChatMenu(Menu):
         return f"<b><ansigreen>{state.me['username']}</ansigreen></b>: "
 
     def on_enter(self):
+        print('Exit Chat Menu with ctrl-c')
         self.my_username = state.me['username']
 
         # log into room and get chat history
@@ -35,7 +36,7 @@ class ChatMenu(Menu):
         return True
 
     def on_leave(self, **kwargs) -> bool:
-        self.exit_room()
+        state.sio.emit('chat/leave')
         return True
 
     def on_message(self, data):
@@ -47,9 +48,6 @@ class ChatMenu(Menu):
 
     def send_chat(self, text):
         state.sio.emit('chat/message', {'message': text})
-
-    def exit_room(self):
-        state.sio.emit('chat/leave')
 
 
 chat_menu = ChatMenu()
