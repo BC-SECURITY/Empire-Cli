@@ -103,14 +103,5 @@ class UseModuleMenu(UseMenu):
         """
         self.execute()
 
-    # @command
-    # def info(self):
-    #     """
-    #     Info about current module (ex: Authors, Description, etc)
-    #
-    #     Usage: info
-    #     """
-    #     print_util.display_module(self.selected, self.module)
-
 
 use_module_menu = UseModuleMenu()
