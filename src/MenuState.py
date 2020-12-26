@@ -1,3 +1,5 @@
+from typing import Optional
+
 from src.menus.MainMenu import main_menu
 from src.menus.Menu import Menu
 
@@ -8,8 +10,9 @@ class MenuState:
     """
 
     def __init__(self, starting_menu: Menu):
-        self.current_menu: Menu = starting_menu
+        self.current_menu: Optional[Menu] = None
         self.menu_history = []
+        self.push(starting_menu)
 
     @property
     def current_menu_name(self) -> str:
@@ -17,7 +20,8 @@ class MenuState:
 
     def push(self, menu: Menu, **kwargs):
         if menu.on_enter(**kwargs):
-            self.current_menu.on_leave()
+            if self.current_menu:  # will be None when bootstrapping
+                self.current_menu.on_leave()
             self.current_menu = menu
             self.menu_history.append(menu)
 
