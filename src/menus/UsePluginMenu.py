@@ -37,6 +37,7 @@ class UsePluginMenu(UseMenu):
         """
         if plugin_name in state.plugins:
             self.selected = plugin_name
+            self.record = state.plugins[plugin_name]
             self.record_options = state.plugins[plugin_name]['options']
 
     @command

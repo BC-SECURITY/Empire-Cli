@@ -3,7 +3,7 @@ servers:
   localhost:
     host: https://localhost
     port: 1337
-    socketport: 5000
+    socketport: 5001
     username: empireadmin
     password: password123
   other-server:
