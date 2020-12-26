@@ -18,7 +18,7 @@ class AgentMenu(Menu):
         return self._cmd_registry + super().autocomplete()
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
-        if cmd_line[0] in ['kill', 'info', 'options', 'clear', 'rename'] and position_util(cmd_line, 2, word_before_cursor):
+        if cmd_line[0] in ['kill', 'clear', 'rename'] and position_util(cmd_line, 2, word_before_cursor):
             for agent in filtered_search_list(word_before_cursor, state.agents.keys()):
                 yield Completion(agent, start_position=-len(word_before_cursor))
         elif position_util(cmd_line, 1, word_before_cursor):
