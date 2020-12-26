@@ -91,9 +91,9 @@ class UseMenu(Menu):
     @command
     def info(self):
         """"
-        Print default info. Override this if you want more things like for modules.
+        Print default info on the current record.
 
-        Usage: stuff.
+        Usage: info
         """
         record_list = []
 
