@@ -94,11 +94,13 @@ class EmpireCli(object):
             'AdminMenu': admin_menu,
             'ChatMenu': chat_menu
         }
+        for menu in self.menus.values():
+            state.register_menu(menu)
 
     @staticmethod
     def bottom_toolbar():
         if state.connected:
-            return HTML(f'Connected to {state.host}:{state.port}. {len(state.agents)} agents.')
+            return HTML(f'Connected to {state.host}:{state.port}. {len(state.agents)} agents. {len(chat_menu.chat_cache)} unread messages.')
         else:
             return ''
 

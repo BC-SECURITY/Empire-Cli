@@ -1,4 +1,5 @@
 from src.EmpireCliState import state
+from src.MenuState import menu_state
 from src.menus.Menu import Menu
 from src.utils import print_util
 from src.utils.autocomplete_util import position_util
@@ -10,6 +11,7 @@ class ChatMenu(Menu):
     def __init__(self):
         super().__init__(display_name='chat', selected='')
         self.my_username = ''
+        self.chat_cache = []
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -21,30 +23,59 @@ class ChatMenu(Menu):
     def get_prompt(self) -> str:
         return f"<b><ansigreen>{state.me['username']}</ansigreen></b>: "
 
+    def on_connect(self):
+        state.sio.on('chat/join', self.on_chat_join)
+        state.sio.on('chat/leave', self.on_chat_leave)
+        state.sio.on('chat/message', self.on_chat_message)
+        state.sio.emit('chat/history')
+        state.sio.emit('chat/join')
+
+    def on_disconnect(self):
+        state.sio.emit('chat/leave')
+
     def on_enter(self):
         print('Exit Chat Menu with ctrl-c')
         self.my_username = state.me['username']
 
-        # log into room and get chat history
-        state.sio.emit('chat/join')
-        state.sio.emit('chat/history')
+        for message in self.chat_cache:
+            print(message)
 
-        # subscribe to chat notifications
-        state.sio.on('chat/join', lambda data: print(print_util.color('[+] ' + data['message'])))
-        state.sio.on('chat/leave', lambda data: print(print_util.color('[+] ' + data['message'])))
-        state.sio.on('chat/message', self.on_message)
+        self.chat_cache = []
+
         return True
 
-    def on_leave(self, **kwargs) -> bool:
-        state.sio.emit('chat/leave')
-        return True
+    @staticmethod
+    def is_chat_active():
+        return menu_state.current_menu_name == 'ChatMenu'
 
-    def on_message(self, data):
+    def on_chat_join(self, data):
+        message = print_util.color('[+] ' + data['message'])
+        if self.is_chat_active() == 'ChatMenu':
+            print(message)
+        else:
+            self.chat_cache.append(message)
+
+    def on_chat_leave(self, data):
+        message = print_util.color('[+] ' + data['message'])
+        if self.is_chat_active():
+            print(message)
+        else:
+            self.chat_cache.append(message)
+
+    def on_chat_message(self, data):
         if data['username'] != state.me['username'] or data.get('history') is True:
             if data['username'] == state.me['username']:
-                print(print_util.color(data['username'], 'green') + ': ' + data['message'])
+                message = print_util.color(data['username'], 'green') + ': ' + data['message']
+                if self.is_chat_active():
+                    print(message)
+                else:
+                    self.chat_cache.append(print_util.color(message))
             else:
-                print(print_util.color(data['username'], 'red') + ': ' + data['message'])
+                message = print_util.color(data['username'], 'red') + ': ' + data['message']
+                if self.is_chat_active():
+                    print(message)
+                else:
+                    self.chat_cache.append(message)
 
     def send_chat(self, text):
         state.sio.emit('chat/message', {'message': text})
