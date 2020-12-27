@@ -4,6 +4,7 @@ from typing import Dict, Optional
 import requests
 import socketio
 
+from src.menus import Menu
 from src.utils import print_util
 
 
@@ -14,6 +15,7 @@ class EmpireCliState(object):
         self.token = ''
         self.sio: Optional[socketio.Client] = None
         self.connected = False
+        self.menus = []
 
         # These are cached values that can be used for autocompletes and other things.
         # When switching menus, refresh these cached values by calling their respective 'get' functions.
@@ -26,6 +28,18 @@ class EmpireCliState(object):
         self.plugins = {}
         self.me = {}
         self.empire_version = ''
+
+    def register_menu(self, menu: Menu):
+        self.menus.append(menu)
+
+    def notify_connected(self):
+        print(print_util.color('[*] Calling connection handlers.'))
+        for menu in self.menus:
+            menu.on_connect()
+
+    def notify_disconnected(self):
+        for menu in self.menus:
+            menu.on_disconnect()
 
     def connect(self, host, port, socketport, username, password):
         self.host = host
@@ -48,6 +62,7 @@ class EmpireCliState(object):
 
         self.init()
         self.init_handlers()
+        self.notify_connected()
         print_util.title(self.empire_version, len(self.modules), len(self.listeners), len(self.agents))
         return response
 
@@ -81,8 +96,9 @@ class EmpireCliState(object):
         self.port = ''
         self.token = ''
         self.connected = False
+        self.notify_disconnected()
+
         if self.sio:
-            self.sio.emit('chat/leave')
             self.sio.disconnect()
 
     def shutdown(self):

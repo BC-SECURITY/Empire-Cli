@@ -6,6 +6,7 @@ servers:
     socketport: 5000
     username: empireadmin
     password: password123
+    autoconnect: true
   other-server:
     host: https://localhost
     port: 1337
