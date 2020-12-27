@@ -194,10 +194,19 @@ class InteractMenu(Menu):
 
         if not shortcut:
             return None
+
+        if shortcut.shell:
+            self.shell(shortcut.shell)
+            return
+
         if not len(params) == len(shortcut.get_dynamic_param_names()):
             return None  # todo log message
-        module_options = dict.copy(state.modules[shortcut.module]['options'])
 
+        if shortcut.module not in state.modules:
+            print(print_util.color(f'No module named {shortcut.name} found on the server.'))
+            return None
+
+        module_options = dict.copy(state.modules[shortcut.module]['options'])
         post_body = {}
 
         for i, shortcut_param in enumerate(shortcut.get_dynamic_params()):

@@ -25,6 +25,7 @@ class ShellMenu(Menu):
             return False
         else:
             self.use(kwargs['selected'])
+            print('Exit Shell Menu with ctrl-c')
             return True
 
     def get_prompt(self) -> str:

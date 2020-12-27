@@ -38,19 +38,14 @@ def print_agent_table(data: List[List[str]] = None, formatting: List[List[str]] 
         data[0][x] = print_utils.color(data[0][x], 'blue')
 
     for x in range(len(data))[1:]:
-        stamp_date = datetime.strptime(data[x][8], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(tz=None)  # Display local
-        stamp_display_local = stamp_date.strftime('%Y-%m-%d %H:%M:%S')
-
         # Add asterisk for high-integrity agents
         if formatting[x][1]:
             data[x][1] = data[x][1] + '*'
 
         # color agents
         if formatting[x][0]:
-            data[x][8] = stamp_display_local
             color = 'red'
         elif not formatting[x][0]:
-            data[x][8] = stamp_display_local
             color = 'green'
 
         # Set colors for entire row

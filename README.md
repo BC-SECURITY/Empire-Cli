@@ -36,7 +36,7 @@ The Empire-Cli configuration is managed via [config.yaml](./config.yaml).
 
 - **servers** - The servers block is meant to give the user the ability to set up frequently used Empire servers.
 If a server is listed in this block then when connecting to the server they need only type: `connect -c localhost`.
-This tells Empire-Cli to use the connection info for the server named localhost from the yaml.
+This tells Empire-Cli to use the connection info for the server named localhost from the yaml. In addition, if autoconnect is set to `True`, the Cli will automatically connect to that server when starting up.
 ```yaml
 servers:
   localhost:
@@ -45,6 +45,7 @@ servers:
     socketport: 5000
     username: empireadmin
     password: password123
+    autoconnect: true
 ```
 - **suppress-self-cert-warning** - Suppress the http warnings when connecting to an Empire instance that uses a self-signed cert
 - **shortcuts** - Shortcuts defined here allow the user to define their own frequently used modules and assign a command to them.
@@ -81,6 +82,26 @@ shortcuts:
 This third one gets a bit more complex. Instead of providing a `value` to the parameter, it is marked as `dynamic`.
 This tells the CLI that it expects the user to send the parameters as part of their command. In other words the user needs to type `bypassuac http1` in order for this to execute.
 The parameters are passed in the order they are defined in config.yaml. There are some convenient autocompletes if the field is named `Listener` or `Agent`.
+
+```yaml
+shortcuts:
+  powershell:
+    whoami:
+      shell: whoami
+```
+The last one is much more simple. Instead of running a module, we run a shell command.
+
+- **resource-file** - A resource file as simply a text file with a list of commands to run in order.
+An example txt is shown below
+```yaml
+resource-file: commands.txt
+
+# commands.txt
+listeners
+uselistener http
+set Port 999
+execute
+```
 
 ### Usage
 

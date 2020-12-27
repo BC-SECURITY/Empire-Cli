@@ -65,8 +65,20 @@ class Menu(object):
 
     def on_leave(self):
         """
-        Wgen a user changes menus, the on_leave method will be called. Any cleanup that needs to happen should happen at this point.
+        When a user changes menus, the on_leave method will be called. Any cleanup that needs to happen should happen at this point.
         :return:
+        """
+        pass
+
+    def on_connect(self):
+        """
+        When the application connects to a server, this function is called.
+        """
+        pass
+
+    def on_disconnect(self):
+        """
+        When the application disconnects from a server, this function is called.
         """
         pass
 

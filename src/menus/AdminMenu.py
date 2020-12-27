@@ -1,6 +1,6 @@
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
-from src.utils import print_util
+from src.utils import print_util, date_util
 from src.utils import table_util
 from src.utils.autocomplete_util import position_util
 from src.utils.cli_util import register_cli_commands, command
@@ -82,12 +82,11 @@ class AdminMenu(Menu):
         Usage: user_list
         """
         users_list = []
-        self.users = state.get_users()['users']
 
-        for x in range(len(self.users)):
-            users_list.append([str(self.users[x]['ID']), self.users[x]['username'],
-                               str(self.users[x]['admin']), str(self.users[x]['enabled']),
-                               self.users[x]['last_logon_time']])
+        for user in state.get_users()['users']:
+            users_list.append([str(user['ID']), user['username'],
+                               str(user['admin']), str(user['enabled']),
+                               date_util.humanize_datetime(user['last_logon_time'])])
 
         users_list.insert(0, ['ID', 'Username', 'Admin', 'Enabled', 'Last Logon Time'])
 
