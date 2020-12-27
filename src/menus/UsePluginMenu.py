@@ -3,6 +3,7 @@ from prompt_toolkit.completion import Completion
 from src.EmpireCliState import state
 from src.menus.UseMenu import UseMenu
 from src.utils.autocomplete_util import filtered_search_list, position_util
+from src.utils import print_util
 from src.utils.cli_util import register_cli_commands, command
 
 
@@ -64,6 +65,15 @@ class UsePluginMenu(UseMenu):
         Usage: generate
         """
         self.execute()
+
+    @command
+    def info(self):
+        """
+        Info about current plugin (ex: Authors, Description, etc)
+
+        Usage: info
+        """
+        print(print_util.color('[!] TODO: info to plugins API endpoint'))
 
 
 use_plugin_menu = UsePluginMenu()
