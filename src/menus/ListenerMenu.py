@@ -5,7 +5,7 @@ from prompt_toolkit.completion import Completion
 
 from src.EmpireCliState import state
 from src.menus.Menu import Menu
-from src.utils import table_util
+from src.utils import table_util, date_util
 from src.utils.autocomplete_util import filtered_search_list, position_util
 from src.utils.cli_util import register_cli_commands, command
 
@@ -36,7 +36,7 @@ class ListenerMenu(Menu):
 
         Usage: list
         """
-        listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_category'], x['created_at']],
+        listener_list = list(map(lambda x: [x['ID'], x['name'], x['module'], x['listener_category'], date_util.humanize_datetime(x['created_at'])],
                                  state.listeners.values()))
         listener_list.insert(0, ['ID', 'Name', 'Module', 'Listener Category', 'Created At'])
 
