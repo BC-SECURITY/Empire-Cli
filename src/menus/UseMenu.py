@@ -14,13 +14,16 @@ class UseMenu(Menu):
     A base menu object that can be used when needing the typical "use" behavior.
     Such as set, unset, info
     """
-    def __init__(self, display_name='', selected='', record_options=None):
+
+    def __init__(self, display_name='', selected='', record=None, record_options=None):
         """
         :param display_name: See Menu
         :param selected:  See Menu
+        :param record: The record object
         :param record_options: The options to configure for the current record
         """
         super().__init__(display_name=display_name, selected=selected)
+        self.record = record
         self.record_options = record_options
 
     def get_completions(self, document, complete_event, cmd_line, word_before_cursor):
@@ -68,11 +71,11 @@ class UseMenu(Menu):
             print(print_util.color(f'Could not find field: {key}'))
 
     @command
-    def info(self):
+    def options(self):
         """
         Print the current record options
 
-        Usage: info
+        Usage: options
         """
         record_list = []
         for key, value in self.record_options.items():
@@ -84,3 +87,27 @@ class UseMenu(Menu):
         record_list.insert(0, ['Name', 'Value', 'Required', 'Description'])
 
         table_util.print_table(record_list, 'Record Options')
+
+    @command
+    def info(self):
+        """"
+        Print default info on the current record.
+
+        Usage: info
+        """
+        record_list = []
+
+        for key, values in self.record.items():
+            if (key in ['Name', 'Author', 'Comments', 'Description', 'Language', 'Background', 'NeedsAdmin',
+                        'OpsecSafe', 'Techniques', 'Software']):
+                if isinstance(values, list):
+                    if values[0] != '':
+                        for i, value in enumerate(values):
+                            if i == 0:
+                                record_list.append([print_util.color(key, 'blue'), print_util.text_wrap(value, width=40)])
+                            else:
+                                record_list.append(['', print_util.text_wrap(value)])
+                elif values != '':
+                    record_list.append([print_util.color(key, 'blue'), print_util.text_wrap(values, width=40)])
+
+        table_util.print_table(record_list, 'Record Info', colored_header=False, no_borders=True)

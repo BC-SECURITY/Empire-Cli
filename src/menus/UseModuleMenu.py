@@ -13,7 +13,7 @@ from src.utils.cli_util import register_cli_commands, command
 @register_cli_commands
 class UseModuleMenu(UseMenu):
     def __init__(self):
-        super().__init__(display_name='usemodule', selected='', record_options=None)
+        super().__init__(display_name='usemodule', selected='', record=None, record_options=None)
 
     def autocomplete(self):
         return self._cmd_registry + super().autocomplete()
@@ -56,6 +56,7 @@ class UseModuleMenu(UseMenu):
             if 'agent' in kwargs and 'Agent' in self.record_options:
                 self.set('Agent', kwargs['agent'])
             self.info()
+            self.options()
             return True
 
     def use(self, module: str) -> None:
@@ -66,6 +67,7 @@ class UseModuleMenu(UseMenu):
         """
         if module in state.modules.keys():
             self.selected = module
+            self.record = state.modules[module]
             self.record_options = state.modules[module]['options']
 
     @command
