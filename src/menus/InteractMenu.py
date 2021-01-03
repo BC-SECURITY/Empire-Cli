@@ -231,6 +231,8 @@ class InteractMenu(Menu):
                                             args=[self.session_id, response['taskID']])
             agent_return.daemon = True
             agent_return.start()
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
 
     def update_comms(self, listener_name: str) -> None:
         """
