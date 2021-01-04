@@ -219,9 +219,9 @@ class InteractMenu(Menu):
             if key in shortcut.get_dynamic_param_names():
                 continue
             elif key in shortcut.get_static_param_names():
-                post_body[key] = shortcut.get_param(key).value
+                post_body[key] = str(shortcut.get_param(key).value)
             else:
-                post_body[key] = module_options[key]['Value']
+                post_body[key] = str(module_options[key]['Value'])
         post_body['Agent'] = self.session_id
         response = state.execute_module(shortcut.module, post_body)
         if 'success' in response.keys():
@@ -231,6 +231,8 @@ class InteractMenu(Menu):
                                             args=[self.session_id, response['taskID']])
             agent_return.daemon = True
             agent_return.start()
+        elif 'error' in response.keys():
+            print(print_util.color('[!] Error: ' + response['error']))
 
     def update_comms(self, listener_name: str) -> None:
         """
