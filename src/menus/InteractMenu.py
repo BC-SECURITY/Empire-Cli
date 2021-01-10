@@ -125,7 +125,7 @@ class InteractMenu(Menu):
         if destination_file_name:
             file_name = destination_file_name
 
-        response = state.agent_upload_file(self.session_id, file_name, file_data)
+        response = state.agent_upload_file(self.session_id, file_name, file_data.decode('UTF-8'))
         print(print_util.color('[*] Tasked ' + self.selected + ' to run Task ' + str(response['taskID'])))
         agent_return = threading.Thread(target=self.tasking_id_returns, args=[self.session_id, response['taskID']])
         agent_return.daemon = True
