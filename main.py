@@ -2,7 +2,7 @@ import re
 import shlex
 import threading
 import time
-from typing import get_type_hints, Dict, Optional
+from typing import get_type_hints, Dict, List, Optional
 
 import urllib3
 from docopt import docopt
@@ -197,7 +197,7 @@ class EmpireCli(object):
             except CliExitException:
                 break
 
-    def parse_command_line(self, text: str, cmd_line: list[str]):
+    def parse_command_line(self, text: str, cmd_line: List[str]):
         if len(cmd_line) == 0:
             return
         if not state.connected and not cmd_line[0] == 'connect':
