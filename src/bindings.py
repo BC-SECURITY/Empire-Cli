@@ -26,7 +26,7 @@ def do_ctrl_c(event):
     menu_state.pop()
 
 
-@bindings.add('s-up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a')
+@bindings.add('f1', 'up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a')
 def do_konami(event):
     custom_formatters = [
         formatters.Label(),
