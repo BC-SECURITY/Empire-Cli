@@ -1,4 +1,4 @@
-** This project has been integrated into the main Empire repository as of Empire 4.0**
+**This project has been integrated into the main Empire repository as of Empire 4.0**
 
 **This code is in a beta state. There may be bugs and major changes before a full release.
 Please provide feedback and bugs in the [issues](https://github.com/BC-SECURITY/Empire-Cli/issues) or in our Discord**
